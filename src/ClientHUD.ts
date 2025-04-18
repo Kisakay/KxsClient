@@ -41,7 +41,6 @@ class KxsClientHUD {
 			this.initCounter("kills", "Kills", "0");
 		}
 
-		this.pingManager.start();
 		this.setupWeaponBorderHandler();
 		this.startUpdateLoop();
 		this.escapeMenu();

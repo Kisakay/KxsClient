@@ -13,18 +13,29 @@ class PingTest {
 	constructor() {
 		this.ptcDataBuf = new ArrayBuffer(1);
 		this.waitForServerSelectElements();
+		this.startKeepAlive();
 	}
 
+	private startKeepAlive() {
+		setInterval(() => {
+			if (this.ws?.readyState === WebSocket.OPEN) {
+				this.ws.send(this.ptcDataBuf);
+			}
+		}, 5000); // envoie toutes les 5s
+	}
 
 	private waitForServerSelectElements() {
 		const checkInterval = setInterval(() => {
-			const teamSelect = document.getElementById("team-server-select");
-			const mainSelect = document.getElementById("server-select-main");
+			const teamSelect = document.getElementById("team-server-select") as HTMLSelectElement | null;
+			const mainSelect = document.getElementById("server-select-main") as HTMLSelectElement | null;
 
-			if (teamSelect || mainSelect) {
+			const selectedValue = teamSelect?.value || mainSelect?.value;
+
+			if ((teamSelect || mainSelect) && selectedValue) {
 				clearInterval(checkInterval);
 				this.setServerFromDOM();
 				this.attachRegionChangeListener();
+				this.start(); // ← Démarrage auto ici
 			}
 		}, 100); // Vérifie toutes les 100ms
 	}
@@ -33,6 +44,8 @@ class PingTest {
 		const { region, url } = this.detectSelectedServer();
 		this.region = region;
 		this.url = `wss://${url}/ptc`;
+
+		this.start();
 	}
 
 	private detectSelectedServer(): { region: string; url: string } {
@@ -93,13 +106,20 @@ class PingTest {
 			this.retryCount = 0;
 			this.isConnecting = false;
 			this.sendPing();
+
+			setTimeout(() => {
+				if (this.ws?.readyState !== WebSocket.OPEN) {
+					console.warn("WebSocket bloquée, tentative de reconnexion");
+					this.restart();
+				}
+			}, 3000); // 3s pour sécuriser
 		};
 
 		ws.onmessage = () => {
 			this.hasPing = true;
 			const elapsed = (Date.now() - this.sendTime) / 1e3;
 			this.ping = Math.round(elapsed * 1000);
-			setTimeout(() => this.sendPing(), 250);
+			setTimeout(() => this.sendPing(), 1000);
 		};
 
 		ws.onerror = () => {
@@ -129,6 +149,10 @@ class PingTest {
 
 	public stop() {
 		if (this.ws) {
+			this.ws.onclose = null;
+			this.ws.onerror = null;
+			this.ws.onmessage = null;
+			this.ws.onopen = null;
 			this.ws.close();
 			this.ws = null;
 		}
@@ -141,13 +165,12 @@ class PingTest {
 	public restart() {
 		this.stop();
 		this.setServerFromDOM();
-		this.start();
 	}
 
 	public getPingResult() {
 		return {
 			region: this.region,
-			ping: this.hasPing ? this.ping : null,
+			ping: this.ws && this.ws.readyState === WebSocket.OPEN && this.hasPing ? this.ping : null,
 		};
 	}
 
