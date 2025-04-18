@@ -322,6 +322,13 @@ class KxsClientHUD {
     .btn-game-container {
         flex: 1 !important;
     }
+
+	#btn-touch-styles,
+	#btn-game-aim-line {
+    	display: none !important;
+    	pointer-events: none !important;
+    	visibility: hidden !important;
+	}
     `;
 
 		const addCustomStyles = (): void => {
@@ -344,9 +351,27 @@ class KxsClientHUD {
 			menuContainer.insertBefore(header, menuContainer.firstChild);
 		};
 
+		const disableUnwantedButtons = (): void => {
+			const touchStyles = document.getElementById('btn-touch-styles');
+			const aimLine = document.getElementById('btn-game-aim-line');
+
+			if (touchStyles) {
+				touchStyles.style.display = 'none';
+				touchStyles.style.pointerEvents = 'none';
+				touchStyles.style.visibility = 'hidden';
+			}
+
+			if (aimLine) {
+				aimLine.style.display = 'none';
+				aimLine.style.pointerEvents = 'none';
+				aimLine.style.visibility = 'hidden';
+			}
+		};
+
 		if (document.querySelector('#ui-game-menu')) {
 			addCustomStyles();
 			addKxsHeader();
+			disableUnwantedButtons();
 		}
 	}
 
