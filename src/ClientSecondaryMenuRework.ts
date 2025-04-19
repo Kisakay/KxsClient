@@ -434,7 +434,7 @@ class KxsClientSecondaryMenu {
 		});
 
 		this.addOption(HUD, {
-			label: "Kill Feed Blint Text",
+			label: "Kill Feed Chroma",
 			value: this.kxsClient.isKillFeedBlint,
 			icon: `<svg fill="#000000" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g data-name="Layer 2" id="Layer_2"> <path d="M18,11a1,1,0,0,1-1,1,5,5,0,0,0-5,5,1,1,0,0,1-2,0,5,5,0,0,0-5-5,1,1,0,0,1,0-2,5,5,0,0,0,5-5,1,1,0,0,1,2,0,5,5,0,0,0,5,5A1,1,0,0,1,18,11Z"></path> <path d="M19,24a1,1,0,0,1-1,1,2,2,0,0,0-2,2,1,1,0,0,1-2,0,2,2,0,0,0-2-2,1,1,0,0,1,0-2,2,2,0,0,0,2-2,1,1,0,0,1,2,0,2,2,0,0,0,2,2A1,1,0,0,1,19,24Z"></path> <path d="M28,17a1,1,0,0,1-1,1,4,4,0,0,0-4,4,1,1,0,0,1-2,0,4,4,0,0,0-4-4,1,1,0,0,1,0-2,4,4,0,0,0,4-4,1,1,0,0,1,2,0,4,4,0,0,0,4,4A1,1,0,0,1,28,17Z"></path> </g> </g></svg>`,
 			category: "HUD",
@@ -442,6 +442,7 @@ class KxsClientSecondaryMenu {
 			onChange: () => {
 				this.kxsClient.isKillFeedBlint = !this.kxsClient.isKillFeedBlint
 				this.kxsClient.updateLocalStorage()
+				this.kxsClient.hud.toggleKillFeed();
 			},
 		});
 

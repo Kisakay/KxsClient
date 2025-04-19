@@ -1,6 +1,4 @@
-import { KxsMainClientMenu } from "./ClientMainMenu";
-import { KxsClientSecondaryMenu } from "./ClientSecondaryMenuRework";
-import { KxsClientHUD } from "./ClientHUD";
+// import { KxsMainClientMenu } from "./ClientMainMenu";
 import { intercept } from "./intercept";
 
 import KxsClient from "./KxsClient";
@@ -58,8 +56,7 @@ if (startBottomMiddle) {
 
 
 const kxsClient = new KxsClient();
-const kxsClientHUD = new KxsClientHUD(kxsClient);
-const mainMenu = new KxsMainClientMenu(kxsClient);
+// const mainMenu = new KxsMainClientMenu(kxsClient);
 
 setInterval(() => {
 	loadingScreen.hide();

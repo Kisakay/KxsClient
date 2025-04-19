@@ -188,12 +188,13 @@ class KxsLegacyClientSecondaryMenu {
 		});
 
 		this.addOption(HUD, {
-			label: "Kill Feed Blint Text",
+			label: "Kill Feed Chroma",
 			value: this.kxsClient.isKillFeedBlint,
 			type: "toggle",
 			onChange: (value) => {
 				this.kxsClient.isKillFeedBlint = !this.kxsClient.isKillFeedBlint
 				this.kxsClient.updateLocalStorage()
+				this.kxsClient.hud.toggleKillFeed();
 			},
 		});
 

@@ -12,6 +12,7 @@ import { KxsClientSecondaryMenu } from "./ClientSecondaryMenuRework";
 import { KxsLegacyClientSecondaryMenu } from "./ClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
 import { background_song, death_sound, full_logo, win_sound } from ".";
+import { KxsClientHUD } from "./ClientHUD";
 
 export default class KxsClient {
 	lastFrameTime: DOMHighResTimeStamp;
@@ -50,6 +51,7 @@ export default class KxsClient {
 	nm: NotificationManager;
 	private deathObserver: MutationObserver | null = null;
 	soundLibrary: SoundLibrary;
+	hud: KxsClientHUD;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -111,6 +113,7 @@ export default class KxsClient {
 		this.loadBackgroundFromLocalStorage();
 		this.initDeathDetection();
 		this.discordRPC.connect();
+		this.hud = new KxsClientHUD(this);
 
 		if (this.isLegaySecondaryMenu) {
 			this.secondaryMenu = new KxsLegacyClientSecondaryMenu(this);

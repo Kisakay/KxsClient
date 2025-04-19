@@ -162,6 +162,47 @@ class KxsClientHUD {
 		this.setupObserver();
 	}
 
+	public toggleKillFeed() {
+		if (this.kxsClient.isKillFeedBlint) {
+			this.initKillFeed(); // <-- injecte le CSS custom et observer
+		} else {
+			this.resetKillFeed(); // <-- supprime styles et contenu
+		}
+	}
+	/**
+	 * Réinitialise le Kill Feed à l'état par défaut (vide)
+	 */
+	/**
+	 * Supprime tous les styles custom KillFeed injectés par applyCustomStyles
+	 */
+	private resetKillFeedStyles() {
+		// Supprime tous les <style> contenant .killfeed-div ou .killfeed-text
+		const styles = Array.from(document.head.querySelectorAll('style'));
+		styles.forEach(style => {
+			if (style.textContent &&
+				(style.textContent.includes('.killfeed-div') || style.textContent.includes('.killfeed-text'))
+			) {
+				style.remove();
+			}
+		});
+	}
+
+	public resetKillFeed() {
+		// Supprime les styles custom KillFeed
+		this.resetKillFeedStyles();
+
+		// Sélectionne le container du killfeed
+		const killfeedContents = document.getElementById('ui-killfeed-contents');
+		if (killfeedContents) {
+			// Vide tous les killfeed-div et killfeed-text
+			killfeedContents.querySelectorAll('.killfeed-div').forEach(div => {
+				const text = div.querySelector('.killfeed-text');
+				if (text) (text as HTMLElement).textContent = '';
+				(div as HTMLElement).style.opacity = '0';
+			});
+		}
+	}
+
 	private escapeMenu() {
 		const customStyles = `
     .ui-game-menu-desktop {
@@ -420,10 +461,16 @@ class KxsClientHUD {
 		}
 	}
 
+	private killFeedObserver: MutationObserver | null = null;
+
 	private setupObserver() {
 		const killfeedContents = document.getElementById('ui-killfeed-contents');
 		if (killfeedContents) {
-			const observer = new MutationObserver((mutations) => {
+			// Détruit l'ancien observer s'il existe
+			if (this.killFeedObserver) {
+				this.killFeedObserver.disconnect();
+			}
+			this.killFeedObserver = new MutationObserver((mutations) => {
 				mutations.forEach((mutation) => {
 					if (mutation.target instanceof HTMLElement &&
 						mutation.target.classList.contains('killfeed-text')) {
@@ -440,7 +487,7 @@ class KxsClientHUD {
 				});
 			});
 
-			observer.observe(killfeedContents, {
+			this.killFeedObserver.observe(killfeedContents, {
 				childList: true,
 				subtree: true,
 				characterData: true,
@@ -449,6 +496,16 @@ class KxsClientHUD {
 			});
 
 			killfeedContents.querySelectorAll('.killfeed-div').forEach(this.handleMessage);
+		}
+	}
+
+	/**
+	 * Détruit l'observer du killfeed s'il existe
+	 */
+	public disableKillFeedObserver() {
+		if (this.killFeedObserver) {
+			this.killFeedObserver.disconnect();
+			this.killFeedObserver = null;
 		}
 	}
 
