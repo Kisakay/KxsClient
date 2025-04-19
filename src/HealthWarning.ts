@@ -167,7 +167,7 @@ class HealthWarning {
 		this.warningElement.style.display = 'block';
 		const span = this.warningElement.querySelector("span");
 		if (span) {
-			span.textContent = 'LOW HP: Mode placement';
+			span.textContent = 'LOW HP: Placement Mode';
 		}
 	}
 
