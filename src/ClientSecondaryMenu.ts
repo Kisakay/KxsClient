@@ -46,13 +46,13 @@ class KxsLegacyClientSecondaryMenu {
 		this.initMenu();
 		this.addShiftListener();
 		this.addDragListeners();
+		this.loadOption();
 	}
 
 	private handleShiftPress(event: KeyboardEvent): void {
 		if (event.key === "Shift" && event.location == 2) {
 			this.clearMenu();
 			this.toggleMenuVisibility();
-			this.loadOption();
 		}
 	}
 

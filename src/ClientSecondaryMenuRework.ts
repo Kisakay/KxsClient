@@ -44,6 +44,7 @@ class KxsClientSecondaryMenu {
 		this.initMenu();
 		this.addShiftListener();
 		this.addDragListeners();
+		this.loadOption();
 	}
 
 	private initMenu(): void {
@@ -738,7 +739,6 @@ class KxsClientSecondaryMenu {
 			if (event.key === "Shift" && event.location == 2) {
 				this.clearMenu();
 				this.toggleMenuVisibility();
-				this.loadOption();
 				// Ensure options are displayed after loading
 				this.filterOptions();
 			}
@@ -771,7 +771,6 @@ class KxsClientSecondaryMenu {
 		if (event.key === "Shift" && event.location == 2) {
 			this.clearMenu();
 			this.toggleMenuVisibility();
-			this.loadOption();
 			// Ensure options are displayed after loading
 			this.filterOptions();
 		}
