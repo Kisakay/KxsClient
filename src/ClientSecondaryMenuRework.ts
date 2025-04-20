@@ -56,7 +56,8 @@ class KxsClientSecondaryMenu {
 	}
 
 	private applyMenuStyles(): void {
-		Object.assign(this.menu.style, {
+		// Styles par défaut (desktop/tablette)
+		const defaultStyles = {
 			backgroundColor: "rgba(17, 24, 39, 0.95)",
 			padding: "20px",
 			borderRadius: "12px",
@@ -74,28 +75,56 @@ class KxsClientSecondaryMenu {
 			transform: "translateX(-50%)",
 			display: "none",
 			boxSizing: "border-box", // Include padding in width calculation
-		});
+		};
+
+		// Styles réduits pour mobile
+		const mobileStyles = {
+			padding: "6px",
+			borderRadius: "7px",
+			width: "78vw",
+			maxWidth: "84vw",
+			fontSize: "10px",
+			maxHeight: "60vh",
+			top: "4%",
+			left: "50%",
+		};
+
+		Object.assign(this.menu.style, defaultStyles);
+		if (this.kxsClient.isMobile && this.kxsClient.isMobile()) {
+			Object.assign(this.menu.style, mobileStyles);
+		}
 	}
 
 
 	private createHeader(): void {
 		const header = document.createElement("div");
-		header.style.marginBottom = "20px";
+
+		// Détection mobile pour styles réduits
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
+
+		const logoSize = isMobile ? 16 : 24;
+		const titleFontSize = isMobile ? 12 : 20;
+		const headerGap = isMobile ? 4 : 10;
+		const headerMarginBottom = isMobile ? 8 : 20;
+		const closeBtnPadding = isMobile ? 2 : 6;
+		const closeBtnFontSize = isMobile ? 12 : 18;
+
+		header.style.marginBottom = `${headerMarginBottom}px`;
 		header.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; box-sizing: border-box;">
-            <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${isMobile ? 7 : 15}px; width: 100%; box-sizing: border-box;">
+            <div style="display: flex; align-items: center; gap: ${headerGap}px;">
                 <img src="${kxs_logo}" 
-                    alt="Logo" style="width: 24px; height: 24px;">
-                <span style="font-size: 20px; font-weight: bold;">KXS CLIENT</span>
+                    alt="Logo" style="width: ${logoSize}px; height: ${logoSize}px;">
+                <span style="font-size: ${titleFontSize}px; font-weight: bold;">KXS CLIENT</span>
             </div>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: ${headerGap}px;">
               <button style="
-                padding: 6px;
+                padding: ${closeBtnPadding}px;
                 background: none;
                 border: none;
                 color: white;
                 cursor: pointer;
-                font-size: 18px;
+                font-size: ${closeBtnFontSize}px;
               ">×</button>
             </div>
           </div>
@@ -103,13 +132,13 @@ class KxsClientSecondaryMenu {
             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 5px;">
               ${["ALL", "HUD", "SERVER", "MECHANIC", "SOUND"].map(cat => `
                 <button class="category-btn" data-category="${cat}" style="
-                  padding: 6px 16px;
+                  padding: ${isMobile ? '2px 6px' : '6px 16px'};
                   background: ${this.activeCategory === cat ? '#3B82F6' : 'rgba(55, 65, 81, 0.8)'};
                   border: none;
-                  border-radius: 6px;
+                  border-radius: ${isMobile ? '3px' : '6px'};
                   color: white;
                   cursor: pointer;
-                  font-size: 14px;
+                  font-size: ${isMobile ? '9px' : '14px'};
                   transition: background 0.2s;
                 ">${cat}</button>
               `).join('')}
@@ -118,22 +147,22 @@ class KxsClientSecondaryMenu {
               <div style="position: relative; width: 100%; box-sizing: border-box;">
                 <input type="text" id="kxsSearchInput" placeholder="Search options..." style="
                   width: 100%;
-                  padding: 8px 12px 8px 32px;
+                  padding: ${isMobile ? '3px 5px 3px 20px' : '8px 12px 8px 32px'};
                   background: rgba(55, 65, 81, 0.8);
                   border: none;
-                  border-radius: 6px;
+                  border-radius: ${isMobile ? '3px' : '6px'};
                   color: white;
-                  font-size: 14px;
+                  font-size: ${isMobile ? '9px' : '14px'};
                   outline: none;
                   box-sizing: border-box;
                 ">
                 <div style="
                   position: absolute;
-                  left: 10px;
+                  left: ${isMobile ? '4px' : '10px'};
                   top: 50%;
                   transform: translateY(-50%);
-                  width: 14px;
-                  height: 14px;
+                  width: ${isMobile ? '9px' : '14px'};
+                  height: ${isMobile ? '9px' : '14px'};
                 ">
                   <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
@@ -644,15 +673,16 @@ class KxsClientSecondaryMenu {
 
 	private createGridContainer(): void {
 		const gridContainer = document.createElement("div");
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
 		Object.assign(gridContainer.style, {
 			display: "grid",
-			gridTemplateColumns: "repeat(3, 1fr)",
-			gap: "16px",
-			padding: "16px",
-			gridAutoRows: "minmax(150px, auto)",
+			gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(3, 1fr)",
+			gap: isMobile ? "5px" : "16px",
+			padding: isMobile ? "2px" : "16px",
+			gridAutoRows: isMobile ? "minmax(38px, auto)" : "minmax(150px, auto)",
 			overflowY: "auto",
 			overflowX: "hidden", // Prevent horizontal scrolling
-			maxHeight: "calc(3 * 150px + 2 * 16px)",
+			maxHeight: isMobile ? "28vh" : "calc(3 * 150px + 2 * 16px)",
 			width: "100%",
 			boxSizing: "border-box" // Include padding in width calculation
 		});
@@ -685,17 +715,21 @@ class KxsClientSecondaryMenu {
 
 	private createToggleButton(option: MenuOption): HTMLButtonElement {
 		const btn = document.createElement("button");
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
 		Object.assign(btn.style, {
 			width: "100%",
-			padding: "8px",
+			padding: isMobile ? "2px 0px" : "8px",
+			height: isMobile ? "24px" : "auto",
 			background: (option.value as boolean) ? "#059669" : "#DC2626",
 			border: "none",
-			borderRadius: "6px",
+			borderRadius: isMobile ? "3px" : "6px",
 			color: "white",
 			cursor: "pointer",
 			transition: "background 0.2s",
-			fontSize: "14px",
-			fontWeight: "bold"
+			fontSize: isMobile ? "9px" : "14px",
+			fontWeight: "bold",
+			minHeight: isMobile ? "20px" : "unset",
+			letterSpacing: isMobile ? "0.5px" : "1px"
 		});
 
 		btn.textContent = (option.value as boolean) ? "ENABLED" : "DISABLED";
@@ -713,9 +747,11 @@ class KxsClientSecondaryMenu {
 
 	private createClickButton(option: MenuOption): HTMLButtonElement {
 		const btn = document.createElement("button");
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
 		Object.assign(btn.style, {
 			width: "100%",
-			padding: "8px",
+			padding: isMobile ? "2px 0px" : "8px",
+			height: isMobile ? "24px" : "auto",
 			background: "#3B82F6",
 			border: "none",
 			borderRadius: "6px",

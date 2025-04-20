@@ -154,6 +154,28 @@ export default class KxsClient {
 		}
 	}
 
+
+	private detectDeviceType(): "mobile" | "tablet" | "desktop" {
+		const ua = navigator.userAgent;
+
+		if (/Mobi|Android/i.test(ua)) {
+			if (/Tablet|iPad/i.test(ua)) {
+				return "tablet";
+			}
+			return "mobile";
+		}
+
+		if (/iPad|Tablet/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+			return "tablet";
+		}
+
+		return "desktop";
+	}
+
+	public isMobile(): boolean {
+		return this.detectDeviceType() !== "desktop";
+	}
+
 	updateLocalStorage() {
 		localStorage.setItem(
 			"userSettings",

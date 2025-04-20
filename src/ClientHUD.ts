@@ -204,177 +204,229 @@ class KxsClientHUD {
 	}
 
 	private escapeMenu() {
-		const customStyles = `
+		const customStylesMobile = `
     .ui-game-menu-desktop {
         background: linear-gradient(135deg, rgba(25, 25, 35, 0.95) 0%, rgba(15, 15, 25, 0.98) 100%) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 12px !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-        padding: 20px !important;
-        backdrop-filter: blur(10px) !important;
-        max-width: 350px !important;
-        /* max-height: 80vh !important; */ /* Optional: Limit the maximum height */
-        margin: auto !important;
+        border-radius: 4px !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+        padding: 2px 2px !important;
+        max-width: 45vw !important;
+        width: 45vw !important;
+        max-height: 28vh !important;
+        min-width: unset !important;
+        min-height: unset !important;
+        font-size: 9px !important;
+        margin: 0 auto !important;
         box-sizing: border-box !important;
-        overflow-y: auto !important; /* Allow vertical scrolling if necessary */
+        overflow-y: auto !important;
     }
-    
+    .ui-game-menu-desktop button, .ui-game-menu-desktop .btn, .ui-game-menu-desktop input, .ui-game-menu-desktop select {
+        font-size: 9px !important;
+        padding: 2px 3px !important;
+        margin: 1px 0 !important;
+        border-radius: 3px !important;
+    }
+    .ui-game-menu-desktop .kxs-header, .ui-game-menu-desktop h1, .ui-game-menu-desktop h2, .ui-game-menu-desktop h3, .ui-game-menu-desktop label, .ui-game-menu-desktop span {
+        font-size: 9px !important;
+    }
+    .ui-game-menu-desktop img, .ui-game-menu-desktop svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+    .ui-game-menu-desktop .mode-btn {
+        min-height: 12px !important;
+        font-size: 8px !important;
+        padding: 2px 3px !important;
+    }
     /* Style pour les boutons de mode de jeu qui ont une image de fond */
     .btn-mode-cobalt,
     [style*="background: url("] {
         background-repeat: no-repeat !important;
         background-position: right center !important;
-        background-size: auto 80% !important;
+        background-size: auto 70% !important;
         position: relative !important;
-        padding-right: 40px !important;
+        padding-right: 8px !important;
     }
-    
-    /* Ne pas appliquer ce style aux boutons standards comme Play Solo */
     #btn-start-mode-0 {
         background-repeat: initial !important;
         background-position: initial !important;
         background-size: initial !important;
         padding-right: initial !important;
     }
+`;
 
-    .ui-game-menu-desktop::-webkit-scrollbar {
-        width: 8px !important;
-    }
-    .ui-game-menu-desktop::-webkit-scrollbar-track {
-        background: rgba(25, 25, 35, 0.5) !important;
-        border-radius: 10px !important;
-    }
-    .ui-game-menu-desktop::-webkit-scrollbar-thumb {
-        background-color: #4287f5 !important;
-        border-radius: 10px !important;
-        border: 2px solid rgba(25, 25, 35, 0.5) !important;
-    }
-    .ui-game-menu-desktop::-webkit-scrollbar-thumb:hover {
-        background-color: #5a9eff !important;
-    }
+		const customStylesDesktop = `
+.ui-game-menu-desktop {
+	background: linear-gradient(135deg, rgba(25, 25, 35, 0.95) 0%, rgba(15, 15, 25, 0.98) 100%) !important;
+	border: 1px solid rgba(255, 255, 255, 0.1) !important;
+	border-radius: 12px !important;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+	padding: 20px !important;
+	backdrop-filter: blur(10px) !important;
+	max-width: 350px !important;
+	/* max-height: 80vh !important; */ /* Optional: Limit the maximum height */
+	margin: auto !important;
+	box-sizing: border-box !important;
+	overflow-y: auto !important; /* Allow vertical scrolling if necessary */
+}
 
-    .ui-game-menu-desktop {
-        scrollbar-width: thin !important;
-        scrollbar-color: #4287f5 rgba(25, 25, 35, 0.5) !important;
-    }
+/* Style pour les boutons de mode de jeu qui ont une image de fond */
+.btn-mode-cobalt,
+[style*="background: url("] {
+	background-repeat: no-repeat !important;
+	background-position: right center !important;
+	background-size: auto 80% !important;
+	position: relative !important;
+	padding-right: 40px !important;
+}
 
-    .kxs-header {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        margin-bottom: 20px;
-        padding: 10px;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-    }
+/* Ne pas appliquer ce style aux boutons standards comme Play Solo */
+#btn-start-mode-0 {
+	background-repeat: initial !important;
+	background-position: initial !important;
+	background-size: initial !important;
+	padding-right: initial !important;
+}
 
-    .kxs-logo {
-        width: 30px;
-        height: 30px;
-        margin-right: 10px;
-        border-radius: 6px;
-    }
+.ui-game-menu-desktop::-webkit-scrollbar {
+	width: 8px !important;
+}
+.ui-game-menu-desktop::-webkit-scrollbar-track {
+	background: rgba(25, 25, 35, 0.5) !important;
+	border-radius: 10px !important;
+}
+.ui-game-menu-desktop::-webkit-scrollbar-thumb {
+	background-color: #4287f5 !important;
+	border-radius: 10px !important;
+	border: 2px solid rgba(25, 25, 35, 0.5) !important;
+}
+.ui-game-menu-desktop::-webkit-scrollbar-thumb:hover {
+	background-color: #5a9eff !important;
+}
 
-    .kxs-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: #ffffff;
-        text-transform: uppercase;
-        text-shadow: 0 0 10px rgba(66, 135, 245, 0.5);
-        font-family: 'Arial', sans-serif;
-        letter-spacing: 2px;
-    }
+.ui-game-menu-desktop {
+	scrollbar-width: thin !important;
+	scrollbar-color: #4287f5 rgba(25, 25, 35, 0.5) !important;
+}
 
-    .kxs-title span {
-        color: #4287f5;
-    }
-        
-    
-    .btn-game-menu {
-        background: linear-gradient(135deg, rgba(66, 135, 245, 0.1) 0%, rgba(66, 135, 245, 0.2) 100%) !important;
-        border: 1px solid rgba(66, 135, 245, 0.3) !important;
-        border-radius: 8px !important;
-        color: #ffffff !important;
-        transition: all 0.3s ease !important;
-        margin: 5px 0 !important;
-        padding: 12px !important;
-        font-weight: 600 !important;
-        width: 100% !important;
-        text-align: center !important;
-        display: block !important;
-        box-sizing: border-box !important;
-		line-height: 15px !important;
-    }
+.kxs-header {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	margin-bottom: 20px;
+	padding: 10px;
+	border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
 
-    .btn-game-menu:hover {
-        background: linear-gradient(135deg, rgba(66, 135, 245, 0.2) 0%, rgba(66, 135, 245, 0.3) 100%) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 12px rgba(66, 135, 245, 0.2) !important;
-    }
+.kxs-logo {
+	width: 30px;
+	height: 30px;
+	margin-right: 10px;
+	border-radius: 6px;
+}
 
-    .slider-container {
-        background: rgba(66, 135, 245, 0.1) !important;
-        border-radius: 8px !important;
-        padding: 10px 15px !important;
-        margin: 10px 0 !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
+.kxs-title {
+	font-size: 20px;
+	font-weight: 700;
+	color: #ffffff;
+	text-transform: uppercase;
+	text-shadow: 0 0 10px rgba(66, 135, 245, 0.5);
+	font-family: 'Arial', sans-serif;
+	letter-spacing: 2px;
+}
 
-    .slider-text {
-        color: #ffffff !important;
-        font-size: 14px !important;
-        margin-bottom: 8px !important;
-        text-align: center !important;
-    }
+.kxs-title span {
+	color: #4287f5;
+}
+	
 
-    .slider {
-        -webkit-appearance: none !important;
-        width: 100% !important;
-        height: 6px !important;
-        border-radius: 3px !important;
-        background: rgba(66, 135, 245, 0.3) !important;
-        outline: none !important;
-        margin: 10px 0 !important;
-    }
+.btn-game-menu {
+	background: linear-gradient(135deg, rgba(66, 135, 245, 0.1) 0%, rgba(66, 135, 245, 0.2) 100%) !important;
+	border: 1px solid rgba(66, 135, 245, 0.3) !important;
+	border-radius: 8px !important;
+	color: #ffffff !important;
+	transition: all 0.3s ease !important;
+	margin: 5px 0 !important;
+	padding: 12px !important;
+	font-weight: 600 !important;
+	width: 100% !important;
+	text-align: center !important;
+	display: block !important;
+	box-sizing: border-box !important;
+	line-height: 15px !important;
+}
 
-    .slider::-webkit-slider-thumb {
-        -webkit-appearance: none !important;
-        width: 16px !important;
-        height: 16px !important;
-        border-radius: 50% !important;
-        background: #4287f5 !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
-    }
+.btn-game-menu:hover {
+	background: linear-gradient(135deg, rgba(66, 135, 245, 0.2) 0%, rgba(66, 135, 245, 0.3) 100%) !important;
+	transform: translateY(-2px) !important;
+	box-shadow: 0 4px 12px rgba(66, 135, 245, 0.2) !important;
+}
 
-    .slider::-webkit-slider-thumb:hover {
-        transform: scale(1.2) !important;
-        box-shadow: 0 0 10px rgba(66, 135, 245, 0.5) !important;
-    }
+.slider-container {
+	background: rgba(66, 135, 245, 0.1) !important;
+	border-radius: 8px !important;
+	padding: 10px 15px !important;
+	margin: 10px 0 !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
 
-    .btns-game-double-row {
-        display: flex !important;
-        justify-content: center !important;
-        gap: 10px !important;
-        margin-bottom: 10px !important;
-        width: 100% !important;
-    }
+.slider-text {
+	color: #ffffff !important;
+	font-size: 14px !important;
+	margin-bottom: 8px !important;
+	text-align: center !important;
+}
 
-    .btn-game-container {
-        flex: 1 !important;
-    }
+.slider {
+	-webkit-appearance: none !important;
+	width: 100% !important;
+	height: 6px !important;
+	border-radius: 3px !important;
+	background: rgba(66, 135, 245, 0.3) !important;
+	outline: none !important;
+	margin: 10px 0 !important;
+}
 
-	#btn-touch-styles,
-	#btn-game-aim-line {
-    	display: none !important;
-    	pointer-events: none !important;
-    	visibility: hidden !important;
-	}
-    `;
+.slider::-webkit-slider-thumb {
+	-webkit-appearance: none !important;
+	width: 16px !important;
+	height: 16px !important;
+	border-radius: 50% !important;
+	background: #4287f5 !important;
+	cursor: pointer !important;
+	transition: all 0.3s ease !important;
+}
+
+.slider::-webkit-slider-thumb:hover {
+	transform: scale(1.2) !important;
+	box-shadow: 0 0 10px rgba(66, 135, 245, 0.5) !important;
+}
+
+.btns-game-double-row {
+	display: flex !important;
+	justify-content: center !important;
+	gap: 10px !important;
+	margin-bottom: 10px !important;
+	width: 100% !important;
+}
+
+.btn-game-container {
+	flex: 1 !important;
+}
+
+#btn-touch-styles,
+#btn-game-aim-line {
+	display: none !important;
+	pointer-events: none !important;
+	visibility: hidden !important;
+}
+`;
 
 		const addCustomStyles = (): void => {
 			const styleElement = document.createElement('style');
-			styleElement.textContent = customStyles;
+			styleElement.textContent = this.kxsClient.isMobile() ? customStylesMobile : customStylesDesktop;
 			document.head.appendChild(styleElement);
 		};
 
@@ -412,7 +464,9 @@ class KxsClientHUD {
 		if (document.querySelector('#ui-game-menu')) {
 			addCustomStyles();
 			addKxsHeader();
-			disableUnwantedButtons();
+			if (!this.kxsClient.isMobile()) {
+				disableUnwantedButtons();
+			}
 
 			// Désactiver uniquement le slider Music Volume
 			const sliders = document.querySelectorAll('.slider-container.ui-slider-container');
