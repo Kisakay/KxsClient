@@ -1,4 +1,5 @@
 import { KxsClientSecondaryMenu } from "./ClientSecondaryMenuRework";
+const packageInfo = require('../package.json');
 import KxsClient from "./KxsClient";
 
 interface MenuOption {
@@ -51,7 +52,7 @@ class KxsLegacyClientSecondaryMenu {
 
 	private handleShiftPress(event: KeyboardEvent): void {
 		if (event.key === "Shift" && event.location == 2) {
-			this.clearMenu();
+			// this.clearMenu();
 			this.toggleMenuVisibility();
 		}
 	}
@@ -399,7 +400,7 @@ class KxsLegacyClientSecondaryMenu {
 
 	private createHeader(): void {
 		const title = document.createElement("h2");
-		title.textContent = "KxsClient alpha";
+		title.textContent = "KxsClient v" + packageInfo.version;
 		Object.assign(title.style, {
 			margin: "0 0 10px",
 			textAlign: "center",
@@ -407,17 +408,7 @@ class KxsLegacyClientSecondaryMenu {
 			color: "#FFAE00",
 		});
 
-		const subtitle = document.createElement("p");
-		subtitle.textContent = "reset with tab";
-		Object.assign(subtitle.style, {
-			margin: "0 0 10px",
-			textAlign: "center",
-			fontSize: "12px",
-			color: "#ccc",
-		});
-
 		this.menu.appendChild(title);
-		this.menu.appendChild(subtitle);
 	}
 
 	public addSection(title: string): MenuSection {
