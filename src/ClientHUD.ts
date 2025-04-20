@@ -229,6 +229,26 @@ class KxsClientHUD {
 
 		// Réinitialise le curseur si pas d'URL
 		if (!url) {
+			// Supprime l'image animée si présente
+			if (this.animatedCursorImg) {
+				this.animatedCursorImg.remove();
+				this.animatedCursorImg = undefined;
+			}
+
+			// Supprime le style CSS qui cache le curseur natif
+			const hideCursorStyle = document.getElementById('kxs-hide-cursor-style');
+			if (hideCursorStyle) hideCursorStyle.remove();
+
+			// Supprime le style CSS du curseur personnalisé
+			const customCursorStyle = document.getElementById('kxs-custom-cursor-style');
+			if (customCursorStyle) customCursorStyle.remove();
+
+			// Retire l'eventListener mousemove si défini
+			if (this._mousemoveHandler) {
+				document.removeEventListener('mousemove', this._mousemoveHandler);
+				this._mousemoveHandler = undefined;
+			}
+
 			document.body.style.cursor = '';
 			return;
 		}
