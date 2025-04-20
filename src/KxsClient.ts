@@ -34,6 +34,7 @@ export default class KxsClient {
 	isMainMenuCleaned: boolean;
 	isNotifyingForToggleMenu: boolean;
 	isGunOverlayColored: boolean;
+	isGunBorderChromatic: boolean;
 	all_friends: string;
 	customCrosshair: string | null;
 
@@ -84,6 +85,7 @@ export default class KxsClient {
 		this.isNotifyingForToggleMenu = true;
 		this.isGunOverlayColored = true;
 		this.customCrosshair = null;
+		this.isGunBorderChromatic = false;
 
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
@@ -204,7 +206,8 @@ export default class KxsClient {
 				isNotifyingForToggleMenu: this.isNotifyingForToggleMenu,
 				soundLibrary: this.soundLibrary,
 				customCrosshair: this.customCrosshair,
-				isGunOverlayColored: this.isGunOverlayColored
+				isGunOverlayColored: this.isGunOverlayColored,
+				isGunBorderChromatic: this.isGunBorderChromatic
 			}),
 		);
 	};
@@ -653,6 +656,7 @@ export default class KxsClient {
 			this.isNotifyingForToggleMenu = savedSettings.isNotifyingForToggleMenu ?? this.isNotifyingForToggleMenu;
 			this.customCrosshair = savedSettings.customCrosshair ?? this.customCrosshair;
 			this.isGunOverlayColored = savedSettings.isGunOverlayColored ?? this.isGunOverlayColored;
+			this.isGunBorderChromatic = savedSettings.isGunBorderChromatic ?? this.isGunBorderChromatic;
 
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists

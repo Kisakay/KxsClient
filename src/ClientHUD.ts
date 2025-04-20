@@ -1024,15 +1024,15 @@ class KxsClientHUD {
 	}
 
 	toggleWeaponBorderHandler() {
-		if (this.kxsClient.isGunOverlayColored) {
+		if (this.kxsClient.isGunOverlayColored && !this.kxsClient.isGunBorderChromatic) {
 			const weaponContainers = Array.from(
 				document.getElementsByClassName("ui-weapon-switch"),
 			);
 			weaponContainers.forEach((container) => {
 				if (container.id === "ui-weapon-id-4") {
-					(container as HTMLElement).style.border = "";
+					(container as HTMLElement).style.border = "3px solid #2f4032";
 				} else {
-					(container as HTMLElement).style.border = "";
+					(container as HTMLElement).style.border = "3px solid #FFFFFF";
 				}
 			});
 
@@ -1109,21 +1109,75 @@ class KxsClientHUD {
 
 				observer.observe(weaponNameElement, { childList: true, characterData: true, subtree: true });
 			});
-		} else {
-			const weaponContainers = Array.from(
-				document.getElementsByClassName("ui-weapon-switch"),
-			);
-			weaponContainers.forEach((container) => {
-				if (container.id === "ui-weapon-id-4") {
-					(container as HTMLElement).style.border = "";
-				} else {
-					(container as HTMLElement).style.border = "";
+		}
+	}
+
+	toggleChromaticWeaponBorder() {
+		const borderClass = 'kxs-chromatic-border';
+		const styleId = 'kxs-chromatic-border-style';
+		const weaponIds = [1, 2, 3, 4];
+		if (this.kxsClient.isGunBorderChromatic) {
+			// Inject CSS if not already present
+			if (!document.getElementById(styleId)) {
+				const style = document.createElement('style');
+				style.id = styleId;
+				style.innerHTML = `
+@keyframes kxs-rainbow {
+	0% { border-image: linear-gradient(120deg, #ff004c, #fffa00, #00ff90, #004cff, #ff004c) 1; }
+	100% { border-image: linear-gradient(480deg, #ff004c, #fffa00, #00ff90, #004cff, #ff004c) 1; }
+}
+@keyframes kxs-glint {
+	0% { box-shadow: 0 0 8px 2px #fff2; }
+	50% { box-shadow: 0 0 24px 6px #fff8; }
+	100% { box-shadow: 0 0 8px 2px #fff2; }
+}
+@keyframes kxs-bg-rainbow {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+.kxs-chromatic-border {
+	border: 3px solid transparent !important;
+	border-image: linear-gradient(120deg, #ff004c, #fffa00, #00ff90, #004cff, #ff004c) 1;
+	animation: kxs-rainbow 3s linear infinite, kxs-glint 2s ease-in-out infinite, kxs-bg-rainbow 8s linear infinite;
+	border-radius: 8px !important;
+	background: linear-gradient(270deg, #ff004c, #fffa00, #00ff90, #004cff, #ff004c);
+	background-size: 1200% 1200%;
+	background-position: 0% 50%;
+	background-clip: padding-box;
+	-webkit-background-clip: padding-box;
+	filter: brightness(1.15) saturate(1.4);
+	transition: background 0.5s;
+}
+`;
+				document.head.appendChild(style);
+			}
+			weaponIds.forEach(id => {
+				const el = document.getElementById(`ui-weapon-id-${id}`);
+				if (el) {
+					el.classList.add(borderClass);
 				}
 			});
+		} else {
+			// Remove chromatic border and style
+			weaponIds.forEach(id => {
+				const el = document.getElementById(`ui-weapon-id-${id}`);
+				if (el) {
+					el.classList.remove(borderClass);
+					el.style.border = '';
+				}
+			});
+			const style = document.getElementById(styleId);
+			if (style) style.remove();
 		}
 	}
 
 	updateUiElements() {
+		// Réapplique l'effet chromatique si activé (corrige le bug d'affichage après un changement de page ou entrée en game)
+		if (this.kxsClient.isGunBorderChromatic) {
+			this.toggleChromaticWeaponBorder();
+		}
+
 		const currentUrl = window.location.href;
 
 		const isSpecialUrl = /\/#\w+/.test(currentUrl);
