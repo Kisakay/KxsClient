@@ -34,6 +34,7 @@ export default class KxsClient {
 	isMainMenuCleaned: boolean;
 	isNotifyingForToggleMenu: boolean;
 	all_friends: string;
+	customCrosshair: string | null;
 
 	currentServer: string | null | undefined;
 	discordRPC: DiscordWebSocket
@@ -80,6 +81,7 @@ export default class KxsClient {
 		this.all_friends = '';
 		this.isMainMenuCleaned = false;
 		this.isNotifyingForToggleMenu = true;
+		this.customCrosshair = null;
 
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
@@ -198,7 +200,8 @@ export default class KxsClient {
 				isSpotifyPlayerEnabled: this.isSpotifyPlayerEnabled,
 				isMainMenuCleaned: this.isMainMenuCleaned,
 				isNotifyingForToggleMenu: this.isNotifyingForToggleMenu,
-				soundLibrary: this.soundLibrary
+				soundLibrary: this.soundLibrary,
+				customCrosshair: this.customCrosshair
 			}),
 		);
 	};
@@ -645,6 +648,7 @@ export default class KxsClient {
 			this.isSpotifyPlayerEnabled = savedSettings.isSpotifyPlayerEnabled ?? this.isSpotifyPlayerEnabled;
 			this.isMainMenuCleaned = savedSettings.isMainMenuCleaned ?? this.isMainMenuCleaned;
 			this.isNotifyingForToggleMenu = savedSettings.isNotifyingForToggleMenu ?? this.isNotifyingForToggleMenu;
+			this.customCrosshair = savedSettings.customCrosshair ?? this.customCrosshair;
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists
 				if (savedSettings.soundLibrary.win_sound_url) {

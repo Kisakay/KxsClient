@@ -14,6 +14,8 @@ interface CounterPosition {
 }
 
 class KxsClientHUD {
+	private animatedCursorImg?: HTMLImageElement;
+	private _mousemoveHandler?: (e: MouseEvent) => void;
 	frameCount: number;
 	fps: number;
 	kills: number;
@@ -22,6 +24,7 @@ class KxsClientHUD {
 	kxsClient: KxsClient;
 	private healthAnimations: HealthChangeAnimation[] = [];
 	private lastHealthValue: number = 100;
+	private customCursorObserver?: MutationObserver;
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
@@ -52,6 +55,10 @@ class KxsClientHUD {
 			} else {
 				this.initKillFeed()
 			}
+		}
+
+		if (this.kxsClient.customCrosshair !== null) {
+			this.loadCustomCrosshair();
 		}
 	}
 
@@ -201,6 +208,113 @@ class KxsClientHUD {
 				(div as HTMLElement).style.opacity = '0';
 			});
 		}
+	}
+
+	public loadCustomCrosshair() {
+		const url = this.kxsClient.customCrosshair;
+
+		// Supprime l'ancienne règle si elle existe
+		const styleId = 'kxs-custom-cursor-style';
+		const oldStyle = document.getElementById(styleId);
+		if (oldStyle) oldStyle.remove();
+
+		// Débranche l'ancien observer s'il existe
+		if (this.customCursorObserver) {
+			this.customCursorObserver.disconnect();
+			this.customCursorObserver = undefined;
+		}
+
+		// Réinitialise le curseur si pas d'URL
+		if (!url) {
+			document.body.style.cursor = '';
+			return;
+		}
+
+		// Curseur animé JS : gestion d'un GIF
+		const isGif = url.split('?')[0].toLowerCase().endsWith('.gif');
+		// Nettoyage si on repasse sur un non-GIF
+		if (this.animatedCursorImg) {
+			this.animatedCursorImg.remove();
+			this.animatedCursorImg = undefined;
+		}
+		if (this._mousemoveHandler) {
+			document.removeEventListener('mousemove', this._mousemoveHandler);
+			this._mousemoveHandler = undefined;
+		}
+		if (isGif) {
+			// Ajoute une règle CSS globale pour cacher le curseur natif partout
+			let hideCursorStyle = document.getElementById('kxs-hide-cursor-style') as HTMLStyleElement | null;
+			if (!hideCursorStyle) {
+				hideCursorStyle = document.createElement('style');
+				hideCursorStyle.id = 'kxs-hide-cursor-style';
+				hideCursorStyle.innerHTML = `#game-touch-area, #game-touch-area *, body, canvas { cursor: none !important; }`;
+				document.head.appendChild(hideCursorStyle);
+			}
+			const animatedImg = document.createElement('img');
+			animatedImg.src = url;
+			animatedImg.style.position = 'fixed';
+			animatedImg.style.pointerEvents = 'none';
+			animatedImg.style.zIndex = '99999';
+			animatedImg.style.width = '38px';
+			animatedImg.style.height = '38px';
+			animatedImg.style.left = '0px';
+			animatedImg.style.top = '0px';
+			this.animatedCursorImg = animatedImg;
+			document.body.appendChild(animatedImg);
+			this._mousemoveHandler = (e: MouseEvent) => {
+				if (this.animatedCursorImg) {
+					this.animatedCursorImg.style.left = `${e.clientX}px`;
+					this.animatedCursorImg.style.top = `${e.clientY}px`;
+				}
+			};
+			document.addEventListener('mousemove', this._mousemoveHandler);
+			return;
+		}
+
+		// Nettoie la règle cursor:none si on repasse sur un curseur natif
+		const hideCursorStyle = document.getElementById('kxs-hide-cursor-style');
+		if (hideCursorStyle) hideCursorStyle.remove();
+
+		// Sinon, méthode classique : précharge l'image, puis applique le curseur natif
+		const img = new window.Image();
+		img.onload = () => {
+			const style = document.createElement('style');
+			style.id = styleId;
+			style.innerHTML = `#game-touch-area, #game-touch-area * { cursor: url('${url}'), auto !important; }`;
+			document.head.appendChild(style);
+		};
+		img.onerror = () => {
+			document.body.style.cursor = '';
+			console.warn('Impossible de charger le curseur personnalisé:', url);
+		};
+		img.src = url;
+
+
+		// --- MutationObserver pour forcer le curseur même si le jeu le réécrit ---
+		this.customCursorObserver = new MutationObserver((mutations) => {
+			for (const mutation of mutations) {
+				if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+					const node = mutation.target as HTMLElement;
+					if (node.style && node.style.cursor && !node.style.cursor.includes(url)) {
+						node.style.cursor = `url('${url}'), auto`;
+					}
+				}
+			}
+		});
+		// Observe tous les changements de style sur tout le body et sur #game-touch-area
+		const gameTouchArea = document.getElementById('game-touch-area');
+		if (gameTouchArea) {
+			this.customCursorObserver.observe(gameTouchArea, {
+				attributes: true,
+				attributeFilter: ['style'],
+				subtree: true
+			});
+		}
+		this.customCursorObserver.observe(document.body, {
+			attributes: true,
+			attributeFilter: ['style'],
+			subtree: true
+		});
 	}
 
 	private escapeMenu() {

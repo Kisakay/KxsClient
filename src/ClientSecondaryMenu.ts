@@ -199,6 +199,17 @@ class KxsLegacyClientSecondaryMenu {
 			},
 		});
 
+		this.addOption(HUD, {
+			label: "Custom Crosshair",
+			value: this.kxsClient.customCrosshair || "",
+			type: "input",
+			onChange: (value) => {
+				this.kxsClient.customCrosshair = value as string
+				this.kxsClient.updateLocalStorage()
+				this.kxsClient.hud.loadCustomCrosshair();
+			},
+		});
+
 		let musicSection = this.addSection("Music");
 
 		this.addOption(musicSection, {

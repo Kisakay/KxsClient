@@ -9,6 +9,7 @@ interface MenuOption {
 	onChange?: (value: string | boolean) => void;
 	category: "HUD" | "SERVER" | "MECHANIC" | "ALL" | "SOUND";
 	icon: string;
+	placeholder?: string; // Texte grisé pour les inputs
 }
 
 interface MenuSection {
@@ -267,6 +268,7 @@ class KxsClientSecondaryMenu {
 			category: "SOUND",
 			icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M3 11V13M6 10V14M9 11V13M12 9V15M15 6V18M18 10V14M21 11V13" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>',
 			type: "input",
+			placeholder: "URL of a sound",
 			onChange: (value) => {
 				this.kxsClient.soundLibrary.win_sound_url = value as string;
 				this.kxsClient.updateLocalStorage();
@@ -279,6 +281,7 @@ class KxsClientSecondaryMenu {
 			category: "SOUND",
 			icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M3 11V13M6 10V14M9 11V13M12 9V15M15 12V18M15 6V8M18 10V14M21 11V13" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>',
 			type: "input",
+			placeholder: "URL of a sound",
 			onChange: (value) => {
 				this.kxsClient.soundLibrary.death_sound_url = value as string;
 				this.kxsClient.updateLocalStorage();
@@ -402,6 +405,20 @@ class KxsClientSecondaryMenu {
 		});
 
 		this.addOption(MECHANIC, {
+			label: "Custom Crosshair",
+			value: this.kxsClient.customCrosshair || "",
+			type: "input",
+			category: "MECHANIC",
+			icon: '<svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>crosshair</title> <path d="M30 14.75h-2.824c-0.608-5.219-4.707-9.318-9.874-9.921l-0.053-0.005v-2.824c0-0.69-0.56-1.25-1.25-1.25s-1.25 0.56-1.25 1.25v0 2.824c-5.219 0.608-9.318 4.707-9.921 9.874l-0.005 0.053h-2.824c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h2.824c0.608 5.219 4.707 9.318 9.874 9.921l0.053 0.005v2.824c0 0.69 0.56 1.25 1.25 1.25s1.25-0.56 1.25-1.25v0-2.824c5.219-0.608 9.318-4.707 9.921-9.874l0.005-0.053h2.824c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0zM17.25 24.624v-2.624c0-0.69-0.56-1.25-1.25-1.25s-1.25 0.56-1.25 1.25v0 2.624c-3.821-0.57-6.803-3.553-7.368-7.326l-0.006-0.048h2.624c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0h-2.624c0.57-3.821 3.553-6.804 7.326-7.368l0.048-0.006v2.624c0 0.69 0.56 1.25 1.25 1.25s1.25-0.56 1.25-1.25v0-2.624c3.821 0.57 6.803 3.553 7.368 7.326l0.006 0.048h-2.624c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h2.624c-0.571 3.821-3.553 6.803-7.326 7.368l-0.048 0.006z"></path> </g></svg>',
+			placeholder: "URL of png,gif,svg",
+			onChange: (value) => {
+				this.kxsClient.customCrosshair = value as string
+				this.kxsClient.updateLocalStorage()
+				this.kxsClient.hud.loadCustomCrosshair();
+			},
+		});
+
+		this.addOption(MECHANIC, {
 			label: "Heal Warning",
 			value: this.kxsClient.isHealthWarningEnabled,
 			type: "toggle",
@@ -508,6 +525,7 @@ class KxsClientSecondaryMenu {
 			category: "MECHANIC",
 			value: this.kxsClient.all_friends,
 			type: "input",
+			placeholder: "kisakay,iletal...",
 			onChange: (value) => {
 				this.kxsClient.all_friends = value as string;
 				this.kxsClient.updateLocalStorage();
@@ -786,6 +804,9 @@ class KxsClientSecondaryMenu {
 		const input = document.createElement("input");
 		input.type = "text";
 		input.value = String(option.value);
+		if (option.placeholder) {
+			input.placeholder = option.placeholder;
+		}
 		Object.assign(input.style, {
 			width: "100%",
 			padding: "8px",
