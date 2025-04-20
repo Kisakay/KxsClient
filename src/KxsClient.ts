@@ -33,6 +33,7 @@ export default class KxsClient {
 	isSpotifyPlayerEnabled: boolean;
 	isMainMenuCleaned: boolean;
 	isNotifyingForToggleMenu: boolean;
+	isGunOverlayColored: boolean;
 	all_friends: string;
 	customCrosshair: string | null;
 
@@ -81,6 +82,7 @@ export default class KxsClient {
 		this.all_friends = '';
 		this.isMainMenuCleaned = false;
 		this.isNotifyingForToggleMenu = true;
+		this.isGunOverlayColored = true;
 		this.customCrosshair = null;
 
 		this.defaultPositions = {
@@ -201,7 +203,8 @@ export default class KxsClient {
 				isMainMenuCleaned: this.isMainMenuCleaned,
 				isNotifyingForToggleMenu: this.isNotifyingForToggleMenu,
 				soundLibrary: this.soundLibrary,
-				customCrosshair: this.customCrosshair
+				customCrosshair: this.customCrosshair,
+				isGunOverlayColored: this.isGunOverlayColored
 			}),
 		);
 	};
@@ -649,6 +652,8 @@ export default class KxsClient {
 			this.isMainMenuCleaned = savedSettings.isMainMenuCleaned ?? this.isMainMenuCleaned;
 			this.isNotifyingForToggleMenu = savedSettings.isNotifyingForToggleMenu ?? this.isNotifyingForToggleMenu;
 			this.customCrosshair = savedSettings.customCrosshair ?? this.customCrosshair;
+			this.isGunOverlayColored = savedSettings.isGunOverlayColored ?? this.isGunOverlayColored;
+
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists
 				if (savedSettings.soundLibrary.win_sound_url) {

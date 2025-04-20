@@ -44,7 +44,10 @@ class KxsClientHUD {
 			this.initCounter("kills", "Kills", "0");
 		}
 
-		this.setupWeaponBorderHandler();
+		if (this.kxsClient.isGunOverlayColored) {
+			this.toggleWeaponBorderHandler();
+		}
+
 		this.startUpdateLoop();
 		this.escapeMenu();
 		this.initFriendDetector();
@@ -247,7 +250,21 @@ class KxsClientHUD {
 			if (!hideCursorStyle) {
 				hideCursorStyle = document.createElement('style');
 				hideCursorStyle.id = 'kxs-hide-cursor-style';
-				hideCursorStyle.innerHTML = `#game-touch-area, #game-touch-area *, body, canvas { cursor: none !important; }`;
+				hideCursorStyle.innerHTML = `
+			* { cursor: none !important; }
+			*:hover { cursor: none !important; }
+			*:active { cursor: none !important; }
+			*:focus { cursor: none !important; }
+			input, textarea { cursor: none !important; }
+			a, button, [role="button"], [onclick] { cursor: none !important; }
+			[draggable="true"] { cursor: none !important; }
+			[style*="cursor: pointer"] { cursor: none !important; }
+			[style*="cursor: text"] { cursor: none !important; }
+			[style*="cursor: move"] { cursor: none !important; }
+			[style*="cursor: crosshair"] { cursor: none !important; }
+			[style*="cursor: ew-resize"] { cursor: none !important; }
+			[style*="cursor: ns-resize"] { cursor: none !important; }
+		`;
 				document.head.appendChild(hideCursorStyle);
 			}
 			const animatedImg = document.createElement('img');
@@ -280,7 +297,21 @@ class KxsClientHUD {
 		img.onload = () => {
 			const style = document.createElement('style');
 			style.id = styleId;
-			style.innerHTML = `#game-touch-area, #game-touch-area * { cursor: url('${url}'), auto !important; }`;
+			style.innerHTML = `
+			* { cursor: url('${url}'), auto !important; }
+			*:hover { cursor: url('${url}'), pointer !important; }
+			*:active { cursor: url('${url}'), pointer !important; }
+			*:focus { cursor: url('${url}'), text !important; }
+			input, textarea { cursor: url('${url}'), text !important; }
+			a, button, [role="button"], [onclick] { cursor: url('${url}'), pointer !important; }
+			[draggable="true"] { cursor: url('${url}'), move !important; }
+			[style*="cursor: pointer"] { cursor: url('${url}'), pointer !important; }
+			[style*="cursor: text"] { cursor: url('${url}'), text !important; }
+			[style*="cursor: move"] { cursor: url('${url}'), move !important; }
+			[style*="cursor: crosshair"] { cursor: url('${url}'), crosshair !important; }
+			[style*="cursor: ew-resize"] { cursor: url('${url}'), ew-resize !important; }
+			[style*="cursor: ns-resize"] { cursor: url('${url}'), ns-resize !important; }
+		`;
 			document.head.appendChild(style);
 		};
 		img.onerror = () => {
@@ -992,91 +1023,104 @@ class KxsClientHUD {
 		}
 	}
 
-	setupWeaponBorderHandler() {
-		const weaponContainers = Array.from(
-			document.getElementsByClassName("ui-weapon-switch"),
-		);
-		weaponContainers.forEach((container) => {
-			if (container.id === "ui-weapon-id-4") {
-				(container as HTMLElement).style.border = "3px solid #2f4032";
-			} else {
-				(container as HTMLElement).style.border = "3px solid #FFFFFF";
-			}
-		});
-
-		const weaponNames = Array.from(
-			document.getElementsByClassName("ui-weapon-name"),
-		);
-
-		type ColorKey = 'ORANGE' | 'BLUE' | 'GREEN' | 'RED' | 'BLACK' | 'OLIVE' | 'ORANGE_RED' | 'PURPLE' | 'TEAL' | 'BROWN' | 'PINK' | 'DEFAULT';
-
-		const WEAPON_COLORS: Record<ColorKey, string> = {
-			ORANGE: '#FFAE00',
-			BLUE: '#007FFF',
-			GREEN: '#0f690d',
-			RED: '#FF0000',
-			BLACK: '#000000',
-			OLIVE: '#808000',
-			ORANGE_RED: '#FF4500',
-			PURPLE: '#800080',
-			TEAL: '#008080',
-			BROWN: '#A52A2A',
-			PINK: '#FFC0CB',
-			DEFAULT: '#FFFFFF'
-		};
-
-		const WEAPON_COLOR_MAPPING: Record<ColorKey, string[]> = {
-			ORANGE: ['CZ-3A1', 'G18C', 'M9', 'M93R', 'MAC-10', 'MP5', 'P30L', 'DUAL P30L', 'UMP9', 'VECTOR', 'VSS', 'FLAMETHROWER'],
-			BLUE: ['AK-47', 'OT-38', 'OTS-38', 'M39 EMR', 'DP-28', 'MOSIN-NAGANT', 'SCAR-H', 'SV-98', 'M1 GARAND', 'PKP PECHENEG', 'AN-94', 'BAR M1918', 'BLR 81', 'SVD-63', 'M134', 'WATER GUN', 'GROZA', 'GROZA-S'],
-			GREEN: ['FAMAS', 'M416', 'M249', 'QBB-97', 'MK 12 SPR', 'M4A1-S', 'SCOUT ELITE', 'L86A2'],
-			RED: ['M870', 'MP220', 'SAIGA-12', 'SPAS-12', 'USAS-12', 'SUPER 90', 'LASR GUN', 'M1100'],
-			BLACK: ['DEAGLE 50', 'RAINBOW BLASTER'],
-			OLIVE: ['AWM-S', 'MK 20 SSR'],
-			ORANGE_RED: ['FLARE GUN'],
-			PURPLE: ['MODEL 94', 'PEACEMAKER', 'VECTOR (.45 ACP)', 'M1911', 'M1A1', 'MK45G'],
-			TEAL: ['M79'],
-			BROWN: ['POTATO CANNON', 'SPUD GUN'],
-			PINK: ['HEART CANNON'],
-			DEFAULT: []
-		};
-
-		weaponNames.forEach((weaponNameElement) => {
-			const weaponContainer = weaponNameElement.closest(".ui-weapon-switch");
-
-			const observer = new MutationObserver(() => {
-				const weaponName = weaponNameElement.textContent?.trim()?.toUpperCase() || '';
-
-				let colorKey: ColorKey = 'DEFAULT';
-
-				// Do a hack for "VECTOR" gun (because can be 2 weapons: yellow or purple)
-				if (weaponName === "VECTOR") {
-					// Get the weapon container and image element
-					const weaponContainer = weaponNameElement.closest(".ui-weapon-switch");
-					const weaponImage = weaponContainer?.querySelector(".ui-weapon-image") as HTMLImageElement;
-
-					if (weaponImage && weaponImage.src) {
-						// Check the image source to determine which Vector it is
-						if (weaponImage.src.includes("-acp") || weaponImage.src.includes("45")) {
-							colorKey = 'PURPLE';
-						} else {
-							colorKey = 'ORANGE';
-						}
-					} else {
-						// Default to orange if we can't determine the type
-						colorKey = 'ORANGE';
-					}
+	toggleWeaponBorderHandler() {
+		if (this.kxsClient.isGunOverlayColored) {
+			const weaponContainers = Array.from(
+				document.getElementsByClassName("ui-weapon-switch"),
+			);
+			weaponContainers.forEach((container) => {
+				if (container.id === "ui-weapon-id-4") {
+					(container as HTMLElement).style.border = "";
 				} else {
-					colorKey = (Object.entries(WEAPON_COLOR_MAPPING)
-						.find(([_, weapons]) => weapons.includes(weaponName))?.[0] || 'DEFAULT') as ColorKey;
-				}
-
-				if (weaponContainer && weaponContainer.id !== "ui-weapon-id-4") {
-					(weaponContainer as HTMLElement).style.border = `3px solid ${WEAPON_COLORS[colorKey]}`;
+					(container as HTMLElement).style.border = "";
 				}
 			});
 
-			observer.observe(weaponNameElement, { childList: true, characterData: true, subtree: true });
-		});
+			const weaponNames = Array.from(
+				document.getElementsByClassName("ui-weapon-name"),
+			);
+
+			type ColorKey = 'ORANGE' | 'BLUE' | 'GREEN' | 'RED' | 'BLACK' | 'OLIVE' | 'ORANGE_RED' | 'PURPLE' | 'TEAL' | 'BROWN' | 'PINK' | 'DEFAULT';
+
+			const WEAPON_COLORS: Record<ColorKey, string> = {
+				ORANGE: '#FFAE00',
+				BLUE: '#007FFF',
+				GREEN: '#0f690d',
+				RED: '#FF0000',
+				BLACK: '#000000',
+				OLIVE: '#808000',
+				ORANGE_RED: '#FF4500',
+				PURPLE: '#800080',
+				TEAL: '#008080',
+				BROWN: '#A52A2A',
+				PINK: '#FFC0CB',
+				DEFAULT: '#FFFFFF'
+			};
+
+			const WEAPON_COLOR_MAPPING: Record<ColorKey, string[]> = {
+				ORANGE: ['CZ-3A1', 'G18C', 'M9', 'M93R', 'MAC-10', 'MP5', 'P30L', 'DUAL P30L', 'UMP9', 'VECTOR', 'VSS', 'FLAMETHROWER'],
+				BLUE: ['AK-47', 'OT-38', 'OTS-38', 'M39 EMR', 'DP-28', 'MOSIN-NAGANT', 'SCAR-H', 'SV-98', 'M1 GARAND', 'PKP PECHENEG', 'AN-94', 'BAR M1918', 'BLR 81', 'SVD-63', 'M134', 'WATER GUN', 'GROZA', 'GROZA-S'],
+				GREEN: ['FAMAS', 'M416', 'M249', 'QBB-97', 'MK 12 SPR', 'M4A1-S', 'SCOUT ELITE', 'L86A2'],
+				RED: ['M870', 'MP220', 'SAIGA-12', 'SPAS-12', 'USAS-12', 'SUPER 90', 'LASR GUN', 'M1100'],
+				BLACK: ['DEAGLE 50', 'RAINBOW BLASTER'],
+				OLIVE: ['AWM-S', 'MK 20 SSR'],
+				ORANGE_RED: ['FLARE GUN'],
+				PURPLE: ['MODEL 94', 'PEACEMAKER', 'VECTOR (.45 ACP)', 'M1911', 'M1A1', 'MK45G'],
+				TEAL: ['M79'],
+				BROWN: ['POTATO CANNON', 'SPUD GUN'],
+				PINK: ['HEART CANNON'],
+				DEFAULT: []
+			};
+
+			weaponNames.forEach((weaponNameElement) => {
+				const weaponContainer = weaponNameElement.closest(".ui-weapon-switch");
+
+				const observer = new MutationObserver(() => {
+					const weaponName = weaponNameElement.textContent?.trim()?.toUpperCase() || '';
+
+					let colorKey: ColorKey = 'DEFAULT';
+
+					// Do a hack for "VECTOR" gun (because can be 2 weapons: yellow or purple)
+					if (weaponName === "VECTOR") {
+						// Get the weapon container and image element
+						const weaponContainer = weaponNameElement.closest(".ui-weapon-switch");
+						const weaponImage = weaponContainer?.querySelector(".ui-weapon-image") as HTMLImageElement;
+
+						if (weaponImage && weaponImage.src) {
+							// Check the image source to determine which Vector it is
+							if (weaponImage.src.includes("-acp") || weaponImage.src.includes("45")) {
+								colorKey = 'PURPLE';
+							} else {
+								colorKey = 'ORANGE';
+							}
+						} else {
+							// Default to orange if we can't determine the type
+							colorKey = 'ORANGE';
+						}
+					} else {
+						colorKey = (Object.entries(WEAPON_COLOR_MAPPING)
+							.find(([_, weapons]) => weapons.includes(weaponName))?.[0] || 'DEFAULT') as ColorKey;
+					}
+
+					if (weaponContainer && weaponContainer.id !== "ui-weapon-id-4") {
+						(weaponContainer as HTMLElement).style.border = `3px solid ${WEAPON_COLORS[colorKey]}`;
+					}
+				});
+
+				observer.observe(weaponNameElement, { childList: true, characterData: true, subtree: true });
+			});
+		} else {
+			const weaponContainers = Array.from(
+				document.getElementsByClassName("ui-weapon-switch"),
+			);
+			weaponContainers.forEach((container) => {
+				if (container.id === "ui-weapon-id-4") {
+					(container as HTMLElement).style.border = "";
+				} else {
+					(container as HTMLElement).style.border = "";
+				}
+			});
+		}
 	}
 
 	updateUiElements() {

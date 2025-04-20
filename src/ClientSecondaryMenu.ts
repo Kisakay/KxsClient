@@ -200,6 +200,17 @@ class KxsLegacyClientSecondaryMenu {
 		});
 
 		this.addOption(HUD, {
+			label: "Weapon Border",
+			value: this.kxsClient.isGunOverlayColored,
+			type: "toggle",
+			onChange: () => {
+				this.kxsClient.isGunOverlayColored = !this.kxsClient.isGunOverlayColored
+				this.kxsClient.updateLocalStorage()
+				this.kxsClient.hud.toggleWeaponBorderHandler()
+			},
+		});
+
+		this.addOption(HUD, {
 			label: "Custom Crosshair",
 			value: this.kxsClient.customCrosshair || "",
 			type: "input",
