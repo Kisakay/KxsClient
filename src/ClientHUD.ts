@@ -109,7 +109,7 @@ class KxsClientHUD {
 					this.kxsClient.isFocusModeEnabled = !this.kxsClient.isFocusModeEnabled;
 					this.kxsClient.hud.toggleFocusMode();
 					this.kxsClient.nm.showNotification("Focus mode toggled", "info", 1200)
-				}, 2000);
+				}, 1000);
 			}
 		});
 
