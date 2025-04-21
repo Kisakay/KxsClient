@@ -35,6 +35,7 @@ export default class KxsClient {
 	isNotifyingForToggleMenu: boolean;
 	isGunOverlayColored: boolean;
 	isGunBorderChromatic: boolean;
+	isFocusModeEnabled: boolean;
 	all_friends: string;
 	customCrosshair: string | null;
 
@@ -87,6 +88,7 @@ export default class KxsClient {
 		this.customCrosshair = null;
 		this.isGunBorderChromatic = false;
 
+		this.isFocusModeEnabled = false;
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
 			ping: { left: 20, top: 220 },

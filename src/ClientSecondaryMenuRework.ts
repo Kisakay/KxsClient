@@ -5,7 +5,7 @@ import KxsClient from "./KxsClient";
 interface MenuOption {
 	label: string;
 	value: string | boolean | number;
-	type: "toggle" | "input" | "click";
+	type: "toggle" | "input" | "click" | "info";
 	onChange?: (value: string | boolean) => void;
 	category: "HUD" | "SERVER" | "MECHANIC" | "ALL" | "SOUND";
 	icon: string;
@@ -367,6 +367,17 @@ class KxsClientSecondaryMenu {
 		});
 
 		this.addOption(HUD, {
+			label: "Focus Mode",
+			value: "Hold Left CTRL for 2 seconds to toggle Focus Mode.\nWhen enabled, the HUD will dim and notifications will appear.",
+			category: "HUD",
+			type: "info",
+			icon: '<svg version="1.1" id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <style type="text/css"> .stone_een{fill:#0B1719;} </style> <path class="stone_een" d="M30.146,28.561l-1.586,1.586c-0.292,0.292-0.676,0.438-1.061,0.438s-0.768-0.146-1.061-0.438 l-4.293-4.293l-2.232,2.232c-0.391,0.391-0.902,0.586-1.414,0.586s-1.024-0.195-1.414-0.586l-0.172-0.172 c-0.781-0.781-0.781-2.047,0-2.828l8.172-8.172c0.391-0.391,0.902-0.586,1.414-0.586s1.024,0.195,1.414,0.586l0.172,0.172 c0.781,0.781,0.781,2.047,0,2.828l-2.232,2.232l4.293,4.293C30.731,27.024,30.731,27.976,30.146,28.561z M22.341,18.244 l-4.097,4.097L3.479,13.656C2.567,13.12,2,12.128,2,11.07V3c0-0.551,0.449-1,1-1h8.07c1.058,0,2.049,0.567,2.586,1.479 L22.341,18.244z M19.354,19.354c0.195-0.195,0.195-0.512,0-0.707l-15.5-15.5c-0.195-0.195-0.512-0.195-0.707,0s-0.195,0.512,0,0.707 l15.5,15.5C18.744,19.451,18.872,19.5,19,19.5S19.256,19.451,19.354,19.354z"></path> </g></svg>',
+			onChange: () => {
+
+			}
+		});
+
+		this.addOption(HUD, {
 			label: "Use Legacy Menu",
 			value: this.kxsClient.isLegaySecondaryMenu,
 			type: "toggle",
@@ -648,6 +659,9 @@ class KxsClientSecondaryMenu {
 		let control: null | HTMLElement = null;
 
 		switch (option.type) {
+			case "info":
+				control = this.createInfoElement(option);
+				break;
 			case "input":
 				control = this.createInputElement(option);
 				break
@@ -851,6 +865,22 @@ class KxsClientSecondaryMenu {
 		});
 
 		return input;
+	}
+
+	private createInfoElement(option: MenuOption): HTMLElement {
+		const info = document.createElement("div");
+		info.textContent = String(option.value);
+		Object.assign(info.style, {
+			color: "#b0b0b0",
+			fontSize: "12px",
+			fontStyle: "italic",
+			marginTop: "2px",
+			marginLeft: "6px",
+			marginBottom: "2px",
+			flex: "1 1 100%",
+			whiteSpace: "pre-line"
+		});
+		return info;
 	}
 
 	private shiftListener = (event: KeyboardEvent) => {

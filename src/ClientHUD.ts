@@ -25,6 +25,9 @@ class KxsClientHUD {
 	private healthAnimations: HealthChangeAnimation[] = [];
 	private lastHealthValue: number = 100;
 	private customCursorObserver?: MutationObserver;
+	private hudOpacityObservers: MutationObserver[] = [];
+	private ctrlFocusTimer: number | null = null;
+	private ctrlFocusActive: boolean = false;
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
@@ -63,6 +66,27 @@ class KxsClientHUD {
 		if (this.kxsClient.customCrosshair !== null) {
 			this.loadCustomCrosshair();
 		}
+
+		this.setupCtrlFocusModeListener();
+	}
+
+	private setupCtrlFocusModeListener() {
+		document.addEventListener('keydown', (e) => {
+			if (e.code === 'ControlLeft' && !this.ctrlFocusTimer) {
+				this.ctrlFocusTimer = window.setTimeout(() => {
+					this.kxsClient.isFocusModeEnabled = !this.kxsClient.isFocusModeEnabled;
+					this.kxsClient.hud.toggleFocusMode();
+					this.kxsClient.nm.showNotification("Focus mode toggled", "info", 1200)
+				}, 2000);
+			}
+		});
+
+		document.addEventListener('keyup', (e) => {
+			if (e.code === 'ControlLeft' && this.ctrlFocusTimer) {
+				clearTimeout(this.ctrlFocusTimer);
+				this.ctrlFocusTimer = null;
+			}
+		});
 	}
 
 	private initFriendDetector() {
@@ -196,6 +220,108 @@ class KxsClientHUD {
 			}
 		});
 	}
+
+	public observeHudOpacity(opacity: number) {
+		// Nettoie d'abord les observers existants
+		this.hudOpacityObservers.forEach(obs => obs.disconnect());
+		this.hudOpacityObservers = [];
+
+		const selectors = [
+			'#ui-medical-interactive > div',
+			'#ui-ammo-interactive > div',
+			'#ui-weapon-container .ui-weapon-switch',
+			'#ui-killfeed',
+			'#ui-killfeed-contents',
+			'.killfeed-div',
+			'.killfeed-text',
+		];
+		selectors.forEach(sel => {
+			const elements = document.querySelectorAll(sel);
+			elements.forEach(el => {
+				(el as HTMLElement).style.opacity = String(opacity);
+
+				// Applique aussi l'opacité à tous les descendants
+				const descendants = (el as HTMLElement).querySelectorAll('*');
+				descendants.forEach(child => {
+					(child as HTMLElement).style.opacity = String(opacity);
+				});
+
+				// Observer pour le parent
+				const observer = new MutationObserver(mutations => {
+					mutations.forEach(mutation => {
+						if (
+							mutation.type === "attributes" &&
+							mutation.attributeName === "style"
+						) {
+							const currentOpacity = (el as HTMLElement).style.opacity;
+							if (currentOpacity !== String(opacity)) {
+								(el as HTMLElement).style.opacity = String(opacity);
+							}
+							// Vérifie aussi les enfants
+							const descendants = (el as HTMLElement).querySelectorAll('*');
+							descendants.forEach(child => {
+								if ((child as HTMLElement).style.opacity !== String(opacity)) {
+									(child as HTMLElement).style.opacity = String(opacity);
+								}
+							});
+						}
+					});
+				});
+				observer.observe(el, { attributes: true, attributeFilter: ["style"] });
+				this.hudOpacityObservers.push(observer);
+
+				// Observer pour chaque enfant (optionnel mais robuste)
+				descendants.forEach(child => {
+					const childObserver = new MutationObserver(mutations => {
+						mutations.forEach(mutation => {
+							if (
+								mutation.type === "attributes" &&
+								mutation.attributeName === "style"
+							) {
+								if ((child as HTMLElement).style.opacity !== String(opacity)) {
+									(child as HTMLElement).style.opacity = String(opacity);
+								}
+							}
+						});
+					});
+					childObserver.observe(child, { attributes: true, attributeFilter: ["style"] });
+					this.hudOpacityObservers.push(childObserver);
+				});
+			});
+		});
+
+
+	}
+
+
+	public toggleFocusMode() {
+		if (this.kxsClient.isFocusModeEnabled) {
+			this.observeHudOpacity(0.05);
+		} else {
+			// 1. Stoppe tous les observers
+			this.hudOpacityObservers.forEach(obs => obs.disconnect());
+			this.hudOpacityObservers = [];
+
+			// 2. Supprime le style d'opacité en ligne pour tous les éléments concernés
+			const selectors = [
+				'#ui-medical-interactive > div',
+				'#ui-ammo-interactive > div',
+				'#ui-weapon-container .ui-weapon-switch',
+			];
+			selectors.forEach(sel => {
+				const elements = document.querySelectorAll(sel);
+				elements.forEach(el => {
+					(el as HTMLElement).style.removeProperty('opacity');
+					// Supprime aussi sur tous les enfants
+					const descendants = (el as HTMLElement).querySelectorAll('*');
+					descendants.forEach(child => {
+						(child as HTMLElement).style.removeProperty('opacity');
+					});
+				});
+			});
+		}
+	}
+
 
 	public resetKillFeed() {
 		// Supprime les styles custom KillFeed
