@@ -1352,94 +1352,128 @@ export default class KxsClient {
 		}
 	}
 
-	MainMenuCleaning() {
-		// Déconnecter l'observateur précédent s'il existe
-		if (this.adBlockObserver) {
-			this.adBlockObserver.disconnect();
-			this.adBlockObserver = null;
-		}
+MainMenuCleaning() {
+    // Déconnecter l'observateur précédent s'il existe
+    if (this.adBlockObserver) {
+        this.adBlockObserver.disconnect();
+        this.adBlockObserver = null;
+    }
 
-		// Select elements to hide/show
-		const newsWrapper = document.getElementById('news-wrapper');
-		const adBlockLeft = document.getElementById('ad-block-left');
-		const socialLeft = document.getElementById('social-share-block-wrapper');
-		const leftCollun = document.getElementById('left-column');
+    // Select elements to hide/show
+    const newsWrapper = document.getElementById('news-wrapper');
+    const adBlockLeft = document.getElementById('ad-block-left');
+    const socialLeft = document.getElementById('social-share-block-wrapper');
+    const leftCollun = document.getElementById('left-column');
 
-		const elementsToMonitor = [
-			{ element: newsWrapper, id: 'news-wrapper' },
-			{ element: adBlockLeft, id: 'ad-block-left' },
-			{ element: socialLeft, id: 'social-share-block-wrapper' },
-			{ element: leftCollun, id: 'left-column' }
-		];
+    const elementsToMonitor = [
+        { element: newsWrapper, id: 'news-wrapper' },
+        { element: adBlockLeft, id: 'ad-block-left' },
+        { element: socialLeft, id: 'social-share-block-wrapper' },
+        { element: leftCollun, id: 'left-column' }
+    ];
 
-		// Appliquer le style personnalisé au menu principal
-		this.applyCustomMainMenuStyle();
+    // Appliquer le style personnalisé au menu principal
+    this.applyCustomMainMenuStyle();
 
-		if (this.isMainMenuCleaned) {
-			// Clean mode: hide elements
-			elementsToMonitor.forEach(item => {
-				if (item.element) item.element.style.display = 'none';
-			});
+    if (this.isMainMenuCleaned) {
+        // Clean mode: hide elements
+        elementsToMonitor.forEach(item => {
+            if (item.element) item.element.style.display = 'none';
+        });
 
-			// Create an observer to prevent the site from redisplaying elements
-			this.adBlockObserver = new MutationObserver((mutations) => {
-				let needsUpdate = false;
+        // Center the start-menu div
+        const startMenu = document.getElementById('start-menu');
+        if (startMenu) {
+            startMenu.style.cssText = `
+                max-height: 355px;
+                background: linear-gradient(135deg, rgba(25, 25, 35, 0.95) 0%, rgba(15, 15, 25, 0.98) 100%);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                box-shadow: rgba(0, 0, 0, 0.3) 0px 8px 32px;
+                padding: 15px;
+                backdrop-filter: blur(10px);
+                margin: 0 auto;
+                width: fit-content;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+            `;
+        }
 
-				mutations.forEach(mutation => {
-					if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-						const target = mutation.target as HTMLElement;
+        // Create an observer to prevent the site from redisplaying elements
+        this.adBlockObserver = new MutationObserver((mutations) => {
+            let needsUpdate = false;
 
-						// Check if the element is one of those we are monitoring
-						if (elementsToMonitor.some(item => item.id === target.id && target.style.display !== 'none')) {
-							target.style.display = 'none';
-							needsUpdate = true;
-						}
-					}
-				});
+            mutations.forEach(mutation => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    const target = mutation.target as HTMLElement;
 
-				// If the site tries to redisplay an advertising element, we prevent it
-				if (needsUpdate) {
-					console.log('[KxsClient] Detection of attempt to redisplay ads - Forced hiding');
-				}
-			});
+                    // Check if the element is one of those we are monitoring
+                    if (elementsToMonitor.some(item => item.id === target.id && target.style.display !== 'none')) {
+                        target.style.display = 'none';
+                        needsUpdate = true;
+                    }
+                }
+            });
 
-			// Observe style changes on elements
-			elementsToMonitor.forEach(item => {
-				if (item.element && this.adBlockObserver) {
-					this.adBlockObserver.observe(item.element, {
-						attributes: true,
-						attributeFilter: ['style']
-					});
-				}
-			});
+            // If the site tries to redisplay an advertising element, we prevent it
+            if (needsUpdate) {
+                console.log('[KxsClient] Detection of attempt to redisplay ads - Forced hiding');
+            }
+        });
 
-			// Vérifier également le document body pour de nouveaux éléments ajoutés
-			const bodyObserver = new MutationObserver(() => {
-				// Réappliquer notre nettoyage après un court délai
-				setTimeout(() => {
-					if (this.isMainMenuCleaned) {
-						elementsToMonitor.forEach(item => {
-							const element = document.getElementById(item.id);
-							if (element && element.style.display !== 'none') {
-								element.style.display = 'none';
-							}
-						});
-					}
-				}, 100);
-			});
+        // Observe style changes on elements
+        elementsToMonitor.forEach(item => {
+            if (item.element && this.adBlockObserver) {
+                this.adBlockObserver.observe(item.element, {
+                    attributes: true,
+                    attributeFilter: ['style']
+                });
+            }
+        });
 
-			// Observe changes in the DOM
-			bodyObserver.observe(document.body, { childList: true, subtree: true });
+        // Vérifier également le document body pour de nouveaux éléments ajoutés
+        const bodyObserver = new MutationObserver(() => {
+            // Réappliquer notre nettoyage après un court délai
+            setTimeout(() => {
+                if (this.isMainMenuCleaned) {
+                    elementsToMonitor.forEach(item => {
+                        const element = document.getElementById(item.id);
+                        if (element && element.style.display !== 'none') {
+                            element.style.display = 'none';
+                        }
+                    });
+                }
+            }, 100);
+        });
 
-		} else {
-			// Mode normal: rétablir l'affichage
-			elementsToMonitor.forEach(item => {
-				if (item.element) item.element.style.display = 'block';
-			});
-		}
-	}
+        // Observe changes in the DOM
+        bodyObserver.observe(document.body, { childList: true, subtree: true });
 
-	removeSimpleSpotifyPlayer() {
+    } else {
+        // Mode normal: rétablir l'affichage
+        elementsToMonitor.forEach(item => {
+            if (item.element) item.element.style.display = 'block';
+        });
+
+        const startMenu = document.getElementById('start-menu');
+        if (startMenu) {
+            startMenu.style.cssText = `
+                max-height: 355px;
+                background: linear-gradient(135deg, rgba(25, 25, 35, 0.95) 0%, rgba(15, 15, 25, 0.98) 100%);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                box-shadow: rgba(0, 0, 0, 0.3) 0px 8px 32px;
+                padding: 15px;
+                backdrop-filter: blur(10px);
+                margin: 0 auto;
+            `;
+        }
+    }
+}	removeSimpleSpotifyPlayer() {
 		// Supprimer le conteneur principal du lecteur
 		const container = document.getElementById('spotify-player-container');
 		if (container) {
