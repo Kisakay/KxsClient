@@ -9,6 +9,9 @@ class PingTest {
 	private url: string = "";
 	private region: string = "";
 	private hasPing: boolean = false;
+	private reconnectTimer: NodeJS.Timeout | null = null;
+	private keepAliveTimer: NodeJS.Timeout | null = null;
+	private connectionCheckTimer: NodeJS.Timeout | null = null;
 
 	constructor() {
 		this.ptcDataBuf = new ArrayBuffer(1);
@@ -17,9 +20,17 @@ class PingTest {
 	}
 
 	private startKeepAlive() {
-		setInterval(() => {
+		// Annuler l'ancien timer si existant
+		if (this.keepAliveTimer) {
+			clearInterval(this.keepAliveTimer);
+		}
+
+		this.keepAliveTimer = setInterval(() => {
 			if (this.ws?.readyState === WebSocket.OPEN) {
 				this.ws.send(this.ptcDataBuf);
+			} else if (this.ws?.readyState === WebSocket.CLOSED || this.ws?.readyState === WebSocket.CLOSING) {
+				// Redémarrer la connexion si elle est fermée
+				this.restart();
 			}
 		}, 5000); // envoie toutes les 5s
 	}
@@ -35,7 +46,6 @@ class PingTest {
 				clearInterval(checkInterval);
 				this.setServerFromDOM();
 				this.attachRegionChangeListener();
-				this.start(); // ← Démarrage auto ici
 			}
 		}, 100); // Vérifie toutes les 100ms
 	}
@@ -93,6 +103,25 @@ class PingTest {
 		if (this.isConnecting) return;
 		this.isConnecting = true;
 		this.startWebSocketPing();
+
+		// Vérifier régulièrement l'état de la connexion
+		this.startConnectionCheck();
+	}
+
+	private startConnectionCheck() {
+		// Annuler l'ancien timer si existant
+		if (this.connectionCheckTimer) {
+			clearInterval(this.connectionCheckTimer);
+		}
+
+		// Vérifier l'état de la connexion toutes les 10 secondes
+		this.connectionCheckTimer = setInterval(() => {
+			// Si on n'a pas de ping valide ou que la connexion est fermée, on tente de reconnecter
+			if (!this.hasPing || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+				console.log("Vérification de connexion: reconnexion nécessaire");
+				this.restart();
+			}
+		}, 10000);
 	}
 
 	private startWebSocketPing() {
@@ -102,6 +131,7 @@ class PingTest {
 		ws.binaryType = "arraybuffer";
 
 		ws.onopen = () => {
+			console.log("WebSocket connectée au serveur:", this.region);
 			this.ws = ws;
 			this.retryCount = 0;
 			this.isConnecting = false;
@@ -122,21 +152,42 @@ class PingTest {
 			setTimeout(() => this.sendPing(), 1000);
 		};
 
-		ws.onerror = () => {
+		ws.onerror = (error) => {
+			console.error("Erreur WebSocket:", error);
 			this.ping = 0;
+			this.hasPing = false;
 			this.retryCount++;
-			if (this.retryCount < 3) {
-				setTimeout(() => this.startWebSocketPing(), 1000);
-			} else {
-				this.ws?.close();
-				this.ws = null;
-				this.isConnecting = false;
+
+			// Tentative immédiate mais avec backoff exponentiel
+			const retryDelay = Math.min(1000 * Math.pow(2, this.retryCount - 1), 10000);
+
+			// Annuler tout timer de reconnexion existant
+			if (this.reconnectTimer) {
+				clearTimeout(this.reconnectTimer);
 			}
+
+			this.reconnectTimer = setTimeout(() => {
+				console.log(`Tentative de reconnexion #${this.retryCount} après ${retryDelay}ms`);
+				this.ws = null; // S'assurer que l'ancienne connexion est effacée
+				this.startWebSocketPing();
+			}, retryDelay);
 		};
 
-		ws.onclose = () => {
+		ws.onclose = (event) => {
+			this.hasPing = false;
+			console.log(`WebSocket fermée. Code: ${event.code}, Raison: ${event.reason}`);
 			this.ws = null;
 			this.isConnecting = false;
+
+			// Tentative de reconnexion après une fermeture
+			if (this.reconnectTimer) {
+				clearTimeout(this.reconnectTimer);
+			}
+
+			this.reconnectTimer = setTimeout(() => {
+				console.log("Tentative de reconnexion après fermeture de WebSocket");
+				this.start();
+			}, 2000); // Attendre 2 secondes avant de reconnecter
 		};
 	}
 
@@ -144,10 +195,30 @@ class PingTest {
 		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
 			this.sendTime = Date.now();
 			this.ws.send(this.ptcDataBuf);
+		} else if (this.ws?.readyState === WebSocket.CLOSED || this.ws?.readyState === WebSocket.CLOSING) {
+			// Si la WebSocket est fermée au moment d'envoyer le ping, on tente de reconnecter
+			console.log("Impossible d'envoyer le ping - WebSocket fermée, tentative de reconnexion");
+			this.restart();
 		}
 	}
 
 	public stop() {
+		// Annuler tous les timers
+		if (this.reconnectTimer) {
+			clearTimeout(this.reconnectTimer);
+			this.reconnectTimer = null;
+		}
+
+		if (this.keepAliveTimer) {
+			clearInterval(this.keepAliveTimer);
+			this.keepAliveTimer = null;
+		}
+
+		if (this.connectionCheckTimer) {
+			clearInterval(this.connectionCheckTimer);
+			this.connectionCheckTimer = null;
+		}
+
 		if (this.ws) {
 			this.ws.onclose = null;
 			this.ws.onerror = null;
@@ -161,10 +232,11 @@ class PingTest {
 		this.hasPing = false;
 	}
 
-
 	public restart() {
 		this.stop();
-		this.setServerFromDOM();
+		setTimeout(() => {
+			this.setServerFromDOM();
+		}, 500); // Petit délai pour éviter les problèmes de rebond
 	}
 
 	/**
@@ -179,7 +251,12 @@ class PingTest {
 				ping: this.ping,
 			};
 		} else {
-			// On ne redémarre plus la websocket ici pour éviter le spam/rate limit
+			// Si on détecte un problème ici, planifier une reconnexion
+			if (!this.reconnectTimer && (!this.ws || this.ws.readyState !== WebSocket.CONNECTING)) {
+				console.log("Détection d'un ping invalide, planification d'une reconnexion");
+				this.reconnectTimer = setTimeout(() => this.restart(), 1000);
+			}
+
 			return {
 				region: this.region,
 				ping: -1, // -1 indique que le ping n'est pas dispo, mais jamais null
