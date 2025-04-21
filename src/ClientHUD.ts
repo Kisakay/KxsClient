@@ -302,11 +302,14 @@ class KxsClientHUD {
 			this.hudOpacityObservers.forEach(obs => obs.disconnect());
 			this.hudOpacityObservers = [];
 
-			// 2. Supprime le style d'opacité en ligne pour tous les éléments concernés
 			const selectors = [
 				'#ui-medical-interactive > div',
 				'#ui-ammo-interactive > div',
 				'#ui-weapon-container .ui-weapon-switch',
+				'#ui-killfeed',
+				'#ui-killfeed-contents',
+				'.killfeed-div',
+				'.killfeed-text',
 			];
 			selectors.forEach(sel => {
 				const elements = document.querySelectorAll(sel);
