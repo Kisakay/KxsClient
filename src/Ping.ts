@@ -167,13 +167,25 @@ class PingTest {
 		this.setServerFromDOM();
 	}
 
+	/**
+	 * Retourne le ping actuel. Ne touche jamais à la websocket ici !
+	 * Si le ping n'est pas dispo, retourne -1 (jamais null).
+	 * La reconnexion doit être gérée ailleurs (timer, event, etc).
+	 */
 	public getPingResult() {
-		return {
-			region: this.region,
-			ping: this.ws && this.ws.readyState === WebSocket.OPEN && this.hasPing ? this.ping : null,
-		};
+		if (this.ws && this.ws.readyState === WebSocket.OPEN && this.hasPing) {
+			return {
+				region: this.region,
+				ping: this.ping,
+			};
+		} else {
+			// On ne redémarre plus la websocket ici pour éviter le spam/rate limit
+			return {
+				region: this.region,
+				ping: -1, // -1 indique que le ping n'est pas dispo, mais jamais null
+			};
+		}
 	}
-
 }
 
 export { PingTest };
