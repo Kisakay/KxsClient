@@ -27,7 +27,7 @@ class KxsClientHUD {
 	private customCursorObserver?: MutationObserver;
 	private hudOpacityObservers: MutationObserver[] = [];
 	private ctrlFocusTimer: number | null = null;
-	private ctrlFocusActive: boolean = false;
+	private allDivToHide: string[];
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
@@ -36,6 +36,38 @@ class KxsClientHUD {
 		this.kills = 0;
 		this.isMenuVisible = true;
 		this.pingManager = new PingTest();
+		this.allDivToHide = [
+			'#ui-medical-interactive > div',
+			'#ui-ammo-interactive > div',
+			'#ui-weapon-container .ui-weapon-switch',
+			'#ui-killfeed',
+			'#ui-killfeed-contents',
+			'.killfeed-div',
+			'.killfeed-text',
+			'#ui-kill-leader-container',
+			'#ui-kill-leader-wrapper',
+			'#ui-kill-leader-name',
+			'#ui-kill-leader-icon',
+			'#ui-kill-leader-count',
+			'#ui-leaderboard-wrapper',
+			'#ui-leaderboard',
+			'#ui-leaderboard-alive',
+			'#ui-leaderboard-alive-faction',
+			'.ui-leaderboard-header',
+			'#ui-kill-counter-wrapper',
+			'#ui-kill-counter',
+			'.ui-player-kills',
+			'.ui-kill-counter-header',
+			'#ui-bottom-center-right',
+			'#ui-armor-helmet',
+			'#ui-armor-chest',
+			'#ui-armor-backpack',
+			'.ui-armor-counter',
+			'.ui-armor-counter-inner',
+			'.ui-armor-level',
+			'.ui-armor-image',
+			'.ui-loot-image',
+		];
 
 		if (this.kxsClient.isPingVisible) {
 			this.initCounter("ping", "Ping", "45ms");
@@ -226,16 +258,7 @@ class KxsClientHUD {
 		this.hudOpacityObservers.forEach(obs => obs.disconnect());
 		this.hudOpacityObservers = [];
 
-		const selectors = [
-			'#ui-medical-interactive > div',
-			'#ui-ammo-interactive > div',
-			'#ui-weapon-container .ui-weapon-switch',
-			'#ui-killfeed',
-			'#ui-killfeed-contents',
-			'.killfeed-div',
-			'.killfeed-text',
-		];
-		selectors.forEach(sel => {
+		this.allDivToHide.forEach(sel => {
 			const elements = document.querySelectorAll(sel);
 			elements.forEach(el => {
 				(el as HTMLElement).style.opacity = String(opacity);
@@ -302,16 +325,7 @@ class KxsClientHUD {
 			this.hudOpacityObservers.forEach(obs => obs.disconnect());
 			this.hudOpacityObservers = [];
 
-			const selectors = [
-				'#ui-medical-interactive > div',
-				'#ui-ammo-interactive > div',
-				'#ui-weapon-container .ui-weapon-switch',
-				'#ui-killfeed',
-				'#ui-killfeed-contents',
-				'.killfeed-div',
-				'.killfeed-text',
-			];
-			selectors.forEach(sel => {
+			this.allDivToHide.forEach(sel => {
 				const elements = document.querySelectorAll(sel);
 				elements.forEach(el => {
 					(el as HTMLElement).style.removeProperty('opacity');
