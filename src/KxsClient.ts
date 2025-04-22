@@ -111,6 +111,8 @@ export default class KxsClient {
 			background_sound_url: background_song,
 		};
 
+		this.gridSystem = new GridSystem();
+
 		// Before all, load local storage
 		this.loadLocalStorage();
 		this.changeSurvevLogo();
@@ -126,7 +128,6 @@ export default class KxsClient {
 		this.initDeathDetection();
 		this.discordRPC.connect();
 		this.hud = new KxsClientHUD(this);
-		this.gridSystem = new GridSystem();
 
 		if (this.isLegaySecondaryMenu) {
 			this.secondaryMenu = new KxsLegacyClientSecondaryMenu(this);
