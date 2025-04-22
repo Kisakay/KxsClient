@@ -121,7 +121,7 @@ class KillLeaderTracker {
 		if (!this.encouragementElement) return;
 
 		let message: string;
-		if (isDethrone) {
+		if (isDethrone && killsToLeader !== 0) {
 			message = "Oh no! You've been dethroned!";
 			this.encouragementElement.style.borderColor = "#ff0000";
 			this.encouragementElement.style.color = "#ff0000";
