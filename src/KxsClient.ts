@@ -601,12 +601,6 @@ export default class KxsClient {
 		return null;
 	}
 
-	saveFpsUncappedToLocalStorage() {
-		let config = JSON.parse(localStorage.getItem("userSettings")!) || {};
-		config.isFpsUncapped = this.isFpsUncapped;
-		localStorage.setItem("userSettings", JSON.stringify(config));
-	}
-
 	saveBackgroundToLocalStorage(image: string | File) {
 		if (typeof image === "string") {
 			localStorage.setItem("lastBackgroundUrl", image);
@@ -707,12 +701,6 @@ export default class KxsClient {
 				? "rgba(0, 0, 0, 0.2)"
 				: "transparent";
 		}
-	}
-
-	toggleFpsUncap() {
-		this.isFpsUncapped = !this.isFpsUncapped;
-		this.setAnimationFrameCallback();
-		this.saveFpsUncappedToLocalStorage();
 	}
 
 	createSimpleSpotifyPlayer() {
