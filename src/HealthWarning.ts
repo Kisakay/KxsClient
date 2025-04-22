@@ -84,7 +84,7 @@ class HealthWarning {
 			} catch (error) {
 				// En cas d'erreur, utiliser la position par défaut
 				position = this.kxsClient.defaultPositions[this.POSITION_KEY];
-				console.error('Erreur lors du chargement de la position LOW HP:', error);
+				this.kxsClient.logger.error('Erreur lors du chargement de la position LOW HP:', error);
 			}
 		} else {
 			// Utiliser la position par défaut

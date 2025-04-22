@@ -218,7 +218,7 @@ class KxsClientHUD {
 				// Check current content immediately
 				checkAllKillfeeds();
 			} else {
-				console.warn("Killfeed-contents element not found");
+				this.kxsClient.logger.error("Killfeed-contents element not found");
 			}
 		}
 	}
@@ -479,7 +479,7 @@ class KxsClientHUD {
 		};
 		img.onerror = () => {
 			document.body.style.cursor = '';
-			console.warn('Impossible de charger le curseur personnalisé:', url);
+			this.kxsClient.logger.warn('Impossible de charger le curseur personnalisé:', url);
 		};
 		img.src = url;
 

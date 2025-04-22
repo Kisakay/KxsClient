@@ -13,6 +13,7 @@ import { KxsLegacyClientSecondaryMenu } from "./ClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
 import { background_song, death_sound, full_logo, win_sound } from ".";
 import { KxsClientHUD } from "./ClientHUD";
+import { Logger } from "./Logger";
 
 export default class KxsClient {
 	lastFrameTime: DOMHighResTimeStamp;
@@ -45,6 +46,7 @@ export default class KxsClient {
 	kill_leader: KillLeaderTracker | undefined;
 	discordTracker: DiscordTracking;
 	updater: UpdateChecker;
+	gridSystem: GridSystem;
 	discordWebhookUrl: string | undefined;
 	counters: Record<string, HTMLElement>;
 	defaultPositions: Record<string, { left: number; top: number }>;
@@ -56,6 +58,7 @@ export default class KxsClient {
 	private deathObserver: MutationObserver | null = null;
 	soundLibrary: SoundLibrary;
 	hud: KxsClientHUD;
+	logger: Logger;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -63,6 +66,7 @@ export default class KxsClient {
 		| undefined;
 
 	constructor() {
+		this.logger = new Logger();
 		this.config = require("../config.json");
 		this.menu = document.createElement("div");
 		this.lastFrameTime = performance.now();
@@ -122,6 +126,7 @@ export default class KxsClient {
 		this.initDeathDetection();
 		this.discordRPC.connect();
 		this.hud = new KxsClientHUD(this);
+		this.gridSystem = new GridSystem();
 
 		if (this.isLegaySecondaryMenu) {
 			this.secondaryMenu = new KxsLegacyClientSecondaryMenu(this);
@@ -268,7 +273,7 @@ export default class KxsClient {
 				audio.play().catch((err) => false);
 			}
 		} catch (error) {
-			console.error("Reading error:", error);
+			this.logger.error("Reading error:", error);
 		}
 
 		const stats = this.getPlayerStats(false);
@@ -388,7 +393,7 @@ export default class KxsClient {
 			const audio = new Audio(
 				this.soundLibrary.win_sound_url,
 			);
-			audio.play().catch((err) => console.error("Erreur lecture:", err));
+			audio.play().catch((err) => this.logger.error("Erreur lecture:", err));
 		}
 
 		setTimeout(() => {
@@ -513,7 +518,6 @@ export default class KxsClient {
 	}
 
 	makeDraggable(element: HTMLElement, storageKey: string) {
-		const gridSystem = new GridSystem();
 		let isDragging = false;
 		let dragOffset = { x: 0, y: 0 };
 
@@ -521,7 +525,7 @@ export default class KxsClient {
 			if (event.button === 0) {
 				// Left click only
 				isDragging = true;
-				gridSystem.toggleGrid(); // Afficher la grille quand on commence à déplacer
+				this.gridSystem.toggleGrid(); // Afficher la grille quand on commence à déplacer
 				dragOffset = {
 					x: event.clientX - element.offsetLeft,
 					y: event.clientY - element.offsetTop,
@@ -536,7 +540,7 @@ export default class KxsClient {
 				const rawY = event.clientY - dragOffset.y;
 
 				// Get snapped coordinates from grid system
-				const snapped = gridSystem.snapToGrid(element, rawX, rawY);
+				const snapped = this.gridSystem.snapToGrid(element, rawX, rawY);
 
 				// Prevent moving off screen
 				const maxX = window.innerWidth - element.offsetWidth;
@@ -546,7 +550,7 @@ export default class KxsClient {
 				element.style.top = `${Math.max(0, Math.min(snapped.y, maxY))}px`;
 
 				// Highlight nearest grid lines while dragging
-				gridSystem.highlightNearestGridLine(rawX, rawY);
+				this.gridSystem.highlightNearestGridLine(rawX, rawY);
 
 				// Save position
 				localStorage.setItem(
@@ -562,7 +566,7 @@ export default class KxsClient {
 		window.addEventListener("mouseup", () => {
 			if (isDragging) {
 				isDragging = false;
-				gridSystem.toggleGrid(); // Masquer la grille quand on arrête de déplacer
+				this.gridSystem.toggleGrid(); // Masquer la grille quand on arrête de déplacer
 				element.style.cursor = "move";
 			}
 		});
@@ -571,7 +575,7 @@ export default class KxsClient {
 		const savedPosition = localStorage.getItem(storageKey);
 		if (savedPosition) {
 			const { x, y } = JSON.parse(savedPosition);
-			const snapped = gridSystem.snapToGrid(element, x, y);
+			const snapped = this.gridSystem.snapToGrid(element, x, y);
 			element.style.left = `${snapped.x}px`;
 			element.style.top = `${snapped.y}px`;
 		}
@@ -1401,7 +1405,7 @@ export default class KxsClient {
 
 				// If the site tries to redisplay an advertising element, we prevent it
 				if (needsUpdate) {
-					console.log('[KxsClient] Detection of attempt to redisplay ads - Forced hiding');
+					this.logger.log('Detection of attempt to redisplay ads - Forced hiding');
 				}
 			});
 

@@ -76,7 +76,6 @@ class WebhookValidator {
 			// Discord returns 200 for valid webhooks
 			return response.status === 200;
 		} catch (error) {
-			console.error("Error validating webhook:", error);
 			return false;
 		}
 	}
@@ -155,7 +154,7 @@ class DiscordTracking {
 				throw new Error(`Discord Webhook Error: ${response.status}`);
 			}
 		} catch (error) {
-			console.error("Error sending Discord message:", error);
+			this.kxsClient.logger.error("Error sending Discord message:", error);
 		}
 	}
 

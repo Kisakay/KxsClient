@@ -23,7 +23,7 @@ class DiscordWebSocket {
 		this.ws = new WebSocket('wss://gateway.discord.gg/?v=9&encoding=json');
 
 		this.ws.onopen = () => {
-			console.log('[RichPresence] WebSocket connection established');
+			this.kxsClient.logger.log('[RichPresence] WebSocket connection established');
 		};
 
 		this.ws.onmessage = (event) => {
@@ -80,7 +80,7 @@ class DiscordWebSocket {
 				break;
 
 			case 11: // Heartbeat ACK
-				console.log('[RichPresence] Heartbeat acknowledged');
+				this.kxsClient.logger.log('[RichPresence] Heartbeat acknowledged');
 				break;
 
 			case 0: // Dispatch
