@@ -26,6 +26,7 @@ class KxsLegacyClientSecondaryMenu {
 	public isOpen: boolean;
 
 	private boundShiftListener: (event: KeyboardEvent) => void;
+	private boundEscapeListener: (event: KeyboardEvent) => void;
 	private boundMouseDownListener: (event: MouseEvent) => void;
 	private boundMouseMoveListener: (event: MouseEvent) => void;
 	private boundMouseUpListener: (event: MouseEvent) => void;
@@ -40,6 +41,7 @@ class KxsLegacyClientSecondaryMenu {
 		this.isOpen = false;
 
 		this.boundShiftListener = this.handleShiftPress.bind(this);
+		this.boundEscapeListener = this.handleEscapePress.bind(this);
 		this.boundMouseDownListener = this.handleMouseDown.bind(this);
 		this.boundMouseMoveListener = this.handleMouseMove.bind(this);
 		this.boundMouseUpListener = this.handleMouseUp.bind(this);
@@ -54,6 +56,18 @@ class KxsLegacyClientSecondaryMenu {
 		if (event.key === "Shift" && event.location == 2) {
 			// this.clearMenu();
 			this.toggleMenuVisibility();
+		}
+	}
+
+	private handleEscapePress(event: KeyboardEvent): void {
+		if (event.key === "Escape" && this.isClientMenuVisible) {
+			// Fermer le menu si la touche Échap est pressée et que le menu est visible
+			this.toggleMenuVisibility();
+			// Empêcher la propagation ET l'action par défaut
+			event.stopPropagation();
+			event.preventDefault();
+			// Arrêter complètement la propagation de l'événement
+			return false as any;
 		}
 	}
 
@@ -627,7 +641,12 @@ class KxsLegacyClientSecondaryMenu {
 	}
 
 	addShiftListener(): void {
+		// Gestionnaire pour la touche Shift (ouverture du menu)
 		window.addEventListener("keydown", this.boundShiftListener);
+		
+		// Utiliser la phase de capture pour intercepter l'événement Escape
+		// avant qu'il n'atteigne le jeu
+		document.addEventListener("keydown", this.boundEscapeListener, true);
 	}
 
 	addDragListeners(): void {
@@ -649,6 +668,7 @@ class KxsLegacyClientSecondaryMenu {
 	destroy(): void {
 		// Remove event listeners
 		window.removeEventListener("keydown", this.boundShiftListener);
+		document.removeEventListener("keydown", this.boundEscapeListener, true);
 		this.menu.removeEventListener("mousedown", this.boundMouseDownListener);
 		window.removeEventListener("mousemove", this.boundMouseMoveListener);
 		window.removeEventListener("mouseup", this.boundMouseUpListener);

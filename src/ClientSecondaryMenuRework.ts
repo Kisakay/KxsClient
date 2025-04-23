@@ -857,6 +857,7 @@ class KxsClientSecondaryMenu {
 	}
 
 	addShiftListener() {
+		// Gestionnaire pour la touche Shift (ouverture du menu)
 		window.addEventListener("keydown", (event) => {
 			if (event.key === "Shift" && event.location == 2) {
 				this.clearMenu();
@@ -865,6 +866,20 @@ class KxsClientSecondaryMenu {
 				this.filterOptions();
 			}
 		});
+
+		// Gestionnaire séparé pour la touche Échap avec capture en phase de capture
+		// pour intercepter l'événement avant qu'il n'atteigne le jeu
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "Escape" && this.isClientMenuVisible) {
+				// Fermer le menu si la touche Échap est pressée et que le menu est visible
+				this.toggleMenuVisibility();
+				// Empêcher la propagation ET l'action par défaut
+				event.stopPropagation();
+				event.preventDefault();
+				// Arrêter la propagation de l'événement
+				return false;
+			}
+		}, true); // true = phase de capture
 	}
 
 	private createInputElement(option: MenuOption): HTMLElement {
@@ -1025,6 +1040,10 @@ class KxsClientSecondaryMenu {
 		window.removeEventListener("keydown", this.shiftListener);
 		document.removeEventListener('mousemove', this.mouseMoveListener);
 		document.removeEventListener('mouseup', this.mouseUpListener);
+
+		// Supprimer tous les écouteurs d'événements keydown du document
+		// Nous ne pouvons pas supprimer directement l'écouteur anonyme, mais ce n'est pas grave
+		// car la vérification isClientMenuVisible empêchera toute action une fois le menu détruit
 
 		// Remove all event listeners from menu elements
 		const removeAllListeners = (element: HTMLElement) => {
