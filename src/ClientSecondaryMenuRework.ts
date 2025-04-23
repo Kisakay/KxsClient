@@ -2,21 +2,25 @@ import { background_image, full_logo, kxs_logo } from ".";
 import { KxsLegacyClientSecondaryMenu } from "./LegacyClientSecondaryMenu";
 import KxsClient from "./KxsClient";
 
+export const category = ["ALL", "HUD", "SERVER", "MECHANIC", "SOUND", "MISC"] as const;
+
+export type CategoryType = typeof category[number];
+
 interface MenuOption {
 	label: string;
 	value: string | boolean | number;
 	type: "toggle" | "input" | "click" | "info";
 	onChange?: (value: string | boolean) => void;
-	category: "HUD" | "SERVER" | "MECHANIC" | "ALL" | "SOUND";
+	category: CategoryType;
 	icon: string;
-	placeholder?: string; // Texte grisé pour les inputs
+	placeholder?: string;
 }
 
 interface MenuSection {
 	title: string;
 	options: MenuOption[];
 	element?: HTMLDivElement;
-	category: "HUD" | "SERVER" | "MECHANIC" | "ALL" | "SOUND";
+	category: CategoryType
 }
 
 class KxsClientSecondaryMenu {
@@ -155,7 +159,7 @@ class KxsClientSecondaryMenu {
           </div>
           <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box;">
             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 5px;">
-              ${["ALL", "HUD", "SERVER", "MECHANIC", "SOUND"].map(cat => `
+              ${category.map(cat => `
                 <button class="category-btn" data-category="${cat}" style="
                   padding: ${isMobile ? '2px 6px' : '6px 16px'};
                   background: ${this.activeCategory === cat ? '#3B82F6' : 'rgba(55, 65, 81, 0.8)'};
@@ -789,7 +793,7 @@ class KxsClientSecondaryMenu {
 		this.allOptions.push(option);
 	}
 
-	public addSection(title: string, category: "HUD" | "SERVER" | "MECHANIC" | "ALL" | "SOUND" = "ALL"): MenuSection {
+	public addSection(title: string, category: CategoryType = "ALL"): MenuSection {
 		const section: MenuSection = {
 			title,
 			options: [],
