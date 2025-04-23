@@ -110,6 +110,16 @@ class KxsClientSecondaryMenu {
 		}
 	}
 
+	private blockMousePropagation(element: HTMLElement, preventDefault = true) {
+		['click', 'mousedown', 'mouseup', 'dblclick', 'contextmenu', 'wheel'].forEach(eventType => {
+			element.addEventListener(eventType, (e) => {
+				e.stopPropagation();
+				if (preventDefault && (eventType === 'contextmenu' || eventType === 'wheel' || element.tagName !== 'INPUT')) {
+					e.preventDefault();
+				}
+			}, false);
+		});
+	}
 
 	private createHeader(): void {
 		const header = document.createElement("div");
@@ -189,6 +199,7 @@ class KxsClientSecondaryMenu {
         `;
 
 		header.querySelectorAll('.category-btn').forEach(btn => {
+			this.blockMousePropagation(btn as HTMLElement);
 			btn.addEventListener('click', (e) => {
 				const category = (e.target as HTMLElement).dataset.category;
 				if (category) {
@@ -204,6 +215,7 @@ class KxsClientSecondaryMenu {
 
 		const searchInput = header.querySelector('#kxsSearchInput') as HTMLInputElement;
 		if (searchInput) {
+			this.blockMousePropagation(searchInput, false);
 			// Gestionnaire pour mettre à jour la recherche
 			searchInput.addEventListener('input', (e) => {
 				this.searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
@@ -823,6 +835,7 @@ class KxsClientSecondaryMenu {
 			option.onChange?.(newValue);
 		});
 
+		this.blockMousePropagation(btn);
 		return btn;
 	}
 
@@ -849,6 +862,7 @@ class KxsClientSecondaryMenu {
 			option.onChange?.(true);
 		});
 
+		this.blockMousePropagation(btn);
 		return btn;
 	}
 
@@ -916,6 +930,7 @@ class KxsClientSecondaryMenu {
 			e.stopPropagation();
 		});
 
+		this.blockMousePropagation(input);
 		return input;
 	}
 
@@ -932,6 +947,7 @@ class KxsClientSecondaryMenu {
 			flex: "1 1 100%",
 			whiteSpace: "pre-line"
 		});
+		this.blockMousePropagation(info);
 		return info;
 	}
 
