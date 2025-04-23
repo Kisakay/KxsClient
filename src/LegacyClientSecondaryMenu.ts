@@ -58,6 +58,11 @@ class KxsLegacyClientSecondaryMenu {
 	}
 
 	private handleMouseDown(e: MouseEvent): void {
+		// Empêcher la propagation de l'événement mousedown vers la page web
+		// pour TOUS les éléments du menu, y compris les éléments interactifs
+		e.stopPropagation();
+
+		// Activer le drag & drop seulement si on clique sur une zone non interactive
 		if (e.target instanceof HTMLElement && !e.target.matches("input, select, button")) {
 			this.isDragging = true;
 			const rect = this.menu.getBoundingClientRect();
@@ -84,9 +89,17 @@ class KxsLegacyClientSecondaryMenu {
 		this.menu.style.top = `${Math.max(0, Math.min(newY, maxY))}px`;
 	}
 
-	private handleMouseUp(): void {
+	private handleMouseUp(e: MouseEvent): void {
+		// Arrêter le drag & drop
+		const wasDragging = this.isDragging;
 		this.isDragging = false;
 		this.menu.style.cursor = "move";
+
+		// Empêcher la propagation de l'événement mouseup vers la page web
+		// pour tous les éléments du menu, y compris les éléments interactifs
+		if (this.menu.contains(e.target as Node)) {
+			e.stopPropagation();
+		}
 	}
 
 	private initMenu(): void {
@@ -94,6 +107,17 @@ class KxsLegacyClientSecondaryMenu {
 		this.applyMenuStyles();
 		this.createHeader();
 		document.body.appendChild(this.menu);
+
+		// Empêcher la propagation des événements souris (clics et molette) vers la page web
+		// Utiliser la phase de bouillonnement (bubbling) au lieu de la phase de capture
+		// pour permettre aux éléments enfants de recevoir les événements d'abord
+		this.menu.addEventListener('click', (e) => {
+			e.stopPropagation();
+		});
+
+		this.menu.addEventListener('wheel', (e) => {
+			e.stopPropagation();
+		});
 	}
 
 	private loadOption(): void {
@@ -574,6 +598,29 @@ class KxsLegacyClientSecondaryMenu {
 		input.addEventListener("change", () => {
 			option.value = input.value;
 			option.onChange?.(input.value);
+		});
+
+		// Empêcher la propagation des touches de texte vers la page web
+		// mais permettre l'interaction avec l'input
+		input.addEventListener("keydown", (e) => {
+			e.stopPropagation();
+		});
+
+		input.addEventListener("keyup", (e) => {
+			e.stopPropagation();
+		});
+
+		input.addEventListener("keypress", (e) => {
+			e.stopPropagation();
+		});
+
+		// Empêcher la propagation des événements de souris
+		input.addEventListener("mousedown", (e) => {
+			e.stopPropagation();
+		});
+
+		input.addEventListener("click", (e) => {
+			e.stopPropagation();
 		});
 
 		return input;
