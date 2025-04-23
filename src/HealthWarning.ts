@@ -2,7 +2,7 @@ import KxsClient from "./KxsClient";
 
 class HealthWarning {
 	private warningElement: HTMLDivElement | null;
-	kxsClient: KxsClient;
+	private kxsClient: KxsClient;
 	private isDraggable: boolean = false;
 	private isDragging: boolean = false;
 	private dragOffset: { x: number, y: number } = { x: 0, y: 0 };
@@ -127,7 +127,7 @@ class HealthWarning {
 	public hide() {
 		if (!this.warningElement) return;
 		// Ne pas masquer si en mode placement
-		if (this.isDraggable) return;
+		// if (this.isDraggable) return;
 		this.warningElement.style.display = "none";
 	}
 
@@ -155,7 +155,7 @@ class HealthWarning {
 		document.addEventListener('mouseup', this.handleMouseUp.bind(this));
 	}
 
-	private enableDragging() {
+	public enableDragging() {
 		if (!this.warningElement) return;
 
 		this.isDraggable = true;
@@ -255,7 +255,7 @@ class HealthWarning {
 			const isMenuOpen = this.kxsClient.secondaryMenu?.isOpen || false;
 
 			// Si le menu est ouvert et que nous ne sommes pas en mode placement, activer le mode placement
-			if (isMenuOpen && !this.isDraggable) {
+			if (isMenuOpen && this.kxsClient.isHealthWarningEnabled && !this.isDraggable) {
 				this.enableDragging();
 			}
 			// Si le menu est fermé et que nous sommes en mode placement, désactiver le mode placement

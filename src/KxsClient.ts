@@ -9,7 +9,7 @@ import { UpdateChecker } from "./UpdateChecker";
 import { DiscordWebSocket } from "./DiscordRichPresence";
 import { NotificationManager } from "./NotificationManager";
 import { KxsClientSecondaryMenu } from "./ClientSecondaryMenuRework";
-import { KxsLegacyClientSecondaryMenu } from "./ClientSecondaryMenu";
+import { KxsLegacyClientSecondaryMenu } from "./LegacyClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
 import { background_song, death_sound, full_logo, win_sound } from ".";
 import { KxsClientHUD } from "./ClientHUD";

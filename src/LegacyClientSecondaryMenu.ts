@@ -274,6 +274,12 @@ class KxsLegacyClientSecondaryMenu {
 			type: "toggle",
 			onChange: (value) => {
 				this.kxsClient.isHealthWarningEnabled = !this.kxsClient.isHealthWarningEnabled
+				if (this.kxsClient.isHealthWarningEnabled) {
+					// Always enter placement mode when enabling from RSHIFT menu
+					this.kxsClient.healWarning?.enableDragging();
+				} else {
+					this.kxsClient.healWarning?.hide();
+				}
 				this.kxsClient.updateLocalStorage()
 			},
 		});
