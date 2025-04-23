@@ -49,11 +49,25 @@ class KxsClientSecondaryMenu {
 	}
 
 	private initMenu(): void {
-		this.menu.id = "kxsMenuIG";
+		this.menu.id = "kxsClientMenu";
 		this.applyMenuStyles();
 		this.createHeader();
 		this.createGridContainer();
 		document.body.appendChild(this.menu);
+		this.menu.style.display = "none";
+
+		// Empêcher la propagation des événements souris (clics et molette) vers la page web
+		// Utiliser la phase de bouillonnement (bubbling) au lieu de la phase de capture
+		// pour permettre aux éléments enfants de recevoir les événements d'abord
+		this.menu.addEventListener('click', (e) => {
+			e.stopPropagation();
+		});
+
+		this.menu.addEventListener('wheel', (e) => {
+			e.stopPropagation();
+		});
+
+		// Nous ne gérons pas mousedown et mouseup ici car ils sont gérés dans addDragListeners()
 	}
 
 	private applyMenuStyles(): void {
@@ -875,6 +889,22 @@ class KxsClientSecondaryMenu {
 			option.onChange?.(input.value);
 		});
 
+		// Empêcher la propagation des touches de texte vers la page web
+		// mais permettre l'interaction avec l'input
+		input.addEventListener("keydown", (e) => {
+			// Ne pas arrêter la propagation des touches de navigation (flèches, tab, etc.)
+			// qui sont nécessaires pour naviguer dans le champ de texte
+			e.stopPropagation();
+		});
+
+		input.addEventListener("keyup", (e) => {
+			e.stopPropagation();
+		});
+
+		input.addEventListener("keypress", (e) => {
+			e.stopPropagation();
+		});
+
 		return input;
 	}
 
@@ -920,6 +950,19 @@ class KxsClientSecondaryMenu {
 
 	addDragListeners() {
 		this.menu.addEventListener('mousedown', (e: MouseEvent) => {
+			// Ne pas arrêter la propagation si l'événement vient d'un élément interactif
+			if (
+				e.target instanceof HTMLElement &&
+				e.target.matches("input, select, button, svg, path")
+			) {
+				// Laisser l'événement se propager aux éléments interactifs
+				return;
+			}
+
+			// Empêcher la propagation de l'événement mousedown vers la page web
+			e.stopPropagation();
+
+			// Activer le drag & drop seulement si on clique sur une zone non interactive
 			if (
 				e.target instanceof HTMLElement &&
 				!e.target.matches("input, select, button, svg, path")
@@ -944,9 +987,19 @@ class KxsClientSecondaryMenu {
 			}
 		});
 
-		document.addEventListener('mouseup', () => {
+		document.addEventListener('mouseup', (e: MouseEvent) => {
+			// Arrêter le drag & drop
+			const wasDragging = this.isDragging;
 			this.isDragging = false;
 			this.menu.style.cursor = "grab";
+
+			// Empêcher la propagation de l'événement mouseup vers la page web
+			// seulement si l'événement vient du menu et n'est pas un élément interactif
+			if (this.menu.contains(e.target as Node)) {
+				if (wasDragging || !(e.target instanceof HTMLElement && e.target.matches("input, select, button, svg, path"))) {
+					e.stopPropagation();
+				}
+			}
 		});
 	}
 
