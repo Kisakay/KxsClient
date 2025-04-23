@@ -377,10 +377,6 @@ class KxsClientSecondaryMenu {
 				this.kxsClient.isGunBorderChromatic = !this.kxsClient.isGunBorderChromatic
 				this.kxsClient.updateLocalStorage()
 				this.kxsClient.hud.toggleChromaticWeaponBorder()
-
-				if (this.kxsClient.isGunOverlayColored) {
-					this.kxsClient.hud.toggleWeaponBorderHandler()
-				}
 			},
 		});
 

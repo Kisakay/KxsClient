@@ -26,6 +26,7 @@ class KxsClientHUD {
 	private lastHealthValue: number = 100;
 	private customCursorObserver?: MutationObserver;
 	private hudOpacityObservers: MutationObserver[] = [];
+	private weaponBorderObservers: MutationObserver[] = [];
 	private ctrlFocusTimer: number | null = null;
 	private allDivToHide: string[];
 
@@ -1187,10 +1188,21 @@ class KxsClientHUD {
 	}
 
 	toggleWeaponBorderHandler() {
-		if (this.kxsClient.isGunOverlayColored && !this.kxsClient.isGunBorderChromatic) {
-			const weaponContainers = Array.from(
-				document.getElementsByClassName("ui-weapon-switch"),
-			);
+		// Get all weapon containers
+		const weaponContainers = Array.from(
+			document.getElementsByClassName("ui-weapon-switch"),
+		);
+
+		// Get all weapon names
+		const weaponNames = Array.from(
+			document.getElementsByClassName("ui-weapon-name"),
+		);
+
+		// Clear any existing observers
+		this.clearWeaponBorderObservers();
+
+		if (this.kxsClient.isGunOverlayColored) {
+			// Apply initial border colors
 			weaponContainers.forEach((container) => {
 				if (container.id === "ui-weapon-id-4") {
 					(container as HTMLElement).style.border = "3px solid #2f4032";
@@ -1198,10 +1210,6 @@ class KxsClientHUD {
 					(container as HTMLElement).style.border = "3px solid #FFFFFF";
 				}
 			});
-
-			const weaponNames = Array.from(
-				document.getElementsByClassName("ui-weapon-name"),
-			);
 
 			type ColorKey = 'ORANGE' | 'BLUE' | 'GREEN' | 'RED' | 'BLACK' | 'OLIVE' | 'ORANGE_RED' | 'PURPLE' | 'TEAL' | 'BROWN' | 'PINK' | 'DEFAULT';
 
@@ -1235,6 +1243,7 @@ class KxsClientHUD {
 				DEFAULT: []
 			};
 
+			// Set up observers for dynamic color changes
 			weaponNames.forEach((weaponNameElement) => {
 				const weaponContainer = weaponNameElement.closest(".ui-weapon-switch");
 
@@ -1271,7 +1280,27 @@ class KxsClientHUD {
 				});
 
 				observer.observe(weaponNameElement, { childList: true, characterData: true, subtree: true });
+				
+				// Store the observer for later cleanup
+				this.weaponBorderObservers = this.weaponBorderObservers || [];
+				this.weaponBorderObservers.push(observer);
 			});
+		} else {
+			// If the feature is disabled, reset all weapon borders to default
+			weaponContainers.forEach((container) => {
+				// Reset to game's default border style
+				(container as HTMLElement).style.border = "";
+			});
+		}
+	}
+
+	// Helper method to clear weapon border observers
+	private clearWeaponBorderObservers() {
+		if (this.weaponBorderObservers && this.weaponBorderObservers.length > 0) {
+			this.weaponBorderObservers.forEach(observer => {
+				observer.disconnect();
+			});
+			this.weaponBorderObservers = [];
 		}
 	}
 
@@ -1332,6 +1361,11 @@ class KxsClientHUD {
 			});
 			const style = document.getElementById(styleId);
 			if (style) style.remove();
+			
+			// Reapply regular colored borders if that feature is enabled
+			if (this.kxsClient.isGunOverlayColored) {
+				this.toggleWeaponBorderHandler();
+			}
 		}
 	}
 
