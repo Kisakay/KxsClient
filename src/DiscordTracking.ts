@@ -1,3 +1,4 @@
+import { kxs_logo } from ".";
 import KxsClient from "./KxsClient";
 
 interface GameResult {
@@ -36,6 +37,7 @@ interface DiscordWebhookMessage {
 			inline?: boolean;
 		}>;
 	}>;
+	avatar_url: string;
 }
 
 const stuff_emojis = {
@@ -225,7 +227,8 @@ class DiscordTracking {
 		}
 
 		const message: DiscordWebhookMessage = {
-			username: result.username,
+			username: "KxsClient",
+			avatar_url: kxs_logo,
 			content: result.isWin ? "🎉 New Victory!" : "Match Ended",
 			embeds: [embed],
 		};
