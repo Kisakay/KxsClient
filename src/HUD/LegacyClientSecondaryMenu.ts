@@ -1,6 +1,6 @@
 import { KxsClientSecondaryMenu } from "./ClientSecondaryMenuRework";
-const packageInfo = require('../package.json');
-import KxsClient from "./KxsClient";
+import KxsClient from "../KxsClient";
+import packageInfo from "../../package.json";
 
 interface MenuOption {
 	label: string;
@@ -643,7 +643,7 @@ class KxsLegacyClientSecondaryMenu {
 	addShiftListener(): void {
 		// Gestionnaire pour la touche Shift (ouverture du menu)
 		window.addEventListener("keydown", this.boundShiftListener);
-		
+
 		// Utiliser la phase de capture pour intercepter l'événement Escape
 		// avant qu'il n'atteigne le jeu
 		document.addEventListener("keydown", this.boundEscapeListener, true);

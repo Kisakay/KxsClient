@@ -1,4 +1,4 @@
-import KxsClient from "./KxsClient";
+import KxsClient from "../KxsClient";
 
 class KillLeaderTracker {
 	private warningElement: HTMLDivElement | null;

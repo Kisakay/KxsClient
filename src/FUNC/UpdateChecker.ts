@@ -1,8 +1,8 @@
-import KxsClient from "./KxsClient";
+import KxsClient from "../KxsClient";
 import gt from 'semver/functions/gt';
 
-const packageInfo = require('../package.json');
-const config = require('../config.json');
+import packageInfo from "../../package.json";
+import config from "../../config.json";
 
 class UpdateChecker {
 	private readonly remoteScriptUrl = config.base_url + "/download/latest-dev.js";

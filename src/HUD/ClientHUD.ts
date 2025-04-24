@@ -1,5 +1,5 @@
-import KxsClient from "./KxsClient";
-import { PingTest } from "./Ping";
+import KxsClient from "../KxsClient";
+import { PingTest } from "../SERVER/Ping";
 
 interface HealthChangeAnimation {
 	element: HTMLElement;
@@ -1280,7 +1280,7 @@ class KxsClientHUD {
 				});
 
 				observer.observe(weaponNameElement, { childList: true, characterData: true, subtree: true });
-				
+
 				// Store the observer for later cleanup
 				this.weaponBorderObservers = this.weaponBorderObservers || [];
 				this.weaponBorderObservers.push(observer);
@@ -1361,7 +1361,7 @@ class KxsClientHUD {
 			});
 			const style = document.getElementById(styleId);
 			if (style) style.remove();
-			
+
 			// Reapply regular colored borders if that feature is enabled
 			if (this.kxsClient.isGunOverlayColored) {
 				this.toggleWeaponBorderHandler();

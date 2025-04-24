@@ -1,20 +1,22 @@
-import { HealthWarning } from "./HealthWarning";
-import { KillLeaderTracker } from "./KillLeaderTracking";
-import { GridSystem } from "./GridSystem";
-import { DiscordTracking } from "./DiscordTracking";
-import { StatsParser } from "./StatsParser";
+import { HealthWarning } from "./HUD/MOD/HealthWarning";
+import { KillLeaderTracker } from "./MECHANIC/KillLeaderTracking";
+import { GridSystem } from "./HUD/GridSystem";
+import { DiscordTracking } from "./SERVER/DiscordTracking";
+import { StatsParser } from "./FUNC/StatsParser";
 import { PlayerStats } from "./types/types";
 import { Config } from "./types/configtype";
-import { UpdateChecker } from "./UpdateChecker";
-import { DiscordWebSocket } from "./DiscordRichPresence";
-import { NotificationManager } from "./NotificationManager";
-import { KxsClientSecondaryMenu } from "./ClientSecondaryMenuRework";
-import { KxsLegacyClientSecondaryMenu } from "./LegacyClientSecondaryMenu";
+import { UpdateChecker } from "./FUNC/UpdateChecker";
+import { DiscordWebSocket } from "./SERVER/DiscordRichPresence";
+import { NotificationManager } from "./HUD/MOD/NotificationManager";
+import { KxsClientSecondaryMenu } from "./HUD/ClientSecondaryMenuRework";
+import { KxsLegacyClientSecondaryMenu } from "./HUD/LegacyClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
 import { background_song, death_sound, full_logo, win_sound } from ".";
-import { KxsClientHUD } from "./ClientHUD";
-import { Logger } from "./Logger";
+import { KxsClientHUD } from "./HUD/ClientHUD";
+import { Logger } from "./FUNC/Logger";
 import { SteganoDB } from "stegano.db/lib/browser";
+import config from "../config.json";
+import { GameHistoryMenu } from "./HUD/HistoryManager";
 
 export default class KxsClient {
 	lastFrameTime: DOMHighResTimeStamp;
@@ -61,6 +63,7 @@ export default class KxsClient {
 	hud: KxsClientHUD;
 	logger: Logger;
 	db: SteganoDB;
+	historyManager: GameHistoryMenu;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -69,7 +72,7 @@ export default class KxsClient {
 
 	constructor() {
 		this.logger = new Logger();
-		this.config = require("../config.json");
+		this.config = config;
 		this.menu = document.createElement("div");
 		this.lastFrameTime = performance.now();
 		this.isFpsUncapped = false;
@@ -124,6 +127,7 @@ export default class KxsClient {
 		this.updater = new UpdateChecker(this);
 		this.kill_leader = new KillLeaderTracker(this);
 		this.healWarning = new HealthWarning(this);
+		this.historyManager = new GameHistoryMenu(this);
 
 		this.setAnimationFrameCallback();
 		this.loadBackgroundFromLocalStorage();

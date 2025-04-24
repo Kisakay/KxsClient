@@ -1,5 +1,5 @@
-import { kxs_logo } from ".";
-import KxsClient from "./KxsClient";
+import { kxs_logo } from "../";
+import KxsClient from "../KxsClient";
 
 interface GameResult {
 	username: string;

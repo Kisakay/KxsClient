@@ -1,4 +1,4 @@
-import { PlayerStats } from "./types/types";
+import { PlayerStats } from "../types/types";
 class StatsParser {
 	private static cleanNumber(str: string): number {
 		return parseInt(str.replace(/[^\d.-]/g, "")) || 0;

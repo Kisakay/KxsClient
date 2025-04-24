@@ -1,5 +1,5 @@
-import KxsClient from "./KxsClient";
-const packageInfo = require('../package.json');
+import KxsClient from "../KxsClient";
+import packageInfo from "../../package.json";
 
 class DiscordWebSocket {
 	private ws: WebSocket | null = null;

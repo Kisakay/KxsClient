@@ -1,4 +1,4 @@
-import KxsClient from "./KxsClient";
+import KxsClient from "../../KxsClient";
 
 class HealthWarning {
 	private warningElement: HTMLDivElement | null;
@@ -23,7 +23,7 @@ class HealthWarning {
 		const warning = document.createElement("div");
 		const uiTopLeft = document.getElementById("ui-top-left");
 
-		warning.style.cssText = `
+		warning.style.cssText = `š
             position: fixed;
             background: rgba(0, 0, 0, 0.8);
             border: 2px solid #ff0000;
