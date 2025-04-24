@@ -23,7 +23,7 @@ class HealthWarning {
 		const warning = document.createElement("div");
 		const uiTopLeft = document.getElementById("ui-top-left");
 
-		warning.style.cssText = `š
+		warning.style.cssText = `
             position: fixed;
             background: rgba(0, 0, 0, 0.8);
             border: 2px solid #ff0000;
