@@ -14,6 +14,7 @@ import { SoundLibrary } from "./types/SoundLibrary";
 import { background_song, death_sound, full_logo, win_sound } from ".";
 import { KxsClientHUD } from "./ClientHUD";
 import { Logger } from "./Logger";
+import { SteganoDB } from "stegano.db/lib/browser";
 
 export default class KxsClient {
 	lastFrameTime: DOMHighResTimeStamp;
@@ -59,6 +60,7 @@ export default class KxsClient {
 	soundLibrary: SoundLibrary;
 	hud: KxsClientHUD;
 	logger: Logger;
+	db: SteganoDB;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -112,7 +114,7 @@ export default class KxsClient {
 		};
 
 		this.gridSystem = new GridSystem();
-
+		this.db = new SteganoDB({ database: "KxsClient", tableName: "gameplay_history" });
 		// Before all, load local storage
 		this.loadLocalStorage();
 		this.changeSurvevLogo();
@@ -278,8 +280,7 @@ export default class KxsClient {
 		}
 
 		const stats = this.getPlayerStats(false);
-
-		await this.discordTracker.trackGameEnd({
+		const body = {
 			username: stats.username,
 			kills: stats.kills,
 			damageDealt: stats.damageDealt,
@@ -287,7 +288,10 @@ export default class KxsClient {
 			duration: stats.duration,
 			position: stats.position,
 			isWin: false,
-		});
+		};
+
+		await this.discordTracker.trackGameEnd(body);
+		this.db.set(new Date().toISOString(), body);
 	}
 
 	private async handlePlayerWin(): Promise<void> {
@@ -296,8 +300,7 @@ export default class KxsClient {
 		}
 
 		const stats = this.getPlayerStats(true);
-
-		await this.discordTracker.trackGameEnd({
+		const body = {
 			username: stats.username,
 			kills: stats.kills,
 			damageDealt: stats.damageDealt,
@@ -318,7 +321,10 @@ export default class KxsClient {
 				chest: document.querySelector("#ui-armor-chest .ui-armor-level")?.textContent,
 				helmet: document.querySelector("#ui-armor-helmet .ui-armor-level")?.textContent,
 			}
-		});
+		};
+
+		await this.discordTracker.trackGameEnd(body);
+		this.db.set(new Date().toISOString(), body);
 	}
 
 	felicitation() {

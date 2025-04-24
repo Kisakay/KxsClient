@@ -16,13 +16,14 @@
 	"devDependencies": {
 		"@types/semver": "^7.7.0",
 		"@types/tampermonkey": "^5.0.4",
-		"ts-loader": "^9.5.1",
-		"typescript": "^5.7.2",
-		"webpack": "^5.97.1",
+		"ts-loader": "^9.5.2",
+		"typescript": "^5.8.3",
+		"webpack": "^5.99.6",
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
 		"semver": "^7.7.1",
+		"stegano.db": "^4.3.7",
 		"ws": "^8.18.1"
 	}
 }
