@@ -274,6 +274,17 @@ class KxsLegacyClientSecondaryMenu {
 			},
 		});
 
+		let miscSection = this.addSection("Misc");
+
+		this.addOption(miscSection, {
+			label: "Gameplay History",
+			value: true,
+			type: "click",
+			onChange: (value) => {
+				this.kxsClient.historyManager.show();
+			},
+		});
+
 		let musicSection = this.addSection("Music");
 
 		this.addOption(musicSection, {
