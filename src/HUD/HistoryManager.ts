@@ -9,18 +9,6 @@ class GameHistoryMenu {
 		this.kxsClient = kxsClient;
 		this.container = document.createElement('div');
 		this.closeBtn = document.createElement('button');
-
-		// Initialize container style
-		this.initContainer();
-
-		// Add close button
-		this.addCloseButton();
-
-		// Add header with title
-		this.addHeader();
-
-		// Load and display game history
-		this.renderContent();
 	}
 
 
@@ -308,6 +296,22 @@ class GameHistoryMenu {
 	}
 
 	public show() {
+		// Recréer le conteneur pour un contenu frais
+		this.container = document.createElement('div');
+		this.closeBtn = document.createElement('button');
+
+		// Réinitialiser le conteneur
+		this.initContainer();
+
+		// Ajouter le bouton de fermeture
+		this.addCloseButton();
+
+		// Ajouter l'en-tête avec le titre
+		this.addHeader();
+
+		// Charger et afficher l'historique des jeux actualisé
+		this.renderContent();
+
 		// Close RSHIFT menu if it's open
 		if (this.kxsClient.secondaryMenu && typeof this.kxsClient.secondaryMenu.getMenuVisibility === 'function') {
 			if (this.kxsClient.secondaryMenu.getMenuVisibility()) {
