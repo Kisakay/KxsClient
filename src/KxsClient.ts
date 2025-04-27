@@ -20,6 +20,12 @@ import { GameHistoryMenu } from "./HUD/HistoryManager";
 import { KxsNetwork } from "./NETWORK/KxsNetwork";
 
 export default class KxsClient {
+	private chatInput: HTMLInputElement | null = null;
+	private chatBox: HTMLDivElement | null = null;
+	private chatMessages: { user: string, text: string }[] = [];
+	private chatOpen = false;
+	private onlineMenuElement: HTMLDivElement | null = null;
+	private onlineMenuInterval: number | null = null;
 	lastFrameTime: DOMHighResTimeStamp;
 
 	// configuration
@@ -154,6 +160,8 @@ export default class KxsClient {
 
 		this.MainMenuCleaning();
 		this.kxsNetwork.connect();
+		this.createOnlineMenu();
+		this.initGlobalChat();
 	}
 
 	parseToken(token: string | null): string | null {
@@ -180,6 +188,167 @@ export default class KxsClient {
 		}
 	}
 
+
+	private createOnlineMenu() {
+		// Cherche le div #start-overlay
+		const overlay = document.getElementById('start-overlay');
+		if (!overlay) return;
+		// Crée le menu
+		const menu = document.createElement('div');
+		menu.id = 'kxs-online-menu';
+		menu.style.position = 'absolute';
+		menu.style.top = '18px';
+		menu.style.right = '18px';
+		menu.style.background = 'rgba(30,30,40,0.92)';
+		menu.style.color = '#fff';
+		menu.style.padding = '8px 18px';
+		menu.style.borderRadius = '12px';
+		menu.style.boxShadow = '0 2px 8px rgba(0,0,0,0.18)';
+		menu.style.fontSize = '15px';
+		menu.style.zIndex = '999';
+		menu.style.userSelect = 'none';
+		menu.style.pointerEvents = 'auto';
+		menu.style.fontFamily = 'inherit';
+		menu.style.display = 'flex';
+		menu.style.alignItems = 'center';
+		menu.innerHTML = `
+			<span id="kxs-online-dot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#3fae2a;margin-right:10px;box-shadow:0 0 8px #3fae2a;animation:kxs-pulse 1s infinite alternate;"></span>
+			<b></b> <span id="kxs-online-count">...</span>
+		`;
+		// Ajoute l'animation CSS
+		if (!document.getElementById('kxs-online-style')) {
+			const style = document.createElement('style');
+			style.id = 'kxs-online-style';
+			style.innerHTML = `
+			@keyframes kxs-pulse {
+				0% { box-shadow:0 0 8px #3fae2a; opacity: 1; }
+				100% { box-shadow:0 0 16px #3fae2a; opacity: 0.6; }
+			}
+			`;
+			document.head.appendChild(style);
+		}
+		overlay.appendChild(menu);
+		this.onlineMenuElement = menu;
+		this.updateOnlineMenu();
+		this.onlineMenuInterval = window.setInterval(() => this.updateOnlineMenu(), 2000);
+	}
+
+	private async updateOnlineMenu() {
+		if (!this.onlineMenuElement) return;
+		const countEl = this.onlineMenuElement.querySelector('#kxs-online-count');
+		const dot = this.onlineMenuElement.querySelector('#kxs-online-dot') as HTMLElement;
+		try {
+			const res = await this.kxsNetwork.getOnlineCount();
+			const count = typeof res.count === 'number' ? res.count : '?';
+			if (countEl) countEl.textContent = `${count} Kxs users`;
+			if (dot) {
+				dot.style.background = '#3fae2a';
+				dot.style.boxShadow = '0 0 8px #3fae2a';
+				dot.style.animation = 'kxs-pulse 1s infinite alternate';
+			}
+		} catch (e) {
+			if (countEl) countEl.textContent = 'API offline';
+			if (dot) {
+				dot.style.background = '#888';
+				dot.style.boxShadow = 'none';
+				dot.style.animation = '';
+			}
+		}
+	}
+
+	private initGlobalChat() {
+		const area = document.getElementById('game-touch-area');
+		if (!area) return;
+		// Chat box
+		const chatBox = document.createElement('div');
+		chatBox.id = 'kxs-chat-box';
+		chatBox.style.position = 'absolute';
+		chatBox.style.left = '50%';
+		chatBox.style.bottom = '38px';
+		chatBox.style.transform = 'translateX(-50%)';
+		chatBox.style.minWidth = '260px';
+		chatBox.style.maxWidth = '480px';
+		chatBox.style.background = 'rgba(30,30,40,0.80)';
+		chatBox.style.color = '#fff';
+		chatBox.style.borderRadius = '10px';
+		chatBox.style.padding = '7px 14px 4px 14px';
+		chatBox.style.fontSize = '15px';
+		chatBox.style.fontFamily = 'inherit';
+		chatBox.style.zIndex = '1002';
+		chatBox.style.pointerEvents = 'none';
+		chatBox.style.display = 'flex';
+		chatBox.style.flexDirection = 'column';
+		chatBox.style.gap = '3px';
+		area.appendChild(chatBox);
+		this.chatBox = chatBox;
+		// Input
+		const input = document.createElement('input');
+		input.type = 'text';
+		input.placeholder = 'Press T to write...';
+		input.id = 'kxs-chat-input';
+		input.style.position = 'absolute';
+		input.style.left = '50%';
+		input.style.bottom = '8px';
+		input.style.transform = 'translateX(-50%)';
+		input.style.width = '320px';
+		input.style.padding = '8px 12px';
+		input.style.borderRadius = '8px';
+		input.style.border = 'none';
+		input.style.background = 'rgba(40,40,50,0.95)';
+		input.style.color = '#fff';
+		input.style.fontSize = '15px';
+		input.style.fontFamily = 'inherit';
+		input.style.zIndex = '1003';
+		input.style.outline = 'none';
+		input.style.display = 'none';
+		area.appendChild(input);
+		this.chatInput = input;
+		// Gestion clavier
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 't' && !this.chatOpen && document.activeElement !== input) {
+				e.preventDefault();
+				this.openChatInput();
+			} else if (e.key === 'Escape' && this.chatOpen) {
+				this.closeChatInput();
+			}
+		});
+		input.addEventListener('keydown', (e) => {
+			e.stopImmediatePropagation();
+			e.stopPropagation();
+			if (e.key === 'Enter') {
+				const txt = input.value.trim();
+				if (txt) this.kxsNetwork.sendGlobalChatMessage(txt);
+				input.value = '';
+				this.closeChatInput();
+			} else if (e.key === 'Escape') {
+				this.closeChatInput();
+			}
+			e.stopPropagation();
+		});
+	}
+
+	private openChatInput() {
+		if (!this.chatInput) return;
+		this.chatInput.style.display = '';
+		this.chatInput.focus();
+		this.chatOpen = true;
+	}
+
+	private closeChatInput() {
+		if (!this.chatInput) return;
+		this.chatInput.style.display = 'none';
+		this.chatInput.blur();
+		this.chatOpen = false;
+	}
+
+	public addChatMessage(user: string, text: string) {
+		if (!this.chatBox) return;
+		this.chatMessages.push({ user, text });
+		if (this.chatMessages.length > 5) this.chatMessages.shift();
+		if (this.chatBox) {
+			this.chatBox.innerHTML = this.chatMessages.map(m => `<span><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</span>`).join('');
+		}
+	}
 
 	private detectDeviceType(): "mobile" | "tablet" | "desktop" {
 		const ua = navigator.userAgent;
