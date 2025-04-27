@@ -1,4 +1,4 @@
-import { kxs_logo } from "../";
+import { kxs_logo } from "../UTILS/vars";
 import KxsClient from "../KxsClient";
 
 interface GameResult {

@@ -11,12 +11,13 @@ import { NotificationManager } from "./HUD/MOD/NotificationManager";
 import { KxsClientSecondaryMenu } from "./HUD/ClientSecondaryMenuRework";
 import { KxsLegacyClientSecondaryMenu } from "./HUD/LegacyClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
-import { background_song, death_sound, full_logo, win_sound } from ".";
+import { background_song, death_sound, full_logo, win_sound } from "./UTILS/vars";
 import { KxsClientHUD } from "./HUD/ClientHUD";
 import { Logger } from "./FUNC/Logger";
 import { SteganoDB } from "stegano.db/lib/browser";
 import config from "../config.json";
 import { GameHistoryMenu } from "./HUD/HistoryManager";
+import { KxsNetwork } from "./NETWORK/KxsNetwork";
 
 export default class KxsClient {
 	lastFrameTime: DOMHighResTimeStamp;
@@ -64,6 +65,7 @@ export default class KxsClient {
 	logger: Logger;
 	db: SteganoDB;
 	historyManager: GameHistoryMenu;
+	kxsNetwork: KxsNetwork;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -71,6 +73,8 @@ export default class KxsClient {
 		| undefined;
 
 	constructor() {
+		globalThis.kxsClient = this;
+
 		this.logger = new Logger();
 		this.config = config;
 		this.menu = document.createElement("div");
@@ -128,6 +132,7 @@ export default class KxsClient {
 		this.kill_leader = new KillLeaderTracker(this);
 		this.healWarning = new HealthWarning(this);
 		this.historyManager = new GameHistoryMenu(this);
+		this.kxsNetwork = new KxsNetwork(this);
 
 		this.setAnimationFrameCallback();
 		this.loadBackgroundFromLocalStorage();
@@ -148,6 +153,7 @@ export default class KxsClient {
 		}
 
 		this.MainMenuCleaning();
+		this.kxsNetwork.connect();
 	}
 
 	parseToken(token: string | null): string | null {

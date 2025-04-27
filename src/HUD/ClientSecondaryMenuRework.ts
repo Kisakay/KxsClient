@@ -1,4 +1,4 @@
-import { background_image, full_logo, kxs_logo } from "..";
+import { background_image, kxs_logo } from "../UTILS/vars";
 import { KxsLegacyClientSecondaryMenu } from "./LegacyClientSecondaryMenu";
 import KxsClient from "../KxsClient";
 
