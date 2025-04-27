@@ -279,6 +279,7 @@ export default class KxsClient {
 		chatBox.style.display = 'flex';
 		chatBox.style.flexDirection = 'column';
 		chatBox.style.gap = '3px';
+		chatBox.style.opacity = '0.5';
 		area.appendChild(chatBox);
 		this.chatBox = chatBox;
 		// Input
@@ -301,6 +302,7 @@ export default class KxsClient {
 		input.style.zIndex = '1003';
 		input.style.outline = 'none';
 		input.style.display = 'none';
+		input.style.opacity = '0.5';
 		area.appendChild(input);
 		this.chatInput = input;
 
@@ -324,7 +326,7 @@ export default class KxsClient {
 
 		// Gestion clavier
 		window.addEventListener('keydown', (e) => {
-			if (e.key === 't' && !this.chatOpen && document.activeElement !== input) {
+			if (e.key === 'Enter' && !this.chatOpen && document.activeElement !== input) {
 				e.preventDefault();
 				this.openChatInput();
 			} else if (e.key === 'Escape' && this.chatOpen) {
