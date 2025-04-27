@@ -275,17 +275,20 @@ export default class KxsClient {
 		chatBox.style.fontSize = '15px';
 		chatBox.style.fontFamily = 'inherit';
 		chatBox.style.zIndex = '1002';
-		chatBox.style.pointerEvents = 'none';
+		chatBox.style.pointerEvents = 'auto';
+		chatBox.style.cursor = 'move'; // Indique que c'est déplaçable
 		chatBox.style.display = 'flex';
 		chatBox.style.flexDirection = 'column';
 		chatBox.style.gap = '3px';
 		chatBox.style.opacity = '0.5';
 		area.appendChild(chatBox);
 		this.chatBox = chatBox;
+		// Rendre la chatbox draggable
+		this.makeDraggable(chatBox, 'kxs-chat-box-position');
 		// Input
 		const input = document.createElement('input');
 		input.type = 'text';
-		input.placeholder = 'Press T to write...';
+		input.placeholder = 'Press Enter to write...';
 		input.id = 'kxs-chat-input';
 		input.style.position = 'absolute';
 		input.style.left = '50%';
