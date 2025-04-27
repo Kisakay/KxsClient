@@ -303,6 +303,25 @@ export default class KxsClient {
 		input.style.display = 'none';
 		area.appendChild(input);
 		this.chatInput = input;
+
+		['keydown', 'keypress', 'keyup'].forEach(eventType => {
+			input.addEventListener(eventType, (e) => {
+				const ke = e as KeyboardEvent;
+				if (eventType === 'keydown') {
+					if (ke.key === 'Enter') {
+						const txt = input.value.trim();
+						if (txt) this.kxsNetwork.sendGlobalChatMessage(txt);
+						input.value = '';
+						this.closeChatInput();
+					} else if (ke.key === 'Escape') {
+						this.closeChatInput();
+					}
+				}
+				e.stopImmediatePropagation();
+				e.stopPropagation();
+			}, true);
+		});
+
 		// Gestion clavier
 		window.addEventListener('keydown', (e) => {
 			if (e.key === 't' && !this.chatOpen && document.activeElement !== input) {
@@ -312,19 +331,7 @@ export default class KxsClient {
 				this.closeChatInput();
 			}
 		});
-		input.addEventListener('keydown', (e) => {
-			e.stopImmediatePropagation();
-			e.stopPropagation();
-			if (e.key === 'Enter') {
-				const txt = input.value.trim();
-				if (txt) this.kxsNetwork.sendGlobalChatMessage(txt);
-				input.value = '';
-				this.closeChatInput();
-			} else if (e.key === 'Escape') {
-				this.closeChatInput();
-			}
-			e.stopPropagation();
-		});
+
 	}
 
 	private openChatInput() {
