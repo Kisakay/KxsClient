@@ -1,6 +1,6 @@
 {
 	"base_url": "https://kxs.rip",
-	"api_url": "http://127.0.0.1:4560",
+	"api_url": "https://network.kxs.rip",
 	"fileName": "KxsClient.user.js",
 	"match": [
 		"*://survev.io/*",

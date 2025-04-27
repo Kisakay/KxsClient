@@ -120,7 +120,7 @@ class KxsNetwork {
 
 			case 7: // Global chat message
 				if (data.d && data.d.user && data.d.text) {
-					this.kxsClient.addChatMessage(data.d.user, data.d.text);
+					this.kxsClient.chat.addChatMessage(data.d.user, data.d.text);
 				}
 				break;
 			case 10: // Hello

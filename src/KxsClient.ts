@@ -18,12 +18,9 @@ import { SteganoDB } from "stegano.db/lib/browser";
 import config from "../config.json";
 import { GameHistoryMenu } from "./HUD/HistoryManager";
 import { KxsNetwork } from "./NETWORK/KxsNetwork";
+import { KxsChat } from "./UTILS/KxsChat";
 
 export default class KxsClient {
-	private chatInput: HTMLInputElement | null = null;
-	private chatBox: HTMLDivElement | null = null;
-	private chatMessages: { user: string, text: string }[] = [];
-	private chatOpen = false;
 	private onlineMenuElement: HTMLDivElement | null = null;
 	private onlineMenuInterval: number | null = null;
 	lastFrameTime: DOMHighResTimeStamp;
@@ -72,6 +69,7 @@ export default class KxsClient {
 	db: SteganoDB;
 	historyManager: GameHistoryMenu;
 	kxsNetwork: KxsNetwork;
+	chat: KxsChat;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -139,6 +137,7 @@ export default class KxsClient {
 		this.healWarning = new HealthWarning(this);
 		this.historyManager = new GameHistoryMenu(this);
 		this.kxsNetwork = new KxsNetwork(this);
+		this.chat = new KxsChat(this);
 
 		this.setAnimationFrameCallback();
 		this.loadBackgroundFromLocalStorage();
@@ -161,7 +160,6 @@ export default class KxsClient {
 		this.MainMenuCleaning();
 		this.kxsNetwork.connect();
 		this.createOnlineMenu();
-		this.initGlobalChat();
 	}
 
 	parseToken(token: string | null): string | null {
@@ -253,112 +251,6 @@ export default class KxsClient {
 				dot.style.boxShadow = 'none';
 				dot.style.animation = '';
 			}
-		}
-	}
-
-	private initGlobalChat() {
-		const area = document.getElementById('game-touch-area');
-		if (!area) return;
-		// Chat box
-		const chatBox = document.createElement('div');
-		chatBox.id = 'kxs-chat-box';
-		chatBox.style.position = 'absolute';
-		chatBox.style.left = '50%';
-		chatBox.style.bottom = '38px';
-		chatBox.style.transform = 'translateX(-50%)';
-		chatBox.style.minWidth = '260px';
-		chatBox.style.maxWidth = '480px';
-		chatBox.style.background = 'rgba(30,30,40,0.80)';
-		chatBox.style.color = '#fff';
-		chatBox.style.borderRadius = '10px';
-		chatBox.style.padding = '7px 14px 4px 14px';
-		chatBox.style.fontSize = '15px';
-		chatBox.style.fontFamily = 'inherit';
-		chatBox.style.zIndex = '1002';
-		chatBox.style.pointerEvents = 'auto';
-		chatBox.style.cursor = 'move'; // Indique que c'est déplaçable
-		chatBox.style.display = 'flex';
-		chatBox.style.flexDirection = 'column';
-		chatBox.style.gap = '3px';
-		chatBox.style.opacity = '0.5';
-		area.appendChild(chatBox);
-		this.chatBox = chatBox;
-		// Rendre la chatbox draggable
-		this.makeDraggable(chatBox, 'kxs-chat-box-position');
-		// Input
-		const input = document.createElement('input');
-		input.type = 'text';
-		input.placeholder = 'Press Enter to write...';
-		input.id = 'kxs-chat-input';
-		input.style.position = 'absolute';
-		input.style.left = '50%';
-		input.style.bottom = '8px';
-		input.style.transform = 'translateX(-50%)';
-		input.style.width = '320px';
-		input.style.padding = '8px 12px';
-		input.style.borderRadius = '8px';
-		input.style.border = 'none';
-		input.style.background = 'rgba(40,40,50,0.95)';
-		input.style.color = '#fff';
-		input.style.fontSize = '15px';
-		input.style.fontFamily = 'inherit';
-		input.style.zIndex = '1003';
-		input.style.outline = 'none';
-		input.style.display = 'none';
-		input.style.opacity = '0.5';
-		area.appendChild(input);
-		this.chatInput = input;
-
-		['keydown', 'keypress', 'keyup'].forEach(eventType => {
-			input.addEventListener(eventType, (e) => {
-				const ke = e as KeyboardEvent;
-				if (eventType === 'keydown') {
-					if (ke.key === 'Enter') {
-						const txt = input.value.trim();
-						if (txt) this.kxsNetwork.sendGlobalChatMessage(txt);
-						input.value = '';
-						this.closeChatInput();
-					} else if (ke.key === 'Escape') {
-						this.closeChatInput();
-					}
-				}
-				e.stopImmediatePropagation();
-				e.stopPropagation();
-			}, true);
-		});
-
-		// Gestion clavier
-		window.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter' && !this.chatOpen && document.activeElement !== input) {
-				e.preventDefault();
-				this.openChatInput();
-			} else if (e.key === 'Escape' && this.chatOpen) {
-				this.closeChatInput();
-			}
-		});
-
-	}
-
-	private openChatInput() {
-		if (!this.chatInput) return;
-		this.chatInput.style.display = '';
-		this.chatInput.focus();
-		this.chatOpen = true;
-	}
-
-	private closeChatInput() {
-		if (!this.chatInput) return;
-		this.chatInput.style.display = 'none';
-		this.chatInput.blur();
-		this.chatOpen = false;
-	}
-
-	public addChatMessage(user: string, text: string) {
-		if (!this.chatBox) return;
-		this.chatMessages.push({ user, text });
-		if (this.chatMessages.length > 5) this.chatMessages.shift();
-		if (this.chatBox) {
-			this.chatBox.innerHTML = this.chatMessages.map(m => `<span><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</span>`).join('');
 		}
 	}
 
