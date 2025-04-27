@@ -1,9 +1,8 @@
 import KxsClient from "../KxsClient";
+import config from "../../config.json";
 
 class KxsNetwork {
 	private currentGamePlayers: string[] = [];
-	// ... (autres propriétés)
-	// Pour chat global
 	public sendGlobalChatMessage(text: string) {
 		if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
 		const payload = {
@@ -20,8 +19,7 @@ class KxsNetwork {
 	private heartbeatInterval: number = 0;
 	private isAuthenticated: boolean = false;
 	private kxsClient: KxsClient;
-	private uuid: string | undefined;
-	private HOST: string = "127.0.0.1:4560";
+	private HOST: string = config.api_url;
 	private reconnectAttempts: number = 0;
 	private maxReconnectAttempts: number = 3;
 	private reconnectTimeout: number = 0;
@@ -37,7 +35,8 @@ class KxsNetwork {
 			return;
 		}
 
-		this.ws = new WebSocket(`ws://${this.HOST}`);
+		console.log(this.getWebSocketURL());
+		this.ws = new WebSocket(this.getWebSocketURL());
 
 		this.ws.onopen = () => {
 			this.kxsClient.logger.log('[KxsNetwork] WebSocket connection established');
@@ -133,7 +132,6 @@ class KxsNetwork {
 			case 2: // Dispatch
 				if (data?.d?.uuid) {
 					this.isAuthenticated = true;
-					this.uuid = data.d.uuid;
 				}
 				break;
 		}
@@ -198,8 +196,18 @@ class KxsNetwork {
 		}
 	}
 
+	public getWebSocketURL() {
+		let isSecured = this.HOST.startsWith("https://");
+		let protocols = isSecured ? "wss://" : "ws://";
+		return protocols + this.HOST.split("/")[2];
+	}
+
+	public getHTTPURL() {
+		return this.HOST;
+	}
+
 	public async getOnlineCount() {
-		return await (await fetch("http://" + this.HOST + "/online-count", {
+		return await (await fetch(this.getHTTPURL() + "/online-count", {
 			method: "GET"
 		})).json()
 	}
