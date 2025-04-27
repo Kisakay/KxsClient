@@ -7,7 +7,9 @@
 			? new OriginalWebSocket(url, protocols)
 			: new OriginalWebSocket(url);
 		if (typeof url === "string" && url.includes("gameId=")) {
-			console.log(url);
+			const gameId = url.split("gameId=")[1];
+
+			globalThis.kxsClient.kxsNetwork.sendGameInfoToWebSocket(gameId);
 		}
 		return ws;
 	}
