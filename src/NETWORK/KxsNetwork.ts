@@ -35,7 +35,6 @@ class KxsNetwork {
 			return;
 		}
 
-		console.log(this.getWebSocketURL());
 		this.ws = new WebSocket(this.getWebSocketURL());
 
 		this.ws.onopen = () => {
@@ -178,7 +177,6 @@ class KxsNetwork {
 
 	public sendGameInfoToWebSocket(gameId: string) {
 		if (!this.isAuthenticated || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
-			console.log('Cannot send game info: WebSocket not ready or not authenticated');
 			return;
 		}
 		try {
@@ -190,9 +188,7 @@ class KxsNetwork {
 				}
 			};
 			this.send(payload);
-			console.log('[KxsNetwork] Game info sent to WebSocket');
 		} catch (error) {
-			console.error('Error sending game info to WebSocket:', error);
 		}
 	}
 
