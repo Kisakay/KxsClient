@@ -310,6 +310,16 @@ class KxsLegacyClientSecondaryMenu {
 		let pluginsSection = this.addSection("Plugins");
 
 		this.addOption(pluginsSection, {
+			label: "Voice Chat",
+			value: this.kxsClient.isVoiceChatEnabled,
+			type: "toggle",
+			onChange: () => {
+				this.kxsClient.isVoiceChatEnabled = !this.kxsClient.isVoiceChatEnabled;
+				this.kxsClient.voiceChat.toggleVoiceChat();
+			},
+		});
+
+		this.addOption(pluginsSection, {
 			label: "Webhook URL",
 			value: this.kxsClient.discordWebhookUrl || "",
 			type: "input",
