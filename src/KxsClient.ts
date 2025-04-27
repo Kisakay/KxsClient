@@ -72,6 +72,7 @@ export default class KxsClient {
 	kxsNetwork: KxsNetwork;
 	chat: KxsChat;
 	voiceChat: KxsVoiceChat;
+	isVoiceChatEnabled: boolean;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -107,6 +108,7 @@ export default class KxsClient {
 		this.customCrosshair = null;
 		this.isGunBorderChromatic = false;
 
+		this.isVoiceChatEnabled = false;
 		this.isFocusModeEnabled = false;
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
@@ -305,7 +307,8 @@ export default class KxsClient {
 				soundLibrary: this.soundLibrary,
 				customCrosshair: this.customCrosshair,
 				isGunOverlayColored: this.isGunOverlayColored,
-				isGunBorderChromatic: this.isGunBorderChromatic
+				isGunBorderChromatic: this.isGunBorderChromatic,
+				isVoiceChatEnabled: this.isVoiceChatEnabled
 			}),
 		);
 	};
@@ -752,6 +755,7 @@ export default class KxsClient {
 			this.customCrosshair = savedSettings.customCrosshair ?? this.customCrosshair;
 			this.isGunOverlayColored = savedSettings.isGunOverlayColored ?? this.isGunOverlayColored;
 			this.isGunBorderChromatic = savedSettings.isGunBorderChromatic ?? this.isGunBorderChromatic;
+			this.isVoiceChatEnabled = savedSettings.isVoiceChatEnabled ?? this.isVoiceChatEnabled;
 
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists

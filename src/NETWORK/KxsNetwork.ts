@@ -96,6 +96,7 @@ class KxsNetwork {
 			op: 2,
 			d: {
 				username: this.getUsername(),
+				isVoiceChat: this.kxsClient.isVoiceChatEnabled
 			}
 		};
 		this.send(payload);

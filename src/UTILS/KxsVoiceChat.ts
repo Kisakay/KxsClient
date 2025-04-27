@@ -8,7 +8,6 @@ class KxsVoiceChat {
 	private micStream: MediaStream | null = null;
 	private micSource: MediaStreamAudioSourceNode | null = null;
 	private processor: ScriptProcessorNode | null = null;
-	private isActive: boolean = false;
 
 	constructor(kxsClient: KxsClient, kxsNetwork: KxsNetwork) {
 		this.kxsClient = kxsClient;
@@ -16,8 +15,8 @@ class KxsVoiceChat {
 	}
 
 	public async startVoiceChat() {
-		if (this.isActive) return;
-		this.isActive = true;
+		if (!this.kxsClient.isVoiceChatEnabled) return;
+		this.cleanup();
 		try {
 			this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
 			this.micStream = await navigator.mediaDevices.getUserMedia({
@@ -73,12 +72,11 @@ class KxsVoiceChat {
 			});
 
 			this.kxsNetwork.ws!.onopen = () => {
-				console.log("WebSocket connecté, flux audio actif");
-				this.showNotification('Chat vocal connecté ✓');
+				this.kxsClient.nm.showNotification('Chat vocal connecté ✓', 'success', 3000);
 			};
 
 			this.kxsNetwork.ws!.onclose = () => {
-				console.log("WebSocket fermé");
+				this.kxsClient.nm.showNotification('Chat vocal déconnecté X', 'error', 3000);
 				this.cleanup();
 			};
 
@@ -90,7 +88,6 @@ class KxsVoiceChat {
 	}
 
 	public stopVoiceChat() {
-		this.isActive = false;
 		this.cleanup();
 	}
 
@@ -113,23 +110,15 @@ class KxsVoiceChat {
 		}
 	}
 
-	private showNotification(message: string) {
-		const notification = document.createElement('div');
-		notification.style.position = 'fixed';
-		notification.style.bottom = '20px';
-		notification.style.right = '20px';
-		notification.style.padding = '10px';
-		notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-		notification.style.color = 'white';
-		notification.style.borderRadius = '5px';
-		notification.style.zIndex = '9999';
-		notification.textContent = message;
-		document.body.appendChild(notification);
-		setTimeout(() => {
-			notification.style.opacity = '0';
-			notification.style.transition = 'opacity 1s';
-			setTimeout(() => notification.remove(), 1000);
-		}, 5000);
+	public toggleVoiceChat() {
+		if (this.kxsClient.isVoiceChatEnabled) {
+			this.kxsNetwork.ws?.send(JSON.stringify({
+
+			}));
+			this.startVoiceChat();
+		} else {
+			this.stopVoiceChat();
+		}
 	}
 }
 
