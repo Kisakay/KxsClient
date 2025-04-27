@@ -45,6 +45,8 @@ export default class KxsClient {
 	isGunOverlayColored: boolean;
 	isGunBorderChromatic: boolean;
 	isFocusModeEnabled: boolean;
+	isVoiceChatEnabled: boolean;
+
 	all_friends: string;
 	customCrosshair: string | null;
 
@@ -72,7 +74,6 @@ export default class KxsClient {
 	kxsNetwork: KxsNetwork;
 	chat: KxsChat;
 	voiceChat: KxsVoiceChat;
-	isVoiceChatEnabled: boolean;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:

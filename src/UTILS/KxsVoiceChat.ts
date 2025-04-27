@@ -113,11 +113,20 @@ class KxsVoiceChat {
 	public toggleVoiceChat() {
 		if (this.kxsClient.isVoiceChatEnabled) {
 			this.kxsNetwork.ws?.send(JSON.stringify({
-
+				op: 98,
+				d: {
+					isVoiceChat: true
+				}
 			}));
 			this.startVoiceChat();
 		} else {
 			this.stopVoiceChat();
+			this.kxsNetwork.ws?.send(JSON.stringify({
+				op: 98,
+				d: {
+					isVoiceChat: false
+				}
+			}));
 		}
 	}
 }

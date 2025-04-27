@@ -476,6 +476,7 @@ class KxsClientSecondaryMenu {
 			type: "toggle",
 			onChange: () => {
 				this.kxsClient.isVoiceChatEnabled = !this.kxsClient.isVoiceChatEnabled;
+				this.kxsClient.updateLocalStorage();
 				this.kxsClient.voiceChat.toggleVoiceChat();
 			},
 		});
