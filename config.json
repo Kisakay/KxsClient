@@ -1,6 +1,6 @@
 {
 	"base_url": "https://kxs.rip",
-	"api_url": "https://network.kxs.rip",
+	"api_url": "http://127.0.0.1:4560",
 	"fileName": "KxsClient.user.js",
 	"match": [
 		"*://survev.io/*",
@@ -17,11 +17,6 @@
 		"*://survev.leia-is.gay/*"
 	],
 	"grant": [
-		"GM_xmlhttpRequest",
-		"GM_info",
-		"GM.getValue",
-		"GM.setValue",
-		"GM.runAt",
 		"none"
 	]
 }

@@ -5,7 +5,7 @@ import packageInfo from "../../package.json";
 import config from "../../config.json";
 
 class UpdateChecker {
-	private readonly remoteScriptUrl = config.base_url + "/download/latest-dev.js";
+	private readonly remoteScriptUrl = config.api_url + "/getLatestVersion";
 	kxsClient: KxsClient;
 	hostedScriptVersion: string | undefined;
 
@@ -18,72 +18,55 @@ class UpdateChecker {
 	}
 
 	private async downloadScript(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			GM.xmlHttpRequest({
+		try {
+			const response: Response = await fetch(this.remoteScriptUrl, {
 				method: "GET",
-				url: this.remoteScriptUrl,
 				headers: {
-					"Cache-Control": "no-cache, no-store, must-revalidate",
-					"Pragma": "no-cache",
-					"Expires": "0"
-				},
-				nocache: true,
-				responseType: "blob",
-				onload: (response) => {
-					if (response.status === 200) {
-						const blob = new Blob([response.response], { type: 'application/javascript' });
-
-						const downloadUrl = window.URL.createObjectURL(blob);
-						const downloadLink = document.createElement('a');
-						downloadLink.href = downloadUrl;
-						downloadLink.download = 'KxsClient.user.js';
-
-						document.body.appendChild(downloadLink);
-						downloadLink.click();
-
-						document.body.removeChild(downloadLink);
-						window.URL.revokeObjectURL(downloadUrl);
-						resolve();
-					} else {
-						reject(new Error("Error downloading script: " + response.statusText));
-					}
-				},
-				onerror: (error: any) => {
-					reject(new Error("Error during script download: " + error));
+					"cache-control": "no-cache, no-store, must-revalidate",
+					"pragma": "no-cache",
+					"expires": "0"
 				}
 			});
-		});
+			if (!response.ok) {
+				throw new Error("Error downloading script: " + response.statusText);
+			}
+			const blob = await response.blob();
+			const downloadUrl = window.URL.createObjectURL(blob);
+			const downloadLink = document.createElement('a');
+			downloadLink.href = downloadUrl;
+			downloadLink.download = 'KxsClient.user.js';
+			document.body.appendChild(downloadLink);
+			downloadLink.click();
+			document.body.removeChild(downloadLink);
+			window.URL.revokeObjectURL(downloadUrl);
+		} catch (error: any) {
+			throw new Error("Error during script download: " + error);
+		}
 	}
 
 	private async getNewScriptVersion(): Promise<string> {
-		return new Promise((resolve, reject) => {
-			GM.xmlHttpRequest({
+		try {
+			const response: Response = await fetch(this.remoteScriptUrl, {
 				method: "GET",
-				url: this.remoteScriptUrl,
 				headers: {
-					"Cache-Control": "no-cache, no-store, must-revalidate",
-					"Pragma": "no-cache",
-					"Expires": "0"
-				},
-				nocache: true,
-				onload: (response) => {
-					if (response.status === 200) {
-						const scriptContent = response.responseText;
-						const versionMatch = scriptContent.match(/\/\/\s*@version\s+([\d.]+)/);
-						if (versionMatch && versionMatch[1]) {
-							resolve(versionMatch[1]);
-						} else {
-							reject(new Error("Script version was not found in the file."));
-						}
-					} else {
-						reject(new Error("Error retrieving remote script: " + response.statusText));
-					}
-				},
-				onerror: (error: any) => {
-					reject(new Error("Error during remote script request: " + error));
+					"cache-control": "no-cache, no-store, must-revalidate",
+					"pragma": "no-cache",
+					"expires": "0"
 				}
 			});
-		});
+			if (!response.ok) {
+				throw new Error("Error retrieving remote script: " + response.statusText);
+			}
+			const scriptContent = await response.text();
+			const versionMatch = scriptContent.match(/\/\/\s*@version\s+([\d.]+)/);
+			if (versionMatch && versionMatch[1]) {
+				return versionMatch[1];
+			} else {
+				throw new Error("Script version was not found in the file.");
+			}
+		} catch (error: any) {
+			throw new Error("Error retrieving remote script: " + error);
+		}
 	}
 
 	private async checkForUpdate() {
