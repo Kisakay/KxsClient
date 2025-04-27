@@ -15,7 +15,7 @@ class KxsNetwork {
 		this.send(payload);
 	}
 
-	private ws: WebSocket | null = null;
+	public ws: WebSocket | null = null;
 	private heartbeatInterval: number = 0;
 	private isAuthenticated: boolean = false;
 	private kxsClient: KxsClient;

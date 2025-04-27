@@ -19,6 +19,7 @@ import config from "../config.json";
 import { GameHistoryMenu } from "./HUD/HistoryManager";
 import { KxsNetwork } from "./NETWORK/KxsNetwork";
 import { KxsChat } from "./UTILS/KxsChat";
+import { KxsVoiceChat } from "./UTILS/KxsVoiceChat";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
@@ -70,6 +71,7 @@ export default class KxsClient {
 	historyManager: GameHistoryMenu;
 	kxsNetwork: KxsNetwork;
 	chat: KxsChat;
+	voiceChat: KxsVoiceChat;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -152,6 +154,7 @@ export default class KxsClient {
 
 		this.discordTracker = new DiscordTracking(this, this.discordWebhookUrl!);
 		this.chat = new KxsChat(this);
+		this.voiceChat = new KxsVoiceChat(this, this.kxsNetwork);
 
 		if (this.isSpotifyPlayerEnabled) {
 			this.createSimpleSpotifyPlayer();
@@ -160,6 +163,8 @@ export default class KxsClient {
 		this.MainMenuCleaning();
 		this.kxsNetwork.connect();
 		this.createOnlineMenu();
+
+		this.voiceChat.startVoiceChat();
 	}
 
 	parseToken(token: string | null): string | null {

@@ -1,19 +1,21 @@
 import KxsClient from "../KxsClient";
+import { KxsNetwork } from "../NETWORK/KxsNetwork";
 
 class KxsVoiceChat {
 	private kxsClient: KxsClient;
-	private ws: WebSocket | null = null;
+	private kxsNetwork: KxsNetwork;
 	private audioCtx: AudioContext | null = null;
 	private micStream: MediaStream | null = null;
 	private micSource: MediaStreamAudioSourceNode | null = null;
 	private processor: ScriptProcessorNode | null = null;
 	private isActive: boolean = false;
 
-	constructor(kxsClient: KxsClient) {
+	constructor(kxsClient: KxsClient, kxsNetwork: KxsNetwork) {
 		this.kxsClient = kxsClient;
+		this.kxsNetwork = kxsNetwork;
 	}
 
-	public async startVoiceChat(wsUrl: string) {
+	public async startVoiceChat() {
 		if (this.isActive) return;
 		this.isActive = true;
 		try {
@@ -33,21 +35,19 @@ class KxsVoiceChat {
 			this.micSource.connect(this.processor);
 			this.processor.connect(this.audioCtx.destination);
 
-			this.ws = new WebSocket(wsUrl);
-
 			// --- ENVOI AUDIO ---
 			this.processor.onaudioprocess = (e) => {
-				if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+				if (!this.kxsNetwork.ws || this.kxsNetwork.ws.readyState !== WebSocket.OPEN) return;
 				const input = e.inputBuffer.getChannelData(0);
 				const int16 = new Int16Array(input.length);
 				for (let i = 0; i < input.length; i++) {
 					int16[i] = Math.max(-32768, Math.min(32767, input[i] * 32767));
 				}
-				this.ws.send(JSON.stringify({ op: 98, d: Array.from(int16) }));
+				this.kxsNetwork.ws!.send(JSON.stringify({ op: 99, d: Array.from(int16) }));
 			};
 
 			// --- RECEPTION & LECTURE ---
-			this.ws.addEventListener('message', (msg) => {
+			this.kxsNetwork.ws!.addEventListener('message', (msg) => {
 				let parsed: any;
 				try {
 					parsed = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
@@ -72,12 +72,12 @@ class KxsVoiceChat {
 				}
 			});
 
-			this.ws.onopen = () => {
+			this.kxsNetwork.ws!.onopen = () => {
 				console.log("WebSocket connecté, flux audio actif");
 				this.showNotification('Chat vocal connecté ✓');
 			};
 
-			this.ws.onclose = () => {
+			this.kxsNetwork.ws!.onclose = () => {
 				console.log("WebSocket fermé");
 				this.cleanup();
 			};
@@ -91,10 +91,6 @@ class KxsVoiceChat {
 
 	public stopVoiceChat() {
 		this.isActive = false;
-		if (this.ws) {
-			this.ws.close();
-			this.ws = null;
-		}
 		this.cleanup();
 	}
 
@@ -137,3 +133,6 @@ class KxsVoiceChat {
 	}
 }
 
+export {
+	KxsVoiceChat
+}
