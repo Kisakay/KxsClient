@@ -48,10 +48,42 @@ class KxsChat {
 		chatBox.style.flexDirection = 'column';
 		chatBox.style.gap = '3px';
 		chatBox.style.opacity = '0.5';
+
+		// Charger la position sauvegardée dès l'initialisation
+		const savedPosition = localStorage.getItem('kxs-chat-box-position');
+		if (savedPosition) {
+			try {
+				const { x, y } = JSON.parse(savedPosition);
+				chatBox.style.left = `${x}px`;
+				chatBox.style.top = `${y}px`;
+				chatBox.style.position = 'absolute';
+			} catch (e) { }
+		}
+
 		area.appendChild(chatBox);
 		this.chatBox = chatBox;
-		// Rendre la chatbox draggable
-		this.kxsClient.makeDraggable(chatBox, 'kxs-chat-box-position');
+		// Rendre la chatbox draggable UNIQUEMENT si le menu secondaire est ouvert
+		const updateChatDraggable = () => {
+			const isMenuOpen = this.kxsClient.secondaryMenu.getMenuVisibility()
+
+			if (isMenuOpen) {
+				chatBox.style.pointerEvents = 'auto';
+				chatBox.style.cursor = 'move';
+				this.kxsClient.makeDraggable(chatBox, 'kxs-chat-box-position');
+			} else {
+				chatBox.style.pointerEvents = 'none';
+				chatBox.style.cursor = 'default';
+			}
+		};
+		// Initial state
+		updateChatDraggable();
+		// Observe menu changes
+		const observer = new MutationObserver(updateChatDraggable);
+		if (this.kxsClient.secondaryMenu && this.kxsClient.secondaryMenu.menu) {
+			observer.observe(this.kxsClient.secondaryMenu.menu, { attributes: true, attributeFilter: ['style', 'class'] });
+		}
+		// Optionnel : timer pour fallback (si le menu est modifié autrement)
+		setInterval(updateChatDraggable, 500);
 		// Input
 		const input = document.createElement('input');
 		input.type = 'text';

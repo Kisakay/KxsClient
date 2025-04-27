@@ -12,6 +12,8 @@ import config from "../config.json";
 intercept("audio/ambient/menu_music_01.mp3", background_song);
 intercept('img/survev_logo_full.png', full_logo);
 
+const kxsClient = new KxsClient();
+
 const loadingScreen = new LoadingScreen(kxs_logo);
 loadingScreen.show();
 
@@ -50,5 +52,4 @@ if (startBottomMiddle) {
 
 setTimeout(() => {
 	loadingScreen.hide();
-	const kxsClient = new KxsClient();
 }, 1400);

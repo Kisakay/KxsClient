@@ -137,7 +137,6 @@ export default class KxsClient {
 		this.healWarning = new HealthWarning(this);
 		this.historyManager = new GameHistoryMenu(this);
 		this.kxsNetwork = new KxsNetwork(this);
-		this.chat = new KxsChat(this);
 
 		this.setAnimationFrameCallback();
 		this.loadBackgroundFromLocalStorage();
@@ -152,6 +151,7 @@ export default class KxsClient {
 		}
 
 		this.discordTracker = new DiscordTracking(this, this.discordWebhookUrl!);
+		this.chat = new KxsChat(this);
 
 		if (this.isSpotifyPlayerEnabled) {
 			this.createSimpleSpotifyPlayer();
