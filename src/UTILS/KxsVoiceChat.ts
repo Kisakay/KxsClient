@@ -6,6 +6,7 @@ interface VoiceChatUser {
 	isActive: boolean;
 	lastActivity: number;
 	audioLevel: number;
+	isMuted?: boolean;
 }
 
 class KxsVoiceChat {
@@ -29,6 +30,7 @@ class KxsVoiceChat {
 	// Overlay elements
 	private overlayContainer: HTMLElement | null = null;
 	private activeUsers: Map<string, VoiceChatUser> = new Map();
+	private mutedUsers: Set<string> = new Set();
 	private activityCheckInterval: number | null = null;
 	private isOverlayVisible: boolean = true;
 
@@ -302,6 +304,7 @@ class KxsVoiceChat {
 
 	// Update the overlay UI with current users
 	private updateOverlayUI() {
+		const self = this;
 		if (!this.overlayContainer || !this.isOverlayVisible) return;
 
 		const usersContainer = document.getElementById('kxs-voice-chat-users');
@@ -321,6 +324,8 @@ class KxsVoiceChat {
 			usersContainer.appendChild(noUsers);
 		} else {
 			this.activeUsers.forEach((user) => {
+				const isMuted = !!user.isMuted;
+
 				const userElement = document.createElement('div');
 				userElement.className = 'kxs-voice-chat-user';
 				userElement.style.display = 'flex';
@@ -330,27 +335,45 @@ class KxsVoiceChat {
 				userElement.style.borderRadius = '3px';
 				userElement.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
 
-				// Status indicator
+				// Status indicator (mute clickable)
 				const indicator = document.createElement('div');
-				indicator.style.width = '10px';
-				indicator.style.height = '10px';
+				indicator.style.width = '14px';
+				indicator.style.height = '14px';
 				indicator.style.borderRadius = '50%';
 				indicator.style.marginRight = '8px';
+				indicator.style.cursor = 'pointer';
+				indicator.title = isMuted ? 'Unmute' : 'Mute';
 
-				// Set color based on activity
-				if (user.isActive) {
-					// Green indicator when active
+				if (isMuted) {
+					indicator.style.backgroundColor = '#e74c3c'; // rouge pour mute
+					indicator.style.boxShadow = '0 0 6px #e74c3c';
+					indicator.innerHTML = '<svg width="10" height="10"><line x1="0" y1="0" x2="10" y2="10" stroke="#fff" stroke-width="2"/><line x1="10" y1="0" x2="0" y2="10" stroke="#fff" stroke-width="2"/></svg>';
+				} else if (user.isActive) {
 					indicator.style.backgroundColor = '#2ecc71';
-
-					// Pulsating effect based on audio level
-					const scale = 1 + Math.min(user.audioLevel * 3, 1); // Max scale 2x
+					const scale = 1 + Math.min(user.audioLevel * 3, 1);
 					indicator.style.transform = `scale(${scale})`;
 					indicator.style.boxShadow = `0 0 5px #2ecc71`;
 					indicator.style.transition = 'transform 0.1s ease-in-out';
+					indicator.innerHTML = '';
 				} else {
-					// Gray indicator when inactive
 					indicator.style.backgroundColor = '#7f8c8d';
+					indicator.innerHTML = '';
 				}
+
+				// Gestion du clic pour mute/unmute
+				indicator.addEventListener('click', function (e) {
+					console.log("Je veux mute ce gros fdp, test")
+					e.stopPropagation();
+					const newMuted = !isMuted;
+					user.isMuted = newMuted;
+					if (newMuted) {
+						self.mutedUsers.add(user.username);
+					} else {
+						self.mutedUsers.delete(user.username);
+					}
+					self.sendMuteState(user.username, newMuted);
+					self.updateOverlayUI();
+				});
 
 				// Username label
 				const usernameLabel = document.createElement('span');
@@ -364,6 +387,18 @@ class KxsVoiceChat {
 				userElement.appendChild(usernameLabel);
 				usersContainer.appendChild(userElement);
 			});
+		}
+	}
+	// Envoie la requête mute/unmute au serveur
+	private sendMuteState(username: string, isMuted: boolean) {
+		if (this.kxsNetwork.ws && this.kxsNetwork.ws.readyState === WebSocket.OPEN) {
+			this.kxsNetwork.ws.send(JSON.stringify({
+				op: 100,
+				d: {
+					user: username,
+					isMuted: isMuted
+				}
+			}));
 		}
 	}
 }
