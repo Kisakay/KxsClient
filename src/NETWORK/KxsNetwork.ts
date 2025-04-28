@@ -121,7 +121,7 @@ class KxsNetwork {
 					// Détecter les nouveaux joueurs (hors soi-même)
 					const newPlayers = currentPlayers.filter((name: string) => !previousPlayers.includes(name));
 					for (const newPlayer of newPlayers) {
-						this.kxsClient.nm.showNotification(`🎉 ${newPlayer} is a Kxs player!`, 'info', 1500);
+						this.kxsClient.nm.showNotification(`🎉 ${newPlayer} is a Kxs player!`, 'info', 3500);
 					}
 					this.currentGamePlayers = currentPlayers;
 				}
