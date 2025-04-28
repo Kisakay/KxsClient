@@ -153,8 +153,7 @@ class KxsNetwork {
 				break;
 			case 98: // VOICE CHAT UPDATE
 				{
-					console.log("j'ai bien reçcu un truc enculer mdr ");
-					if (d && d.isVoiceChat && d.user) {
+					if (d && !d.isVoiceChat && d.user) {
 						this.kxsClient.voiceChat.removeUserFromVoice(d.user);
 					}
 				}
