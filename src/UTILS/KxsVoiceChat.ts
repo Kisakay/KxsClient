@@ -6,7 +6,7 @@ interface VoiceChatUser {
 	isActive: boolean;
 	lastActivity: number;
 	audioLevel: number;
-	isMuted?: boolean;
+	isMuted: boolean;
 }
 
 class KxsVoiceChat {
@@ -84,6 +84,11 @@ class KxsVoiceChat {
 				}
 				if (!parsed || parsed.op !== 99 || !parsed.d || !parsed.u) return;
 				try {
+					// Vérifier si l'utilisateur est muté
+					if (this.mutedUsers.has(parsed.u)) {
+						return; // Ne pas jouer l'audio si l'utilisateur est muté
+					}
+
 					const int16Data = new Int16Array(parsed.d);
 					const floatData = new Float32Array(int16Data.length);
 
@@ -174,7 +179,6 @@ class KxsVoiceChat {
 				}
 			}));
 		}
-
 	}
 
 	// Create the overlay container for voice chat users
@@ -261,7 +265,8 @@ class KxsVoiceChat {
 				username,
 				isActive: isActive,
 				lastActivity: now,
-				audioLevel: audioLevel
+				audioLevel: audioLevel,
+				isMuted: this.mutedUsers.has(username) // Initialiser l'état muté
 			};
 			this.activeUsers.set(username, user);
 		} else {
@@ -269,6 +274,7 @@ class KxsVoiceChat {
 			user.isActive = isActive;
 			user.lastActivity = now;
 			user.audioLevel = audioLevel;
+			user.isMuted = this.mutedUsers.has(username);
 		}
 
 		// Update UI
@@ -344,11 +350,7 @@ class KxsVoiceChat {
 				indicator.style.cursor = 'pointer';
 				indicator.title = isMuted ? 'Unmute' : 'Mute';
 
-				if (isMuted) {
-					indicator.style.backgroundColor = '#e74c3c'; // rouge pour mute
-					indicator.style.boxShadow = '0 0 6px #e74c3c';
-					indicator.innerHTML = '<svg width="10" height="10"><line x1="0" y1="0" x2="10" y2="10" stroke="#fff" stroke-width="2"/><line x1="10" y1="0" x2="0" y2="10" stroke="#fff" stroke-width="2"/></svg>';
-				} else if (user.isActive) {
+				if (user.isActive) {
 					indicator.style.backgroundColor = '#2ecc71';
 					const scale = 1 + Math.min(user.audioLevel * 3, 1);
 					indicator.style.transform = `scale(${scale})`;
@@ -360,21 +362,6 @@ class KxsVoiceChat {
 					indicator.innerHTML = '';
 				}
 
-				// Gestion du clic pour mute/unmute
-				indicator.addEventListener('click', function (e) {
-					console.log("Je veux mute ce gros fdp, test")
-					e.stopPropagation();
-					const newMuted = !isMuted;
-					user.isMuted = newMuted;
-					if (newMuted) {
-						self.mutedUsers.add(user.username);
-					} else {
-						self.mutedUsers.delete(user.username);
-					}
-					self.sendMuteState(user.username, newMuted);
-					self.updateOverlayUI();
-				});
-
 				// Username label
 				const usernameLabel = document.createElement('span');
 				usernameLabel.textContent = user.username;
@@ -383,14 +370,73 @@ class KxsVoiceChat {
 				usernameLabel.style.overflow = 'hidden';
 				usernameLabel.style.textOverflow = 'ellipsis';
 
+				// Bouton mute explicite
+				const muteButton = document.createElement('button');
+				muteButton.style.backgroundColor = user.isMuted ? '#e74c3c' : '#7f8c8d';
+				muteButton.style.color = 'white';
+				muteButton.style.border = 'none';
+				muteButton.style.borderRadius = '3px';
+				muteButton.style.padding = '2px 5px';
+				muteButton.style.marginLeft = '5px';
+				muteButton.style.cursor = 'pointer';
+				muteButton.style.fontSize = '11px';
+				muteButton.style.fontWeight = 'bold';
+				muteButton.style.minWidth = '40px';
+				muteButton.textContent = user.isMuted ? 'UNMUTE' : 'MUTE';
+
+				muteButton.onmouseover = function (e) {
+					(e.currentTarget as HTMLButtonElement).style.opacity = '0.8';
+				};
+				muteButton.onmouseout = function (e) {
+					(e.currentTarget as HTMLButtonElement).style.opacity = '1';
+				};
+				// Gérer le clic sur le bouton mute
+				muteButton.onclick = function (e) {
+					console.log('[DEBUG] Bouton MUTE cliqué pour', user.username);
+					e.stopPropagation();
+					e.preventDefault();
+
+					// Toggle the mute state
+					const newMutedState = !user.isMuted;
+					user.isMuted = newMutedState;
+
+					console.log('[DEBUG] Nouveau mute state:', newMutedState);
+
+					// Update the set of muted users
+					if (newMutedState) {
+						self.mutedUsers.add(user.username);
+					} else {
+						self.mutedUsers.delete(user.username);
+					}
+
+					// Send the mute state to the server
+					console.log('[DEBUG] Appel sendMuteState pour', user.username, newMutedState);
+					self.sendMuteState(user.username, newMutedState);
+
+					// Update the UI to reflect the change
+					self.updateOverlayUI();
+
+					console.log(`${user.username} is now ${newMutedState ? 'muted' : 'unmuted'}`);
+				};
+
+				// Ajouter les éléments au conteneur utilisateur
 				userElement.appendChild(indicator);
 				userElement.appendChild(usernameLabel);
+				userElement.appendChild(muteButton);
 				usersContainer.appendChild(userElement);
 			});
 		}
 	}
+
 	// Envoie la requête mute/unmute au serveur
 	private sendMuteState(username: string, isMuted: boolean) {
+		console.log('[DEBUG] sendMuteState appelé:', username, isMuted);
+		if (!this.kxsNetwork.ws) {
+			console.warn('[DEBUG] Pas de WebSocket disponible');
+		}
+		else if (this.kxsNetwork.ws.readyState !== WebSocket.OPEN) {
+			console.warn('[DEBUG] WebSocket pas ouverte');
+		}
 		if (this.kxsNetwork.ws && this.kxsNetwork.ws.readyState === WebSocket.OPEN) {
 			this.kxsNetwork.ws.send(JSON.stringify({
 				op: 100,
