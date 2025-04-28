@@ -349,10 +349,17 @@ export default class KxsClient {
 		nodes.forEach((node) => {
 			if (node instanceof HTMLElement) {
 				const deathTitle = node.querySelector(".ui-stats-header-title");
+				const deathTitle_2 = node.querySelector(".ui-stats-title");
+
 				if (loseArray.some((word) => deathTitle?.textContent?.toLowerCase().includes(word))) {
+					this.kxsNetwork.gameEnded();
 					this.handlePlayerDeath();
 				} else if (winArray.some((word) => deathTitle?.textContent?.toLowerCase().includes(word))) {
+					this.kxsNetwork.gameEnded();
 					this.handlePlayerWin();
+				} else if (deathTitle_2?.textContent?.toLowerCase().includes("result")) {
+					this.kxsNetwork.gameEnded();
+					this.handlePlayerDeath();
 				}
 			}
 		});

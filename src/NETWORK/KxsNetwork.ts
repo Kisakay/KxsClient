@@ -218,6 +218,11 @@ class KxsNetwork {
 	public getOnlineCount() {
 		return this.kxsUsers;
 	}
+
+	public gameEnded() {
+		this.ws?.send(JSON.stringify({ op: 4, d: {} }));
+	}
+
 }
 
 export {
