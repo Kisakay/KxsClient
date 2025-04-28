@@ -447,7 +447,6 @@ class KxsVoiceChat {
 			minWidth: '40px'
 		});
 
-		// FIX: Use proper event listeners instead of property assignments
 		muteButton.addEventListener('mouseover', () => {
 			muteButton.style.opacity = '0.8';
 		});
@@ -456,30 +455,49 @@ class KxsVoiceChat {
 			muteButton.style.opacity = '1';
 		});
 
-		// FIX: Create proper event listener for click to handle mute/unmute
-		muteButton.addEventListener('click', (e) => {
+		const handleMuteToggle = (e: Event) => {
+			e.stopImmediatePropagation();
 			e.stopPropagation();
 			e.preventDefault();
 
-			// Toggle the mute state
 			const newMutedState = !user.isMuted;
 			user.isMuted = newMutedState;
 
-			// Update muted users collection
 			if (newMutedState) {
 				this.mutedUsers.add(user.username);
 			} else {
 				this.mutedUsers.delete(user.username);
 			}
 
-			// Send mute state to server
 			this.sendMuteState(user.username, newMutedState);
 
-			// Update UI
 			this.updateOverlayUI();
-
 			console.log(`${user.username} is now ${newMutedState ? 'muted' : 'unmuted'}`);
+			return false;
+		};
+
+		['click', 'mousedown', 'pointerdown'].forEach(eventType => {
+			muteButton.addEventListener(eventType, handleMuteToggle, true);
 		});
+
+		muteButton.onclick = (e: MouseEvent) => {
+			e.stopImmediatePropagation();
+			e.stopPropagation();
+			e.preventDefault();
+
+			const newMutedState = !user.isMuted;
+			user.isMuted = newMutedState;
+
+			if (newMutedState) {
+				this.mutedUsers.add(user.username);
+			} else {
+				this.mutedUsers.delete(user.username);
+			}
+
+			this.sendMuteState(user.username, newMutedState);
+			this.updateOverlayUI();
+			return false;
+		};
 
 		return muteButton;
 	}
