@@ -322,7 +322,7 @@ class KxsVoiceChat {
 		// Add users
 		if (this.activeUsers.size === 0) {
 			const noUsers = document.createElement('div');
-			noUsers.textContent = 'Aucun utilisateur actif';
+			noUsers.textContent = 'No active users';
 			noUsers.style.color = 'rgba(255, 255, 255, 0.6)';
 			noUsers.style.fontStyle = 'italic';
 			noUsers.style.textAlign = 'center';
