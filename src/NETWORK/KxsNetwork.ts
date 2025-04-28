@@ -24,6 +24,7 @@ class KxsNetwork {
 	private maxReconnectAttempts: number = 3;
 	private reconnectTimeout: number = 0;
 	private reconnectDelay: number = 15000; // Initial reconnect delay of 1 second
+	private kxsUsers: number = 0;
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
@@ -104,6 +105,13 @@ class KxsNetwork {
 
 	private handleMessage(data: any) {
 		switch (data.op) {
+			case 1: //Heart
+				{
+					if (data?.d?.count) {
+						this.kxsUsers = data.d.count;
+					}
+				}
+				break;
 			case 3: // Kxs user join game
 				if (data.d && Array.isArray(data.d.players)) {
 					const myName = this.getUsername();
@@ -125,13 +133,17 @@ class KxsNetwork {
 				}
 				break;
 			case 10: // Hello
-				const { heartbeat_interval } = data.d;
-				this.startHeartbeat(heartbeat_interval);
-				this.identify();
+				{
+					const { heartbeat_interval } = data.d;
+					this.startHeartbeat(heartbeat_interval);
+					this.identify();
+				}
 				break;
 			case 2: // Dispatch
-				if (data?.d?.uuid) {
-					this.isAuthenticated = true;
+				{
+					if (data?.d?.uuid) {
+						this.isAuthenticated = true;
+					}
 				}
 				break;
 		}
@@ -204,9 +216,7 @@ class KxsNetwork {
 	}
 
 	public async getOnlineCount() {
-		return await (await fetch(this.getHTTPURL() + "/online-count", {
-			method: "GET"
-		})).json()
+		return this.kxsUsers;
 	}
 }
 
