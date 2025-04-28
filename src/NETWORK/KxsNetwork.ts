@@ -103,46 +103,59 @@ class KxsNetwork {
 		this.send(payload);
 	}
 
-	private handleMessage(data: any) {
-		switch (data.op) {
+	private handleMessage(_data: any) {
+		const { op, d } = _data;
+		switch (op) {
 			case 1: //Heart
 				{
-					if (data?.d?.count) {
-						this.kxsUsers = data.d.count;
+					if (d?.count) {
+						this.kxsUsers = d.count;
 					}
 				}
 				break;
 			case 3: // Kxs user join game
-				if (data.d && Array.isArray(data.d.players)) {
-					const myName = this.getUsername();
-					const previousPlayers = this.currentGamePlayers;
-					const currentPlayers = data.d.players.filter((name: string) => name !== myName);
+				{
+					if (d && Array.isArray(d.players)) {
+						const myName = this.getUsername();
+						const previousPlayers = this.currentGamePlayers;
+						const currentPlayers = d.players.filter((name: string) => name !== myName);
 
-					// Détecter les nouveaux joueurs (hors soi-même)
-					const newPlayers = currentPlayers.filter((name: string) => !previousPlayers.includes(name));
-					for (const newPlayer of newPlayers) {
-						this.kxsClient.nm.showNotification(`🎉 ${newPlayer} is a Kxs player!`, 'info', 3500);
+						// Détecter les nouveaux joueurs (hors soi-même)
+						const newPlayers = currentPlayers.filter((name: string) => !previousPlayers.includes(name));
+						for (const newPlayer of newPlayers) {
+							this.kxsClient.nm.showNotification(`🎉 ${newPlayer} is a Kxs player!`, 'info', 3500);
+						}
+						this.currentGamePlayers = currentPlayers;
 					}
-					this.currentGamePlayers = currentPlayers;
 				}
 				break;
 
 			case 7: // Global chat message
-				if (data.d && data.d.user && data.d.text) {
-					this.kxsClient.chat.addChatMessage(data.d.user, data.d.text);
+				{
+					if (d && d.user && d.text) {
+						this.kxsClient.chat.addChatMessage(d.user, d.text);
+					}
 				}
 				break;
 			case 10: // Hello
 				{
-					const { heartbeat_interval } = data.d;
+					const { heartbeat_interval } = d;
 					this.startHeartbeat(heartbeat_interval);
 					this.identify();
 				}
 				break;
 			case 2: // Dispatch
 				{
-					if (data?.d?.uuid) {
+					if (d?.uuid) {
 						this.isAuthenticated = true;
+					}
+				}
+				break;
+			case 98: // VOICE CHAT UPDATE
+				{
+					console.log("j'ai bien reçcu un truc enculer mdr ");
+					if (d && d.isVoiceChat && d.user) {
+						this.kxsClient.voiceChat.removeUserFromVoice(d.user);
 					}
 				}
 				break;

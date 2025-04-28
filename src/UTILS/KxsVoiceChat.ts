@@ -9,6 +9,16 @@ interface VoiceChatUser {
 }
 
 class KxsVoiceChat {
+	/**
+	 * Retire un utilisateur du voice chat (ex: lors d'un mute)
+	 */
+	public removeUserFromVoice(username: string) {
+		if (this.activeUsers.has(username)) {
+			this.activeUsers.delete(username);
+			this.updateOverlayUI();
+		}
+	}
+
 	private kxsClient: KxsClient;
 	private kxsNetwork: KxsNetwork;
 	private audioCtx: AudioContext | null = null;
