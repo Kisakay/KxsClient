@@ -53,7 +53,7 @@ class KxsVoiceChat {
 				} catch {
 					return;
 				}
-				if (!parsed || parsed.op !== 99 || !parsed.d) return;
+				if (!parsed || parsed.op !== 99 || !parsed.d || !parsed.u) return;
 				try {
 					const int16Data = new Int16Array(parsed.d);
 					const floatData = new Float32Array(int16Data.length);
