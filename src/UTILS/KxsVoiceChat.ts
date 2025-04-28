@@ -10,16 +10,6 @@ interface VoiceChatUser {
 }
 
 class KxsVoiceChat {
-	/**
-	 * Retire un utilisateur du voice chat (ex: lors d'un mute)
-	 */
-	public removeUserFromVoice(username: string) {
-		if (this.activeUsers.has(username)) {
-			this.activeUsers.delete(username);
-			this.updateOverlayUI();
-		}
-	}
-
 	private kxsClient: KxsClient;
 	private kxsNetwork: KxsNetwork;
 	private audioCtx: AudioContext | null = null;
@@ -34,18 +24,34 @@ class KxsVoiceChat {
 	private activityCheckInterval: number | null = null;
 	private isOverlayVisible: boolean = true;
 
+	// Constants
+	private readonly ACTIVITY_THRESHOLD = 0.01;
+	private readonly INACTIVITY_TIMEOUT = 2000;
+	private readonly REMOVAL_TIMEOUT = 30000;
+	private readonly ACTIVITY_CHECK_INTERVAL = 500;
+
 	constructor(kxsClient: KxsClient, kxsNetwork: KxsNetwork) {
 		this.kxsClient = kxsClient;
 		this.kxsNetwork = kxsNetwork;
-
-		// Create overlay container
 		this.createOverlayContainer();
 	}
 
-	public async startVoiceChat() {
+	/**
+	 * Remove a user from voice chat (e.g., when muted)
+	 */
+	public removeUserFromVoice(username: string): void {
+		if (this.activeUsers.has(username)) {
+			this.activeUsers.delete(username);
+			this.updateOverlayUI();
+		}
+	}
+
+	public async startVoiceChat(): Promise<void> {
 		if (!this.kxsClient.isVoiceChatEnabled) return;
+
 		this.cleanup();
 		this.showOverlay();
+
 		try {
 			this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
 			this.micStream = await navigator.mediaDevices.getUserMedia({
@@ -57,194 +63,214 @@ class KxsVoiceChat {
 					autoGainControl: true
 				}
 			});
+
 			this.micSource = this.audioCtx.createMediaStreamSource(this.micStream);
 			this.processor = this.audioCtx.createScriptProcessor(2048, 1, 1);
 
 			this.micSource.connect(this.processor);
 			this.processor.connect(this.audioCtx.destination);
 
-			// --- ENVOI AUDIO ---
-			this.processor.onaudioprocess = (e) => {
-				if (!this.kxsNetwork.ws || this.kxsNetwork.ws.readyState !== WebSocket.OPEN) return;
-				const input = e.inputBuffer.getChannelData(0);
-				const int16 = new Int16Array(input.length);
-				for (let i = 0; i < input.length; i++) {
-					int16[i] = Math.max(-32768, Math.min(32767, input[i] * 32767));
-				}
-				this.kxsNetwork.ws!.send(JSON.stringify({ op: 99, d: Array.from(int16) }));
-			};
-
-			// --- RECEPTION & LECTURE ---
-			this.kxsNetwork.ws!.addEventListener('message', (msg) => {
-				let parsed: any;
-				try {
-					parsed = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
-				} catch {
-					return;
-				}
-				if (!parsed || parsed.op !== 99 || !parsed.d || !parsed.u) return;
-				try {
-					// Vérifier si l'utilisateur est muté
-					if (this.mutedUsers.has(parsed.u)) {
-						return; // Ne pas jouer l'audio si l'utilisateur est muté
-					}
-
-					const int16Data = new Int16Array(parsed.d);
-					const floatData = new Float32Array(int16Data.length);
-
-					// Calculate audio level for visualization
-					let audioLevel = 0;
-					for (let i = 0; i < int16Data.length; i++) {
-						floatData[i] = int16Data[i] / 32767;
-						// Calculate RMS (Root Mean Square) for audio level
-						audioLevel += floatData[i] * floatData[i];
-					}
-					audioLevel = Math.sqrt(audioLevel / int16Data.length);
-
-					// Update user activity in the overlay
-					this.updateUserActivity(parsed.u, audioLevel);
-
-					const buffer = this.audioCtx!.createBuffer(1, floatData.length, this.audioCtx!.sampleRate);
-					buffer.getChannelData(0).set(floatData);
-					const source = this.audioCtx!.createBufferSource();
-					source.buffer = buffer;
-					source.connect(this.audioCtx!.destination);
-					source.start();
-				} catch (error) {
-					console.error("Erreur lors du traitement audio:", error);
-				}
-			});
-
-			this.kxsNetwork.ws!.onopen = () => {
-				this.kxsClient.nm.showNotification('Chat vocal connecté ✓', 'success', 3000);
-			};
-
-			this.kxsNetwork.ws!.onclose = () => {
-				this.kxsClient.nm.showNotification('Chat vocal déconnecté X', 'error', 3000);
-				this.cleanup();
-			};
+			// Set up audio processing
+			this.setupAudioProcessing();
+			this.setupWebSocketListeners();
 
 		} catch (error: any) {
-			console.error("Erreur d'initialisation du chat vocal:", error);
-			alert("Impossible d'initialiser le chat vocal: " + error.message);
+			console.error("Voice chat initialization error:", error);
+			alert("Unable to initialize voice chat: " + error.message);
 			this.cleanup();
 		}
 	}
 
-	public stopVoiceChat() {
+	private setupAudioProcessing(): void {
+		if (!this.processor) return;
+
+		this.processor.onaudioprocess = (e) => {
+			if (!this.kxsNetwork.ws || this.kxsNetwork.ws.readyState !== WebSocket.OPEN) return;
+
+			const input = e.inputBuffer.getChannelData(0);
+			const int16 = new Int16Array(input.length);
+
+			for (let i = 0; i < input.length; i++) {
+				int16[i] = Math.max(-32768, Math.min(32767, input[i] * 32767));
+			}
+
+			this.kxsNetwork.ws.send(JSON.stringify({ op: 99, d: Array.from(int16) }));
+		};
+	}
+
+	private setupWebSocketListeners(): void {
+		if (!this.kxsNetwork.ws) return;
+
+		this.kxsNetwork.ws.addEventListener('message', this.handleAudioMessage.bind(this));
+
+		this.kxsNetwork.ws.onopen = () => {
+			this.kxsClient.nm.showNotification('Voice chat connected ✓', 'success', 3000);
+		};
+
+		this.kxsNetwork.ws.onclose = () => {
+			this.kxsClient.nm.showNotification('Voice chat disconnected X', 'error', 3000);
+			this.cleanup();
+		};
+	}
+
+	private handleAudioMessage(msg: MessageEvent): void {
+		let parsed: any;
+		try {
+			parsed = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
+		} catch {
+			return;
+		}
+
+		if (!parsed || parsed.op !== 99 || !parsed.d || !parsed.u) return;
+
+		try {
+			// Skip if user is muted
+			if (this.mutedUsers.has(parsed.u)) return;
+
+			const int16Data = new Int16Array(parsed.d);
+			const floatData = new Float32Array(int16Data.length);
+
+			// Calculate audio level for visualization
+			let audioLevel = 0;
+			for (let i = 0; i < int16Data.length; i++) {
+				floatData[i] = int16Data[i] / 32767;
+				audioLevel += floatData[i] * floatData[i];
+			}
+			audioLevel = Math.sqrt(audioLevel / int16Data.length);
+
+			// Update user activity in the overlay
+			this.updateUserActivity(parsed.u, audioLevel);
+
+			// Play the audio
+			this.playAudio(floatData);
+
+		} catch (error) {
+			console.error("Audio processing error:", error);
+		}
+	}
+
+	private playAudio(floatData: Float32Array): void {
+		if (!this.audioCtx) return;
+
+		const buffer = this.audioCtx.createBuffer(1, floatData.length, this.audioCtx.sampleRate);
+		buffer.getChannelData(0).set(floatData);
+
+		const source = this.audioCtx.createBufferSource();
+		source.buffer = buffer;
+		source.connect(this.audioCtx.destination);
+		source.start();
+	}
+
+	public stopVoiceChat(): void {
 		this.cleanup();
 		this.hideOverlay();
 	}
 
-	private cleanup() {
+	private cleanup(): void {
 		if (this.processor) {
 			this.processor.disconnect();
 			this.processor = null;
 		}
+
 		if (this.micSource) {
 			this.micSource.disconnect();
 			this.micSource = null;
 		}
+
 		if (this.micStream) {
 			this.micStream.getTracks().forEach(track => track.stop());
 			this.micStream = null;
 		}
+
 		if (this.audioCtx) {
 			this.audioCtx.close();
 			this.audioCtx = null;
 		}
 
-		// Clear activity check interval
 		if (this.activityCheckInterval) {
 			window.clearInterval(this.activityCheckInterval);
 			this.activityCheckInterval = null;
 		}
 	}
 
-	public toggleVoiceChat() {
+	public toggleVoiceChat(): void {
 		if (this.kxsClient.isVoiceChatEnabled) {
 			this.kxsNetwork.ws?.send(JSON.stringify({
 				op: 98,
-				d: {
-					isVoiceChat: true
-				}
+				d: { isVoiceChat: true }
 			}));
 			this.startVoiceChat();
 		} else {
 			this.stopVoiceChat();
 			this.kxsNetwork.ws?.send(JSON.stringify({
 				op: 98,
-				d: {
-					isVoiceChat: false
-				}
+				d: { isVoiceChat: false }
 			}));
 		}
 	}
 
-	// Create the overlay container for voice chat users
-	private createOverlayContainer() {
-		// Create overlay container if it doesn't exist
-		if (!this.overlayContainer) {
-			this.overlayContainer = document.createElement('div');
-			this.overlayContainer.id = 'kxs-voice-chat-overlay';
-			this.overlayContainer.style.position = 'absolute';
-			this.overlayContainer.style.top = '10px';
-			this.overlayContainer.style.right = '10px';
-			this.overlayContainer.style.width = '200px';
-			this.overlayContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-			this.overlayContainer.style.color = 'white';
-			this.overlayContainer.style.padding = '10px';
-			this.overlayContainer.style.borderRadius = '5px';
-			this.overlayContainer.style.zIndex = '1000';
-			this.overlayContainer.style.fontFamily = 'Arial, sans-serif';
-			this.overlayContainer.style.fontSize = '14px';
-			this.overlayContainer.style.display = 'none';
+	private createOverlayContainer(): void {
+		if (this.overlayContainer) return;
 
-			// Add title
-			const title = document.createElement('div');
-			title.textContent = 'Voice Chat';
-			title.style.fontWeight = 'bold';
-			title.style.marginBottom = '5px';
-			title.style.borderBottom = '1px solid rgba(255, 255, 255, 0.3)';
-			title.style.paddingBottom = '5px';
-			this.overlayContainer.appendChild(title);
+		this.overlayContainer = document.createElement('div');
+		this.overlayContainer.id = 'kxs-voice-chat-overlay';
 
-			// Container for users
-			const usersContainer = document.createElement('div');
-			usersContainer.id = 'kxs-voice-chat-users';
-			this.overlayContainer.appendChild(usersContainer);
+		Object.assign(this.overlayContainer.style, {
+			position: 'absolute',
+			top: '10px',
+			right: '10px',
+			width: '200px',
+			backgroundColor: 'rgba(0, 0, 0, 0.7)',
+			color: 'white',
+			padding: '10px',
+			borderRadius: '5px',
+			zIndex: '1000',
+			fontFamily: 'Arial, sans-serif',
+			fontSize: '14px',
+			display: 'none'
+		});
 
-			// Add to document body
-			document.body.appendChild(this.overlayContainer);
+		// Add title
+		const title = document.createElement('div');
+		title.textContent = 'Voice Chat';
 
-			// Start checking for inactive users
+		Object.assign(title.style, {
+			fontWeight: 'bold',
+			marginBottom: '5px',
+			borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
+			paddingBottom: '5px'
+		});
+
+		this.overlayContainer.appendChild(title);
+
+		// Container for users
+		const usersContainer = document.createElement('div');
+		usersContainer.id = 'kxs-voice-chat-users';
+		this.overlayContainer.appendChild(usersContainer);
+
+		document.body.appendChild(this.overlayContainer);
+		this.startActivityCheck();
+	}
+
+	private showOverlay(): void {
+		if (!this.overlayContainer) return;
+
+		this.overlayContainer.style.display = 'block';
+		this.isOverlayVisible = true;
+
+		if (!this.activityCheckInterval) {
 			this.startActivityCheck();
 		}
 	}
 
-	// Show the voice chat overlay
-	private showOverlay() {
-		if (this.overlayContainer) {
-			this.overlayContainer.style.display = 'block';
-			this.isOverlayVisible = true;
+	private hideOverlay(): void {
+		if (!this.overlayContainer) return;
 
-			// Start checking for inactive users if not already started
-			if (!this.activityCheckInterval) {
-				this.startActivityCheck();
-			}
-		}
+		this.overlayContainer.style.display = 'none';
+		this.isOverlayVisible = false;
 	}
 
-	// Hide the voice chat overlay
-	private hideOverlay() {
-		if (this.overlayContainer) {
-			this.overlayContainer.style.display = 'none';
-			this.isOverlayVisible = false;
-		}
-	}
-
-	// Toggle the visibility of the overlay
-	public toggleOverlay() {
+	public toggleOverlay(): boolean {
 		if (this.isOverlayVisible) {
 			this.hideOverlay();
 		} else {
@@ -253,50 +279,45 @@ class KxsVoiceChat {
 		return this.isOverlayVisible;
 	}
 
-	// Update activity of a user when they send audio
-	private updateUserActivity(username: string, audioLevel: number) {
+	private updateUserActivity(username: string, audioLevel: number): void {
 		const now = Date.now();
-		const isActive = audioLevel > 0.01; // Consider active if audio level is above threshold
+		const isActive = audioLevel > this.ACTIVITY_THRESHOLD;
 
-		// Get or create user
 		let user = this.activeUsers.get(username);
+
 		if (!user) {
 			user = {
 				username,
-				isActive: isActive,
+				isActive,
 				lastActivity: now,
-				audioLevel: audioLevel,
-				isMuted: this.mutedUsers.has(username) // Initialiser l'état muté
+				audioLevel,
+				isMuted: this.mutedUsers.has(username)
 			};
 			this.activeUsers.set(username, user);
 		} else {
-			// Update existing user
 			user.isActive = isActive;
 			user.lastActivity = now;
 			user.audioLevel = audioLevel;
 			user.isMuted = this.mutedUsers.has(username);
 		}
 
-		// Update UI
 		this.updateOverlayUI();
 	}
 
-	// Start the interval to check for inactive users
-	private startActivityCheck() {
-		// Check every 500ms for inactive users (no audio for more than 2 seconds)
+	private startActivityCheck(): void {
 		this.activityCheckInterval = window.setInterval(() => {
 			const now = Date.now();
 			let updated = false;
 
 			this.activeUsers.forEach((user, username) => {
-				// If last activity was more than 2 seconds ago, set inactive
-				if (now - user.lastActivity > 2000 && user.isActive) {
+				// Set inactive if no activity for the specified timeout
+				if (now - user.lastActivity > this.INACTIVITY_TIMEOUT && user.isActive) {
 					user.isActive = false;
 					updated = true;
 				}
 
-				// Remove users who have been inactive for more than 30 seconds
-				if (now - user.lastActivity > 30000) {
+				// Remove users inactive for longer period
+				if (now - user.lastActivity > this.REMOVAL_TIMEOUT) {
 					this.activeUsers.delete(username);
 					updated = true;
 				}
@@ -305,12 +326,10 @@ class KxsVoiceChat {
 			if (updated) {
 				this.updateOverlayUI();
 			}
-		}, 500);
+		}, this.ACTIVITY_CHECK_INTERVAL);
 	}
 
-	// Update the overlay UI with current users
-	private updateOverlayUI() {
-		const self = this;
+	private updateOverlayUI(): void {
 		if (!this.overlayContainer || !this.isOverlayVisible) return;
 
 		const usersContainer = document.getElementById('kxs-voice-chat-users');
@@ -319,136 +338,166 @@ class KxsVoiceChat {
 		// Clear existing users
 		usersContainer.innerHTML = '';
 
-		// Add users
+		// Add users or show "no users" message
 		if (this.activeUsers.size === 0) {
-			const noUsers = document.createElement('div');
-			noUsers.textContent = 'No active users';
-			noUsers.style.color = 'rgba(255, 255, 255, 0.6)';
-			noUsers.style.fontStyle = 'italic';
-			noUsers.style.textAlign = 'center';
-			noUsers.style.padding = '5px';
-			usersContainer.appendChild(noUsers);
+			this.renderNoUsersMessage(usersContainer);
 		} else {
-			this.activeUsers.forEach((user) => {
-				const isMuted = !!user.isMuted;
-
-				const userElement = document.createElement('div');
-				userElement.className = 'kxs-voice-chat-user';
-				userElement.style.display = 'flex';
-				userElement.style.alignItems = 'center';
-				userElement.style.margin = '3px 0';
-				userElement.style.padding = '3px';
-				userElement.style.borderRadius = '3px';
-				userElement.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-
-				// Status indicator (mute clickable)
-				const indicator = document.createElement('div');
-				indicator.style.width = '14px';
-				indicator.style.height = '14px';
-				indicator.style.borderRadius = '50%';
-				indicator.style.marginRight = '8px';
-				indicator.style.cursor = 'pointer';
-				indicator.title = isMuted ? 'Unmute' : 'Mute';
-
-				if (user.isActive) {
-					indicator.style.backgroundColor = '#2ecc71';
-					const scale = 1 + Math.min(user.audioLevel * 3, 1);
-					indicator.style.transform = `scale(${scale})`;
-					indicator.style.boxShadow = `0 0 5px #2ecc71`;
-					indicator.style.transition = 'transform 0.1s ease-in-out';
-					indicator.innerHTML = '';
-				} else {
-					indicator.style.backgroundColor = '#7f8c8d';
-					indicator.innerHTML = '';
-				}
-
-				// Username label
-				const usernameLabel = document.createElement('span');
-				usernameLabel.textContent = user.username;
-				usernameLabel.style.flexGrow = '1';
-				usernameLabel.style.whiteSpace = 'nowrap';
-				usernameLabel.style.overflow = 'hidden';
-				usernameLabel.style.textOverflow = 'ellipsis';
-
-				// Bouton mute explicite
-				const muteButton = document.createElement('button');
-				muteButton.style.backgroundColor = user.isMuted ? '#e74c3c' : '#7f8c8d';
-				muteButton.style.color = 'white';
-				muteButton.style.border = 'none';
-				muteButton.style.borderRadius = '3px';
-				muteButton.style.padding = '2px 5px';
-				muteButton.style.marginLeft = '5px';
-				muteButton.style.cursor = 'pointer';
-				muteButton.style.fontSize = '11px';
-				muteButton.style.fontWeight = 'bold';
-				muteButton.style.minWidth = '40px';
-				muteButton.textContent = user.isMuted ? 'UNMUTE' : 'MUTE';
-
-				muteButton.onmouseover = function (e) {
-					(e.currentTarget as HTMLButtonElement).style.opacity = '0.8';
-				};
-				muteButton.onmouseout = function (e) {
-					(e.currentTarget as HTMLButtonElement).style.opacity = '1';
-				};
-				// Gérer le clic sur le bouton mute
-				muteButton.onclick = function (e) {
-					console.log('[DEBUG] Bouton MUTE cliqué pour', user.username);
-					e.stopPropagation();
-					e.preventDefault();
-
-					// Toggle the mute state
-					const newMutedState = !user.isMuted;
-					user.isMuted = newMutedState;
-
-					console.log('[DEBUG] Nouveau mute state:', newMutedState);
-
-					// Update the set of muted users
-					if (newMutedState) {
-						self.mutedUsers.add(user.username);
-					} else {
-						self.mutedUsers.delete(user.username);
-					}
-
-					// Send the mute state to the server
-					console.log('[DEBUG] Appel sendMuteState pour', user.username, newMutedState);
-					self.sendMuteState(user.username, newMutedState);
-
-					// Update the UI to reflect the change
-					self.updateOverlayUI();
-
-					console.log(`${user.username} is now ${newMutedState ? 'muted' : 'unmuted'}`);
-				};
-
-				// Ajouter les éléments au conteneur utilisateur
-				userElement.appendChild(indicator);
-				userElement.appendChild(usernameLabel);
-				userElement.appendChild(muteButton);
-				usersContainer.appendChild(userElement);
+			this.activeUsers.forEach(user => {
+				this.renderUserElement(usersContainer, user);
 			});
 		}
 	}
 
-	// Envoie la requête mute/unmute au serveur
-	private sendMuteState(username: string, isMuted: boolean) {
-		console.log('[DEBUG] sendMuteState appelé:', username, isMuted);
-		if (!this.kxsNetwork.ws) {
-			console.warn('[DEBUG] Pas de WebSocket disponible');
+	private renderNoUsersMessage(container: HTMLElement): void {
+		const noUsers = document.createElement('div');
+		noUsers.textContent = 'No active users';
+
+		Object.assign(noUsers.style, {
+			color: 'rgba(255, 255, 255, 0.6)',
+			fontStyle: 'italic',
+			textAlign: 'center',
+			padding: '5px'
+		});
+
+		container.appendChild(noUsers);
+	}
+
+	private renderUserElement(container: HTMLElement, user: VoiceChatUser): void {
+		const userElement = document.createElement('div');
+		userElement.className = 'kxs-voice-chat-user';
+
+		Object.assign(userElement.style, {
+			display: 'flex',
+			alignItems: 'center',
+			margin: '3px 0',
+			padding: '3px',
+			borderRadius: '3px',
+			backgroundColor: 'rgba(255, 255, 255, 0.1)'
+		});
+
+		// Status indicator
+		const indicator = this.createStatusIndicator(user);
+
+		// Username label
+		const usernameLabel = document.createElement('span');
+		usernameLabel.textContent = user.username;
+
+		Object.assign(usernameLabel.style, {
+			flexGrow: '1',
+			whiteSpace: 'nowrap',
+			overflow: 'hidden',
+			textOverflow: 'ellipsis'
+		});
+
+		// Mute button - FIX: Create this element properly
+		const muteButton = this.createMuteButton(user);
+
+		// Add elements to container
+		userElement.appendChild(indicator);
+		userElement.appendChild(usernameLabel);
+		userElement.appendChild(muteButton);
+		container.appendChild(userElement);
+	}
+
+	private createStatusIndicator(user: VoiceChatUser): HTMLElement {
+		const indicator = document.createElement('div');
+
+		Object.assign(indicator.style, {
+			width: '14px',
+			height: '14px',
+			borderRadius: '50%',
+			marginRight: '8px',
+			cursor: 'pointer'
+		});
+
+		indicator.title = user.isMuted ? 'Unmute' : 'Mute';
+
+		if (user.isActive) {
+			const scale = 1 + Math.min(user.audioLevel * 3, 1);
+
+			Object.assign(indicator.style, {
+				backgroundColor: '#2ecc71',
+				transform: `scale(${scale})`,
+				boxShadow: '0 0 5px #2ecc71',
+				transition: 'transform 0.1s ease-in-out'
+			});
+
+		} else {
+			indicator.style.backgroundColor = '#7f8c8d';
 		}
-		else if (this.kxsNetwork.ws.readyState !== WebSocket.OPEN) {
-			console.warn('[DEBUG] WebSocket pas ouverte');
+
+		return indicator;
+	}
+
+	private createMuteButton(user: VoiceChatUser): HTMLButtonElement {
+		const muteButton = document.createElement('button');
+		muteButton.type = 'button'; // Important: specify type to prevent form submission behavior
+		muteButton.textContent = user.isMuted ? 'UNMUTE' : 'MUTE';
+
+		Object.assign(muteButton.style, {
+			backgroundColor: user.isMuted ? '#e74c3c' : '#7f8c8d',
+			color: 'white',
+			border: 'none',
+			borderRadius: '3px',
+			padding: '2px 5px',
+			marginLeft: '5px',
+			cursor: 'pointer',
+			fontSize: '11px',
+			fontWeight: 'bold',
+			minWidth: '40px'
+		});
+
+		// FIX: Use proper event listeners instead of property assignments
+		muteButton.addEventListener('mouseover', () => {
+			muteButton.style.opacity = '0.8';
+		});
+
+		muteButton.addEventListener('mouseout', () => {
+			muteButton.style.opacity = '1';
+		});
+
+		// FIX: Create proper event listener for click to handle mute/unmute
+		muteButton.addEventListener('click', (e) => {
+			e.stopPropagation();
+			e.preventDefault();
+
+			// Toggle the mute state
+			const newMutedState = !user.isMuted;
+			user.isMuted = newMutedState;
+
+			// Update muted users collection
+			if (newMutedState) {
+				this.mutedUsers.add(user.username);
+			} else {
+				this.mutedUsers.delete(user.username);
+			}
+
+			// Send mute state to server
+			this.sendMuteState(user.username, newMutedState);
+
+			// Update UI
+			this.updateOverlayUI();
+
+			console.log(`${user.username} is now ${newMutedState ? 'muted' : 'unmuted'}`);
+		});
+
+		return muteButton;
+	}
+
+	private sendMuteState(username: string, isMuted: boolean): void {
+		if (!this.kxsNetwork.ws || this.kxsNetwork.ws.readyState !== WebSocket.OPEN) {
+			console.warn('WebSocket not available or not open');
+			return;
 		}
-		if (this.kxsNetwork.ws && this.kxsNetwork.ws.readyState === WebSocket.OPEN) {
-			this.kxsNetwork.ws.send(JSON.stringify({
-				op: 100,
-				d: {
-					user: username,
-					isMuted: isMuted
-				}
-			}));
-		}
+
+		this.kxsNetwork.ws.send(JSON.stringify({
+			op: 100,
+			d: {
+				user: username,
+				isMuted: isMuted
+			}
+		}));
 	}
 }
 
-export {
-	KxsVoiceChat
-}
+export { KxsVoiceChat };
