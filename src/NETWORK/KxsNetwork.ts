@@ -215,7 +215,7 @@ class KxsNetwork {
 		return this.HOST;
 	}
 
-	public async getOnlineCount() {
+	public getOnlineCount() {
 		return this.kxsUsers;
 	}
 }

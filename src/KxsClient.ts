@@ -244,8 +244,8 @@ export default class KxsClient {
 		const countEl = this.onlineMenuElement.querySelector('#kxs-online-count');
 		const dot = this.onlineMenuElement.querySelector('#kxs-online-dot') as HTMLElement;
 		try {
-			const res = await this.kxsNetwork.getOnlineCount();
-			const count = typeof res.count === 'number' ? res.count : '?';
+			const res = this.kxsNetwork.getOnlineCount();
+			const count = typeof res === 'number' ? res : '?';
 			if (countEl) countEl.textContent = `${count} Kxs users`;
 			if (dot) {
 				dot.style.background = '#3fae2a';
