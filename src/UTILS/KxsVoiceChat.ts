@@ -77,7 +77,6 @@ class KxsVoiceChat {
 			this.setupWebSocketListeners();
 
 		} catch (error: any) {
-			console.error("Voice chat initialization error:", error);
 			alert("Unable to initialize voice chat: " + error.message);
 			this.cleanup();
 		}
@@ -223,8 +222,20 @@ class KxsVoiceChat {
 			zIndex: '1000',
 			fontFamily: 'Arial, sans-serif',
 			fontSize: '14px',
-			display: 'none'
+			display: 'none',
+			cursor: 'move'
 		});
+
+		// Charger la position sauvegardée si elle existe
+		const savedPosition = localStorage.getItem('kxs-voice-chat-position');
+		if (savedPosition) {
+			try {
+				const { x, y } = JSON.parse(savedPosition);
+				this.overlayContainer.style.left = `${x}px`;
+				this.overlayContainer.style.top = `${y}px`;
+				this.overlayContainer.style.right = 'auto';
+			} catch (e) { }
+		}
 
 		// Add title and controls container (for title and mute button)
 		const controlsContainer = document.createElement('div');
@@ -243,6 +254,32 @@ class KxsVoiceChat {
 		Object.assign(title.style, {
 			fontWeight: 'bold'
 		});
+
+		// Fonction pour mettre à jour l'état draggable selon la visibilité du menu RSHIFT
+		const updateVoiceChatDraggable = () => {
+			const isMenuOpen = this.kxsClient.secondaryMenu.getMenuVisibility();
+
+			if (isMenuOpen) {
+				this.overlayContainer!.style.pointerEvents = 'auto';
+				this.overlayContainer!.style.cursor = 'move';
+				this.kxsClient.makeDraggable(this.overlayContainer!, 'kxs-voice-chat-position');
+			} else {
+				this.overlayContainer!.style.pointerEvents = 'none';
+				this.overlayContainer!.style.cursor = 'default';
+			}
+		};
+
+		// Initial state
+		updateVoiceChatDraggable();
+
+		// Observer les changements du menu
+		const observer = new MutationObserver(updateVoiceChatDraggable);
+		if (this.kxsClient.secondaryMenu && this.kxsClient.secondaryMenu.menu) {
+			observer.observe(this.kxsClient.secondaryMenu.menu, { attributes: true, attributeFilter: ['style', 'class'] });
+		}
+
+		// Fallback timer pour s'assurer de l'état correct
+		setInterval(updateVoiceChatDraggable, 500);
 
 		// Create local mute button
 		this.localMuteButton = this.createLocalMuteButton();
@@ -513,7 +550,6 @@ class KxsVoiceChat {
 
 	private sendMuteState(username: string, isMuted: boolean): void {
 		if (!this.kxsNetwork.ws || this.kxsNetwork.ws.readyState !== WebSocket.OPEN) {
-			console.warn('WebSocket not available or not open');
 			return;
 		}
 
@@ -585,6 +621,8 @@ class KxsVoiceChat {
 		const message = this.isLocalMuted ? 'You are muted' : 'You are unmuted';
 		this.kxsClient.nm.showNotification(message, notificationType, 2000);
 	}
+
+
 }
 
 export { KxsVoiceChat };
