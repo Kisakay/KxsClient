@@ -107,15 +107,6 @@ class KxsVoiceChat {
 		if (!this.kxsNetwork.ws) return;
 
 		this.kxsNetwork.ws.addEventListener('message', this.handleAudioMessage.bind(this));
-
-		this.kxsNetwork.ws.onopen = () => {
-			this.kxsClient.nm.showNotification('Voice chat connected ✓', 'success', 3000);
-		};
-
-		this.kxsNetwork.ws.onclose = () => {
-			this.kxsClient.nm.showNotification('Voice chat disconnected X', 'error', 3000);
-			this.cleanup();
-		};
 	}
 
 	private handleAudioMessage(msg: MessageEvent): void {
