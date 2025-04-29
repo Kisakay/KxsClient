@@ -310,6 +310,17 @@ class KxsLegacyClientSecondaryMenu {
 		let pluginsSection = this.addSection("Plugins");
 
 		this.addOption(pluginsSection, {
+			label: "Chat",
+			value: this.kxsClient.isKxsChatEnabled,
+			type: "toggle",
+			onChange: () => {
+				this.kxsClient.isKxsChatEnabled = !this.kxsClient.isKxsChatEnabled;
+				this.kxsClient.updateLocalStorage();
+				this.kxsClient.chat.toggleChat();
+			},
+		});
+
+		this.addOption(pluginsSection, {
 			label: "Voice Chat",
 			value: this.kxsClient.isVoiceChatEnabled,
 			type: "toggle",

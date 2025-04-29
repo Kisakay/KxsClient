@@ -46,6 +46,7 @@ export default class KxsClient {
 	isGunBorderChromatic: boolean;
 	isFocusModeEnabled: boolean;
 	isVoiceChatEnabled: boolean;
+	isKxsChatEnabled: boolean;
 
 	all_friends: string;
 	customCrosshair: string | null;
@@ -108,7 +109,7 @@ export default class KxsClient {
 		this.isGunOverlayColored = true;
 		this.customCrosshair = null;
 		this.isGunBorderChromatic = false;
-
+		this.isKxsChatEnabled = true;
 		this.isVoiceChatEnabled = false;
 		this.isFocusModeEnabled = false;
 		this.defaultPositions = {
@@ -309,7 +310,8 @@ export default class KxsClient {
 				customCrosshair: this.customCrosshair,
 				isGunOverlayColored: this.isGunOverlayColored,
 				isGunBorderChromatic: this.isGunBorderChromatic,
-				isVoiceChatEnabled: this.isVoiceChatEnabled
+				isVoiceChatEnabled: this.isVoiceChatEnabled,
+				isKxsChatEnabled: this.isKxsChatEnabled,
 			}),
 		);
 	};
@@ -764,6 +766,7 @@ export default class KxsClient {
 			this.isGunOverlayColored = savedSettings.isGunOverlayColored ?? this.isGunOverlayColored;
 			this.isGunBorderChromatic = savedSettings.isGunBorderChromatic ?? this.isGunBorderChromatic;
 			this.isVoiceChatEnabled = savedSettings.isVoiceChatEnabled ?? this.isVoiceChatEnabled;
+			this.isKxsChatEnabled = savedSettings.isKxsChatEnabled ?? this.isKxsChatEnabled;
 
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists

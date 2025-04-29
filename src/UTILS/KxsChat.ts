@@ -12,7 +12,22 @@ class KxsChat {
 		this.kxsClient = kxsClient;
 
 		this.initGlobalChat();
+
+		// Initialize chat visibility based on the current setting
+		if (this.chatBox && !this.kxsClient.isKxsChatEnabled) {
+			this.chatBox.style.display = 'none';
+			window.removeEventListener('keydown', this.handleKeyDown);
+		}
 	}
+
+	private handleKeyDown = (e: KeyboardEvent) => {
+		if (e.key === 'Enter' && !this.chatOpen && document.activeElement !== this.chatInput) {
+			e.preventDefault();
+			this.openChatInput();
+		} else if (e.key === 'Escape' && this.chatOpen) {
+			this.closeChatInput();
+		}
+	};
 
 	private initGlobalChat() {
 		const area = document.getElementById('game-touch-area');
@@ -146,14 +161,7 @@ class KxsChat {
 		});
 
 		// Gestion clavier
-		window.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter' && !this.chatOpen && document.activeElement !== input) {
-				e.preventDefault();
-				this.openChatInput();
-			} else if (e.key === 'Escape' && this.chatOpen) {
-				this.closeChatInput();
-			}
-		});
+		window.addEventListener('keydown', this.handleKeyDown);
 
 	}
 
@@ -174,12 +182,29 @@ class KxsChat {
 	}
 
 	public addChatMessage(user: string, text: string) {
-		if (!this.chatBox) return;
+		if (!this.chatBox || !this.kxsClient.isKxsChatEnabled) return;
 		this.chatMessages.push({ user, text });
 		if (this.chatMessages.length > 5) this.chatMessages.shift();
 		if (this.messagesContainer) {
 			this.messagesContainer.innerHTML = this.chatMessages.map(m => `<span><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</span>`).join('');
 		}
+	}
+
+	public toggleChat() {
+		if (this.chatBox) {
+			this.chatBox.style.display = this.kxsClient.isKxsChatEnabled ? 'flex' : 'none';
+		}
+
+		if (this.kxsClient.isKxsChatEnabled) {
+			window.addEventListener('keydown', this.handleKeyDown);
+		} else {
+			this.closeChatInput();
+			window.removeEventListener('keydown', this.handleKeyDown);
+		}
+
+		const message = this.kxsClient.isKxsChatEnabled ? 'Chat enabled' : 'Chat disabled';
+		const type = this.kxsClient.isKxsChatEnabled ? 'success' : 'info';
+		this.kxsClient.nm.showNotification(message, type, 600);
 	}
 }
 
