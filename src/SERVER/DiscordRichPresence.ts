@@ -76,7 +76,6 @@ class DiscordWebSocket {
 				const { heartbeat_interval } = data.d;
 				this.startHeartbeat(heartbeat_interval);
 				this.identify();
-				this.kxsClient.nm.showNotification('Started Discord RPC', 'success', 3000);
 				break;
 
 			case 11: // Heartbeat ACK
@@ -87,7 +86,7 @@ class DiscordWebSocket {
 				this.sequence = data.s;
 				if (data.t === 'READY') {
 					this.isAuthenticated = true;
-					this.kxsClient.nm.showNotification('Connected to Discord gateway', 'success', 2500);
+					this.kxsClient.nm.showNotification('Started Discord RPC', 'success', 3000);
 				}
 				break;
 		}
