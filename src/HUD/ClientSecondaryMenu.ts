@@ -447,17 +447,6 @@ class KxsClientSecondaryMenu {
 			type: "sub",
 			fields: [
 				{
-					label: "Enable",
-					category: "SERVER",
-					icon: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M11 3C13.7614 3 16 5.23858 16 8C16 10.7614 13.7614 13 11 13H5C2.23858 13 0 10.7614 0 8C0 5.23858 2.23858 3 5 3H11ZM11 5C12.6569 5 14 6.34315 14 8C14 9.65685 12.6569 11 11 11C9.34315 11 8 9.65685 8 8C8 6.34315 9.34315 5 11 5Z" fill="#000000"></path> </g></svg>',
-					type: "toggle",
-					value: true,
-					onChange: () => {
-						this.kxsClient.kxsNetworkSettings.enabled = !this.kxsClient.kxsNetworkSettings.enabled;
-						this.kxsClient.updateLocalStorage();
-					}
-				},
-				{
 					label: "Show Kills",
 					value: this.kxsClient.isKillsVisible,
 					type: "toggle",
@@ -1096,7 +1085,8 @@ class KxsClientSecondaryMenu {
 
 		// Variables pour le sous-menu
 		let subMenuContainer: HTMLElement | null = null;
-		let sectionsBackup: Map<HTMLElement, string> = new Map();
+		// Sauvegarde des éléments originaux à masquer/afficher
+		let originalElements: HTMLElement[] = [];
 		let isSubMenuOpen = false;
 
 		// Gestionnaire d'événement pour ouvrir le sous-menu
@@ -1115,27 +1105,20 @@ class KxsClientSecondaryMenu {
 				return;
 			}
 
-			// Sauvegarder et cacher toutes les sections du menu principal
-			this.sections.forEach(section => {
-				if (section.element) {
-					sectionsBackup.set(section.element, section.element.style.display);
-					section.element.style.display = 'none';
-				}
+			// Trouver tous les éléments principaux à masquer
+			originalElements = [];
+			const allSections = document.querySelectorAll('.menu-section');
+			allSections.forEach(section => {
+				originalElements.push(section as HTMLElement);
+				(section as HTMLElement).style.display = 'none';
 			});
 
-			// Trouver le conteneur des options du menu (kxsMenuGrid)
-			const optionsContainer = document.getElementById('kxsMenuGrid');
-			if (!optionsContainer) {
-				console.error("kxsMenuGrid not found");
-				return;
+			// Masquer aussi le conteneur de la grille
+			const grid = document.getElementById('kxsMenuGrid');
+			if (grid) {
+				originalElements.push(grid as HTMLElement);
+				grid.style.display = 'none';
 			}
-
-			// Sauvegarder le contenu original du conteneur d'options avant de le vider
-			const originalContent = Array.from(optionsContainer.children);
-			const contentBackup = document.createDocumentFragment();
-			originalContent.forEach(child => contentBackup.appendChild(child));
-			// Vider le conteneur d'options
-			optionsContainer.innerHTML = '';
 
 			// Créer le conteneur du sous-menu
 			subMenuContainer = document.createElement("div");
@@ -1144,9 +1127,11 @@ class KxsClientSecondaryMenu {
 			Object.assign(subMenuContainer.style, {
 				width: "100%",
 				padding: "10px 0",
-				boxSizing: "border-box"
+				boxSizing: "border-box",
+				overflowY: "auto",
+				background: "rgba(17, 24, 39, 0.95)"
 			});
-			this.blockMousePropagation(subMenuContainer); // Bloquer les événements souris
+			this.blockMousePropagation(subMenuContainer);
 
 			// Créer l'en-tête du sous-menu
 			const subMenuHeader = document.createElement("div");
@@ -1156,7 +1141,11 @@ class KxsClientSecondaryMenu {
 				alignItems: "center",
 				marginBottom: isMobile ? "10px" : "15px",
 				paddingBottom: isMobile ? "5px" : "10px",
-				borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+				borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+				paddingLeft: isMobile ? "10px" : "15px",
+				paddingRight: isMobile ? "10px" : "15px",
+				width: "100%",
+				boxSizing: "border-box"
 			});
 			this.blockMousePropagation(subMenuHeader);
 
@@ -1209,7 +1198,9 @@ class KxsClientSecondaryMenu {
 				gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
 				gap: isMobile ? "8px" : "16px",
 				padding: isMobile ? "4px" : "16px",
-				gridAutoRows: isMobile ? "minmax(100px, auto)" : "minmax(150px, auto)"
+				gridAutoRows: isMobile ? "minmax(100px, auto)" : "minmax(150px, auto)",
+				width: "100%",
+				boxSizing: "border-box"
 			});
 			this.blockMousePropagation(optionsGrid);
 
@@ -1220,34 +1211,29 @@ class KxsClientSecondaryMenu {
 
 			subMenuContainer.appendChild(optionsGrid);
 
-			// Ajouter le sous-menu au conteneur d'options
-			optionsContainer.appendChild(subMenuContainer);
+			// Ajouter le sous-menu au menu principal
+			this.menu.appendChild(subMenuContainer);
 			isSubMenuOpen = true;
 
 			// Définir la méthode pour fermer le sous-menu
 			this.closeSubMenu = () => {
+				// Supprimer le sous-menu
 				if (subMenuContainer && subMenuContainer.parentElement) {
 					subMenuContainer.parentElement.removeChild(subMenuContainer);
 				}
 
-				// Vider d'abord le conteneur d'options
-				if (optionsContainer) {
-					optionsContainer.innerHTML = '';
-
-					// Restaurer le contenu original du conteneur d'options
-					Array.from(contentBackup.children).forEach(child => {
-						optionsContainer.appendChild(child);
-					});
-				}
-
-				// Restaurer l'affichage des sections
-				sectionsBackup.forEach((display, element) => {
-					element.style.display = display;
+				// Réafficher tous les éléments originaux
+				originalElements.forEach(el => {
+					if (el.id === 'kxsMenuGrid') {
+						el.style.display = 'grid';
+					} else {
+						el.style.display = 'block';
+					}
 				});
 
-				// Réinitialiser les variables
+				// Réinitialiser les états
+				this.filterOptions(); // S'assurer que les options sont correctement filtrées
 				subMenuContainer = null;
-				sectionsBackup.clear();
 				isSubMenuOpen = false;
 			};
 
