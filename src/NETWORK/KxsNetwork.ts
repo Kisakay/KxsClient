@@ -2,7 +2,6 @@ import KxsClient from "../KxsClient";
 import config from "../../config.json";
 
 interface KxsNetworkSettings {
-	enabled: boolean;
 	nickname_anonymized: boolean;
 }
 
@@ -30,14 +29,13 @@ class KxsNetwork {
 	private reconnectTimeout: number = 0;
 	private reconnectDelay: number = 15000; // Initial reconnect delay of 1 second
 	private kxsUsers: number = 0;
+	private privateUsername: string = this.generateRandomUsername();
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
 	}
 
 	connect() {
-		if (this.kxsClient.kxsNetworkSettings.enabled === false) return;
-
 		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
 			this.kxsClient.logger.log('[KxsNetwork] WebSocket already connected');
 			return;
@@ -95,7 +93,7 @@ class KxsNetwork {
 		}
 	}
 
-	public generateUsername() {
+	private generateRandomUsername() {
 		let char = 'abcdefghijklmnopqrstuvwxyz0123456789';
 		let username = '';
 		for (let i = 0; i < 6; i++) {
@@ -105,7 +103,7 @@ class KxsNetwork {
 	}
 
 	public getUsername() {
-		return this.kxsClient.kxsNetworkSettings.nickname_anonymized ? this.generateUsername() : JSON.parse(localStorage.getItem("surviv_config") || "{}").playerName;
+		return this.kxsClient.kxsNetworkSettings.nickname_anonymized ? this.privateUsername : JSON.parse(localStorage.getItem("surviv_config") || "{}").playerName;
 	}
 
 	private identify() {

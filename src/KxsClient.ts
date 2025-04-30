@@ -122,7 +122,6 @@ export default class KxsClient {
 			kills: { width: 100, height: 30 },
 		};
 		this.kxsNetworkSettings = {
-			enabled: true,
 			nickname_anonymized: false,
 		}
 
