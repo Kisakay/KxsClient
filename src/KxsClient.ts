@@ -9,7 +9,6 @@ import { UpdateChecker } from "./FUNC/UpdateChecker";
 import { DiscordWebSocket } from "./SERVER/DiscordRichPresence";
 import { NotificationManager } from "./HUD/MOD/NotificationManager";
 import { KxsClientSecondaryMenu } from "./HUD/ClientSecondaryMenuRework";
-import { KxsLegacyClientSecondaryMenu } from "./HUD/LegacyClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
 import { background_song, death_sound, full_logo, win_sound } from "./UTILS/vars";
 import { KxsClientHUD } from "./HUD/ClientHUD";
@@ -37,7 +36,6 @@ export default class KxsClient {
 	isAutoUpdateEnabled: boolean;
 	isWinningAnimationEnabled: boolean;
 	isKillLeaderTrackerEnabled: boolean;
-	isLegaySecondaryMenu: boolean;
 	isKillFeedBlint: boolean;
 	isSpotifyPlayerEnabled: boolean;
 	isMainMenuCleaned: boolean;
@@ -64,7 +62,7 @@ export default class KxsClient {
 	defaultSizes: Record<string, { width: number; height: number }>;
 	config: Config;
 	discordToken: string | null;
-	secondaryMenu: KxsClientSecondaryMenu | KxsLegacyClientSecondaryMenu;
+	secondaryMenu: KxsClientSecondaryMenu;
 	nm: NotificationManager;
 	private deathObserver: MutationObserver | null = null;
 	soundLibrary: SoundLibrary;
@@ -98,7 +96,6 @@ export default class KxsClient {
 		this.isAutoUpdateEnabled = true;
 		this.isWinningAnimationEnabled = true;
 		this.isKillLeaderTrackerEnabled = true;
-		this.isLegaySecondaryMenu = false;
 		this.isKillFeedBlint = false;
 		this.isSpotifyPlayerEnabled = false;
 		this.discordToken = null;
@@ -150,11 +147,7 @@ export default class KxsClient {
 		this.discordRPC.connect();
 		this.hud = new KxsClientHUD(this);
 
-		if (this.isLegaySecondaryMenu) {
-			this.secondaryMenu = new KxsLegacyClientSecondaryMenu(this);
-		} else {
-			this.secondaryMenu = new KxsClientSecondaryMenu(this);
-		}
+		this.secondaryMenu = new KxsClientSecondaryMenu(this);
 
 		this.discordTracker = new DiscordTracking(this, this.discordWebhookUrl!);
 		this.chat = new KxsChat(this);
@@ -300,7 +293,6 @@ export default class KxsClient {
 				isWinningAnimationEnabled: this.isWinningAnimationEnabled,
 				discordToken: this.discordToken,
 				isKillLeaderTrackerEnabled: this.isKillLeaderTrackerEnabled,
-				isLegaySecondaryMenu: this.isLegaySecondaryMenu,
 				isKillFeedBlint: this.isKillFeedBlint,
 				all_friends: this.all_friends,
 				isSpotifyPlayerEnabled: this.isSpotifyPlayerEnabled,
@@ -756,7 +748,6 @@ export default class KxsClient {
 			this.isWinningAnimationEnabled = savedSettings.isWinningAnimationEnabled ?? this.isWinningAnimationEnabled;
 			this.discordToken = savedSettings.discordToken ?? this.discordToken;
 			this.isKillLeaderTrackerEnabled = savedSettings.isKillLeaderTrackerEnabled ?? this.isKillLeaderTrackerEnabled;
-			this.isLegaySecondaryMenu = savedSettings.isLegaySecondaryMenu ?? this.isLegaySecondaryMenu
 			this.isKillFeedBlint = savedSettings.isKillFeedBlint ?? this.isKillFeedBlint;
 			this.all_friends = savedSettings.all_friends ?? this.all_friends;
 			this.isSpotifyPlayerEnabled = savedSettings.isSpotifyPlayerEnabled ?? this.isSpotifyPlayerEnabled;
