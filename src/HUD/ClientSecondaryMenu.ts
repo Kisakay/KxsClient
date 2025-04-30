@@ -1115,7 +1115,7 @@ class KxsClientSecondaryMenu {
 				return;
 			}
 
-			// Cacher toutes les sections du menu principal
+			// Sauvegarder et cacher toutes les sections du menu principal
 			this.sections.forEach(section => {
 				if (section.element) {
 					sectionsBackup.set(section.element, section.element.style.display);
@@ -1129,6 +1129,13 @@ class KxsClientSecondaryMenu {
 				console.error("kxsMenuGrid not found");
 				return;
 			}
+
+			// Sauvegarder le contenu original du conteneur d'options avant de le vider
+			const originalContent = Array.from(optionsContainer.children);
+			const contentBackup = document.createDocumentFragment();
+			originalContent.forEach(child => contentBackup.appendChild(child));
+			// Vider le conteneur d'options
+			optionsContainer.innerHTML = '';
 
 			// Créer le conteneur du sous-menu
 			subMenuContainer = document.createElement("div");
@@ -1221,6 +1228,16 @@ class KxsClientSecondaryMenu {
 			this.closeSubMenu = () => {
 				if (subMenuContainer && subMenuContainer.parentElement) {
 					subMenuContainer.parentElement.removeChild(subMenuContainer);
+				}
+
+				// Vider d'abord le conteneur d'options
+				if (optionsContainer) {
+					optionsContainer.innerHTML = '';
+
+					// Restaurer le contenu original du conteneur d'options
+					Array.from(contentBackup.children).forEach(child => {
+						optionsContainer.appendChild(child);
+					});
 				}
 
 				// Restaurer l'affichage des sections
