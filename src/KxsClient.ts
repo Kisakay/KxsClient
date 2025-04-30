@@ -8,7 +8,7 @@ import { Config } from "./types/configtype";
 import { UpdateChecker } from "./FUNC/UpdateChecker";
 import { DiscordWebSocket } from "./SERVER/DiscordRichPresence";
 import { NotificationManager } from "./HUD/MOD/NotificationManager";
-import { KxsClientSecondaryMenu } from "./HUD/ClientSecondaryMenuRework";
+import { KxsClientSecondaryMenu } from "./HUD/ClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
 import { background_song, death_sound, full_logo, win_sound } from "./UTILS/vars";
 import { KxsClientHUD } from "./HUD/ClientHUD";
@@ -16,7 +16,7 @@ import { Logger } from "./FUNC/Logger";
 import { SteganoDB } from "stegano.db/lib/browser";
 import config from "../config.json";
 import { GameHistoryMenu } from "./HUD/HistoryManager";
-import { KxsNetwork } from "./NETWORK/KxsNetwork";
+import { KxsNetwork, KxsNetworkSettings } from "./NETWORK/KxsNetwork";
 import { KxsChat } from "./UTILS/KxsChat";
 import { KxsVoiceChat } from "./UTILS/KxsVoiceChat";
 
@@ -73,6 +73,7 @@ export default class KxsClient {
 	kxsNetwork: KxsNetwork;
 	chat: KxsChat;
 	voiceChat: KxsVoiceChat;
+	kxsNetworkSettings: KxsNetworkSettings;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -120,6 +121,11 @@ export default class KxsClient {
 			ping: { width: 100, height: 30 },
 			kills: { width: 100, height: 30 },
 		};
+		this.kxsNetworkSettings = {
+			enabled: true,
+			nickname_anonymized: false,
+		}
+
 
 		this.soundLibrary = {
 			win_sound_url: win_sound,
@@ -304,6 +310,7 @@ export default class KxsClient {
 				isGunBorderChromatic: this.isGunBorderChromatic,
 				isVoiceChatEnabled: this.isVoiceChatEnabled,
 				isKxsChatEnabled: this.isKxsChatEnabled,
+				kxsNetworkSettings: this.kxsNetworkSettings
 			}),
 		);
 	};
@@ -758,6 +765,7 @@ export default class KxsClient {
 			this.isGunBorderChromatic = savedSettings.isGunBorderChromatic ?? this.isGunBorderChromatic;
 			this.isVoiceChatEnabled = savedSettings.isVoiceChatEnabled ?? this.isVoiceChatEnabled;
 			this.isKxsChatEnabled = savedSettings.isKxsChatEnabled ?? this.isKxsChatEnabled;
+			this.kxsNetworkSettings = savedSettings.kxsNetworkSettings ?? this.kxsNetworkSettings;
 
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists

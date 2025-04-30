@@ -5,14 +5,25 @@ export const category = ["ALL", "HUD", "SERVER", "MECHANIC", "SOUND", "MISC"] as
 
 export type CategoryType = typeof category[number];
 
-interface MenuOption {
+interface Mod {
 	label: string;
 	value: string | boolean | number;
 	type: "toggle" | "input" | "click" | "info";
 	onChange?: (value: string | boolean) => void;
+	icon: string;
+	placeholder?: string;
+	category: CategoryType;
+}
+
+interface MenuOption {
+	label: string;
+	value: string | boolean | number;
+	type: "toggle" | "input" | "click" | "info" | "sub";
+	onChange?: (value: string | boolean) => void;
 	category: CategoryType;
 	icon: string;
 	placeholder?: string;
+	fields?: Mod[];
 }
 
 interface MenuSection {
@@ -34,6 +45,8 @@ class KxsClientSecondaryMenu {
 	kxsClient: KxsClient;
 	// Propriété publique pour exposer l'état d'ouverture du menu
 	public isOpen: boolean;
+	// Fonction pour fermer un sous-menu
+	public closeSubMenu: () => void = () => { };
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
@@ -292,6 +305,62 @@ class KxsClientSecondaryMenu {
 		let SOUND = this.addSection("SOUND", 'SOUND');
 		let MISC = this.addSection("MISC", 'MISC');
 
+		this.addOption(SERVER, {
+			label: "KxsNetwork",
+			value: true,
+			category: "SERVER",
+			icon: '<svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>network</title> <path d="M27 21.75c-0.795 0.004-1.538 0.229-2.169 0.616l0.018-0.010-2.694-2.449c0.724-1.105 1.154-2.459 1.154-3.913 0-1.572-0.503-3.027-1.358-4.212l0.015 0.021 3.062-3.062c0.57 0.316 1.249 0.503 1.971 0.508h0.002c2.347 0 4.25-1.903 4.25-4.25s-1.903-4.25-4.25-4.25c-2.347 0-4.25 1.903-4.25 4.25v0c0.005 0.724 0.193 1.403 0.519 1.995l-0.011-0.022-3.062 3.062c-1.147-0.84-2.587-1.344-4.144-1.344-0.868 0-1.699 0.157-2.467 0.443l0.049-0.016-0.644-1.17c0.726-0.757 1.173-1.787 1.173-2.921 0-2.332-1.891-4.223-4.223-4.223s-4.223 1.891-4.223 4.223c0 2.332 1.891 4.223 4.223 4.223 0.306 0 0.605-0.033 0.893-0.095l-0.028 0.005 0.642 1.166c-1.685 1.315-2.758 3.345-2.758 5.627 0 0.605 0.076 1.193 0.218 1.754l-0.011-0.049-0.667 0.283c-0.78-0.904-1.927-1.474-3.207-1.474-2.334 0-4.226 1.892-4.226 4.226s1.892 4.226 4.226 4.226c2.334 0 4.226-1.892 4.226-4.226 0-0.008-0-0.017-0-0.025v0.001c-0.008-0.159-0.023-0.307-0.046-0.451l0.003 0.024 0.667-0.283c1.303 2.026 3.547 3.349 6.1 3.349 1.703 0 3.268-0.589 4.503-1.574l-0.015 0.011 2.702 2.455c-0.258 0.526-0.41 1.144-0.414 1.797v0.001c0 2.347 1.903 4.25 4.25 4.25s4.25-1.903 4.25-4.25c0-2.347-1.903-4.25-4.25-4.25v0zM8.19 5c0-0.966 0.784-1.75 1.75-1.75s1.75 0.784 1.75 1.75c0 0.966-0.784 1.75-1.75 1.75v0c-0.966-0.001-1.749-0.784-1.75-1.75v-0zM5 22.42c-0.966-0.001-1.748-0.783-1.748-1.749s0.783-1.749 1.749-1.749c0.966 0 1.748 0.782 1.749 1.748v0c-0.001 0.966-0.784 1.749-1.75 1.75h-0zM27 3.25c0.966 0 1.75 0.784 1.75 1.75s-0.784 1.75-1.75 1.75c-0.966 0-1.75-0.784-1.75-1.75v0c0.001-0.966 0.784-1.749 1.75-1.75h0zM11.19 16c0-0.001 0-0.002 0-0.003 0-2.655 2.152-4.807 4.807-4.807 1.328 0 2.53 0.539 3.4 1.409l0.001 0.001 0.001 0.001c0.87 0.87 1.407 2.072 1.407 3.399 0 2.656-2.153 4.808-4.808 4.808s-4.808-2.153-4.808-4.808c0-0 0-0 0-0v0zM27 27.75c-0.966 0-1.75-0.784-1.75-1.75s0.784-1.75 1.75-1.75c0.966 0 1.75 0.784 1.75 1.75v0c-0.001 0.966-0.784 1.749-1.75 1.75h-0z"></path> </g></svg>',
+			type: "sub",
+			fields: [
+				{
+					label: "Enable",
+					category: "SERVER",
+					icon: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M11 3C13.7614 3 16 5.23858 16 8C16 10.7614 13.7614 13 11 13H5C2.23858 13 0 10.7614 0 8C0 5.23858 2.23858 3 5 3H11ZM11 5C12.6569 5 14 6.34315 14 8C14 9.65685 12.6569 11 11 11C9.34315 11 8 9.65685 8 8C8 6.34315 9.34315 5 11 5Z" fill="#000000"></path> </g></svg>',
+					type: "toggle",
+					value: true,
+					onChange: () => {
+						this.kxsClient.kxsNetworkSettings.enabled = !this.kxsClient.kxsNetworkSettings.enabled;
+						this.kxsClient.updateLocalStorage();
+					}
+				},
+				{
+					label: "Spoof Nickname",
+					category: "SERVER",
+					icon: '<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>hacker-solid</title> <g id="Layer_2" data-name="Layer 2"> <g id="invisible_box" data-name="invisible box"> <rect width="48" height="48" fill="none"></rect> </g> <g id="Q3_icons" data-name="Q3 icons"> <g> <path d="M24,30a60.3,60.3,0,0,1-13-1.3L7,27.6V40.2a1.9,1.9,0,0,0,1.5,1.9l12,2.9a2.4,2.4,0,0,0,2.1-.8L24,42.5l1.4,1.7A2.1,2.1,0,0,0,27,45h.5l12-2.9A1.9,1.9,0,0,0,41,40.2V27.6l-4,1.1A60.3,60.3,0,0,1,24,30Zm-7,8c-2,0-4-1.9-4-3s2-1,4-1,4,.9,4,2S19,38,17,38Zm14,0c-2,0-4-.9-4-2s2-2,4-2,4-.1,4,1S33,38,31,38Z"></path> <path d="M39.4,16,37.3,6.2A4,4,0,0,0,33.4,3H29.1a3.9,3.9,0,0,0-3.4,1.9L24,7.8,22.3,4.9A3.9,3.9,0,0,0,18.9,3H14.6a4,4,0,0,0-3.9,3.2L8.6,16C4.5,17.3,2,19,2,21c0,3.9,9.8,7,22,7s22-3.1,22-7C46,19,43.5,17.3,39.4,16Z"></path> </g> </g> </g> </g></svg>',
+					type: "toggle",
+					value: true,
+					onChange: () => {
+						this.kxsClient.kxsNetworkSettings.nickname_anonymized = !this.kxsClient.kxsNetworkSettings.nickname_anonymized;
+						this.kxsClient.updateLocalStorage();
+					}
+				},
+				{
+					label: "Voice Chat",
+					value: this.kxsClient.isVoiceChatEnabled,
+					icon: '<svg fill="#000000" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <defs> <style> .cls-1 { fill: none; } </style> </defs> <path d="M26,30H24V27H20a5.0055,5.0055,0,0,1-5-5V20.7207l-2.3162-.772a1,1,0,0,1-.5412-1.4631L15,13.7229V11a9.01,9.01,0,0,1,9-9h5V4H24a7.0078,7.0078,0,0,0-7,7v3a.9991.9991,0,0,1-.1426.5144l-2.3586,3.9312,1.8174.6057A1,1,0,0,1,17,20v2a3.0033,3.0033,0,0,0,3,3h5a1,1,0,0,1,1,1Z"></path> <rect x="19" y="12" width="4" height="2"></rect> <path d="M9.3325,25.2168a7.0007,7.0007,0,0,1,0-10.4341l1.334,1.49a5,5,0,0,0,0,7.4537Z"></path> <path d="M6.3994,28.8008a11.0019,11.0019,0,0,1,0-17.6006L7.6,12.8a9.0009,9.0009,0,0,0,0,14.4014Z"></path> <rect id="_Transparent_Rectangle_" data-name="<Transparent Rectangle>" class="cls-1" width="32" height="32"></rect> </g></svg>',
+					category: "SERVER",
+					type: "toggle",
+					onChange: () => {
+						this.kxsClient.isVoiceChatEnabled = !this.kxsClient.isVoiceChatEnabled;
+						this.kxsClient.updateLocalStorage();
+						this.kxsClient.voiceChat.toggleVoiceChat();
+					},
+				},
+				{
+					label: "Chat",
+					value: this.kxsClient.isKxsChatEnabled,
+					icon: '<svg fill="#000000" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M232.727,238.545v186.182H281.6l-13.964,69.818l97.745-69.818H512V238.545H232.727z M477.091,389.818H365.382h-11.187 l-9.103,6.502l-25.912,18.508l5.003-25.01H281.6h-13.964V273.455h209.455V389.818z"></path> </g> </g> <g> <g> <path d="M279.273,17.455H0v186.182h65.164l97.745,69.818l-13.964-69.818h130.327V17.455z M244.364,168.727h-95.418h-42.582 l5.003,25.01L85.455,175.23l-9.104-6.502H65.164H34.909V52.364h209.455V168.727z"></path> </g> </g> <g> <g> <rect x="180.364" y="93.091" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="122.182" y="93.091" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="64" y="93.091" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="413.091" y="314.182" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="354.909" y="314.182" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="296.727" y="314.182" width="34.909" height="34.909"></rect> </g> </g> </g></svg>',
+					category: "SERVER",
+					type: "toggle",
+					onChange: () => {
+						this.kxsClient.isKxsChatEnabled = !this.kxsClient.isKxsChatEnabled;
+						this.kxsClient.updateLocalStorage();
+						this.kxsClient.chat.toggleChat();
+					},
+				}
+			],
+		})
+
 		this.addOption(MISC, {
 			label: "Game History",
 			value: true,
@@ -452,32 +521,6 @@ class KxsClientSecondaryMenu {
 				this.kxsClient.updateLocalStorage()
 			},
 		})
-
-		this.addOption(SERVER, {
-			label: "Chat",
-			value: this.kxsClient.isKxsChatEnabled,
-			icon: '<svg fill="#000000" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M232.727,238.545v186.182H281.6l-13.964,69.818l97.745-69.818H512V238.545H232.727z M477.091,389.818H365.382h-11.187 l-9.103,6.502l-25.912,18.508l5.003-25.01H281.6h-13.964V273.455h209.455V389.818z"></path> </g> </g> <g> <g> <path d="M279.273,17.455H0v186.182h65.164l97.745,69.818l-13.964-69.818h130.327V17.455z M244.364,168.727h-95.418h-42.582 l5.003,25.01L85.455,175.23l-9.104-6.502H65.164H34.909V52.364h209.455V168.727z"></path> </g> </g> <g> <g> <rect x="180.364" y="93.091" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="122.182" y="93.091" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="64" y="93.091" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="413.091" y="314.182" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="354.909" y="314.182" width="34.909" height="34.909"></rect> </g> </g> <g> <g> <rect x="296.727" y="314.182" width="34.909" height="34.909"></rect> </g> </g> </g></svg>',
-			category: "SERVER",
-			type: "toggle",
-			onChange: () => {
-				this.kxsClient.isKxsChatEnabled = !this.kxsClient.isKxsChatEnabled;
-				this.kxsClient.updateLocalStorage();
-				this.kxsClient.chat.toggleChat();
-			},
-		});
-
-		this.addOption(SERVER, {
-			label: "Voice Chat",
-			value: this.kxsClient.isVoiceChatEnabled,
-			icon: '<svg fill="#000000" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <defs> <style> .cls-1 { fill: none; } </style> </defs> <path d="M26,30H24V27H20a5.0055,5.0055,0,0,1-5-5V20.7207l-2.3162-.772a1,1,0,0,1-.5412-1.4631L15,13.7229V11a9.01,9.01,0,0,1,9-9h5V4H24a7.0078,7.0078,0,0,0-7,7v3a.9991.9991,0,0,1-.1426.5144l-2.3586,3.9312,1.8174.6057A1,1,0,0,1,17,20v2a3.0033,3.0033,0,0,0,3,3h5a1,1,0,0,1,1,1Z"></path> <rect x="19" y="12" width="4" height="2"></rect> <path d="M9.3325,25.2168a7.0007,7.0007,0,0,1,0-10.4341l1.334,1.49a5,5,0,0,0,0,7.4537Z"></path> <path d="M6.3994,28.8008a11.0019,11.0019,0,0,1,0-17.6006L7.6,12.8a9.0009,9.0009,0,0,0,0,14.4014Z"></path> <rect id="_Transparent_Rectangle_" data-name="<Transparent Rectangle>" class="cls-1" width="32" height="32"></rect> </g></svg>',
-			category: "SERVER",
-			type: "toggle",
-			onChange: () => {
-				this.kxsClient.isVoiceChatEnabled = !this.kxsClient.isVoiceChatEnabled;
-				this.kxsClient.updateLocalStorage();
-				this.kxsClient.voiceChat.toggleVoiceChat();
-			},
-		});
 
 		this.addOption(SERVER, {
 			label: "Webhook URL",
@@ -726,6 +769,9 @@ class KxsClientSecondaryMenu {
 				break
 			case "toggle":
 				control = this.createToggleButton(option);
+				break;
+			case "sub":
+				control = this.createSubButton(option);
 				break;
 			case "click":
 				control = this.createClickButton(option);
@@ -1001,6 +1047,242 @@ class KxsClientSecondaryMenu {
 		this.menu.style.cursor = "grab";
 	};
 
+	// Crée un bouton pour ouvrir un sous-menu de configuration de mode
+	private createSubButton(option: MenuOption): HTMLButtonElement {
+		const btn = document.createElement("button");
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
+
+		// Styles pour le bouton de sous-menu (gris par défaut)
+		Object.assign(btn.style, {
+			width: "100%",
+			padding: isMobile ? "2px 0px" : "8px",
+			height: isMobile ? "24px" : "auto",
+			background: "#6B7280", // Couleur grise par défaut
+			border: "none",
+			borderRadius: isMobile ? "3px" : "6px",
+			color: "white",
+			cursor: "pointer",
+			transition: "background 0.2s",
+			fontSize: isMobile ? "9px" : "14px",
+			fontWeight: "bold",
+			minHeight: isMobile ? "20px" : "unset",
+			letterSpacing: isMobile ? "0.5px" : "1px"
+		});
+
+		btn.textContent = "CONFIGURE";
+
+		// Variables pour le sous-menu
+		let subMenuContainer: HTMLElement | null = null;
+		let sectionsBackup: Map<HTMLElement, string> = new Map();
+		let isSubMenuOpen = false;
+
+		// Gestionnaire d'événement pour ouvrir le sous-menu
+		btn.addEventListener("click", () => {
+			// Si aucun champ n'est défini, ne rien faire
+			if (!option.fields || option.fields.length === 0) {
+				if (option.onChange) {
+					option.onChange(option.value as boolean);
+				}
+				return;
+			}
+
+			// Si le sous-menu est déjà ouvert, le fermer
+			if (isSubMenuOpen) {
+				this.closeSubMenu();
+				return;
+			}
+
+			// Cacher toutes les sections du menu principal
+			this.sections.forEach(section => {
+				if (section.element) {
+					sectionsBackup.set(section.element, section.element.style.display);
+					section.element.style.display = 'none';
+				}
+			});
+
+			// Trouver le conteneur des options du menu (kxsMenuGrid)
+			const optionsContainer = document.getElementById('kxsMenuGrid');
+			if (!optionsContainer) {
+				console.error("kxsMenuGrid not found");
+				return;
+			}
+
+			// Créer le conteneur du sous-menu
+			subMenuContainer = document.createElement("div");
+			subMenuContainer.id = "kxs-submenu";
+			subMenuContainer.className = "kxs-submenu-container";
+			Object.assign(subMenuContainer.style, {
+				width: "100%",
+				padding: "10px 0",
+				boxSizing: "border-box"
+			});
+			this.blockMousePropagation(subMenuContainer); // Bloquer les événements souris
+
+			// Créer l'en-tête du sous-menu
+			const subMenuHeader = document.createElement("div");
+			Object.assign(subMenuHeader.style, {
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "center",
+				marginBottom: isMobile ? "10px" : "15px",
+				paddingBottom: isMobile ? "5px" : "10px",
+				borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+			});
+			this.blockMousePropagation(subMenuHeader);
+
+			// Bouton de retour
+			const backBtn = document.createElement("button");
+			backBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M15 19L8 12L15 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg> Retour`;
+			Object.assign(backBtn.style, {
+				background: "none",
+				border: "none",
+				color: "#fff",
+				cursor: "pointer",
+				display: "flex",
+				alignItems: "center",
+				gap: "6px",
+				padding: "5px",
+				fontSize: isMobile ? "12px" : "14px"
+			});
+			this.blockMousePropagation(backBtn);
+
+			// Titre du sous-menu
+			const subMenuTitle = document.createElement("h3");
+			subMenuTitle.textContent = option.label;
+			Object.assign(subMenuTitle.style, {
+				margin: "0",
+				color: "#fff",
+				fontSize: isMobile ? "16px" : "20px",
+				fontWeight: "bold",
+				textAlign: "center",
+				flex: "1"
+			});
+			this.blockMousePropagation(subMenuTitle);
+
+			// Ajouter l'événement au bouton retour pour fermer le sous-menu
+			backBtn.addEventListener("click", () => {
+				this.closeSubMenu();
+			});
+
+			// Assembler l'en-tête
+			subMenuHeader.appendChild(backBtn);
+			subMenuHeader.appendChild(subMenuTitle);
+			subMenuHeader.appendChild(document.createElement("div")); // Espace vide pour l'équilibre
+			subMenuContainer.appendChild(subMenuHeader);
+
+			// Créer la grille pour les options
+			const optionsGrid = document.createElement("div");
+			Object.assign(optionsGrid.style, {
+				display: "grid",
+				gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+				gap: isMobile ? "8px" : "16px",
+				padding: isMobile ? "4px" : "16px",
+				gridAutoRows: isMobile ? "minmax(100px, auto)" : "minmax(150px, auto)"
+			});
+			this.blockMousePropagation(optionsGrid);
+
+			// Créer les cartes pour chaque option
+			option.fields.forEach(mod => {
+				this.createModCard(mod, optionsGrid);
+			});
+
+			subMenuContainer.appendChild(optionsGrid);
+
+			// Ajouter le sous-menu au conteneur d'options
+			optionsContainer.appendChild(subMenuContainer);
+			isSubMenuOpen = true;
+
+			// Définir la méthode pour fermer le sous-menu
+			this.closeSubMenu = () => {
+				if (subMenuContainer && subMenuContainer.parentElement) {
+					subMenuContainer.parentElement.removeChild(subMenuContainer);
+				}
+
+				// Restaurer l'affichage des sections
+				sectionsBackup.forEach((display, element) => {
+					element.style.display = display;
+				});
+
+				// Réinitialiser les variables
+				subMenuContainer = null;
+				sectionsBackup.clear();
+				isSubMenuOpen = false;
+			};
+
+			// Appeler le callback si défini
+			if (option.onChange) {
+				option.onChange(option.value as boolean);
+			}
+		});
+
+		this.blockMousePropagation(btn);
+		return btn;
+	}
+
+	// Crée une carte pour un mod dans le sous-menu
+	private createModCard(mod: Mod, container: HTMLElement): void {
+		const modCard = document.createElement("div");
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
+
+		Object.assign(modCard.style, {
+			background: "rgba(31, 41, 55, 0.8)",
+			borderRadius: "10px",
+			padding: isMobile ? "10px" : "16px",
+			display: "flex",
+			flexDirection: "column",
+			alignItems: "center",
+			gap: isMobile ? "8px" : "12px",
+			minHeight: isMobile ? "100px" : "150px",
+		});
+
+		// Icône
+		const iconContainer = document.createElement("div");
+		Object.assign(iconContainer.style, {
+			width: isMobile ? "32px" : "48px",
+			height: isMobile ? "32px" : "48px",
+			borderRadius: "50%",
+			display: "flex",
+			alignItems: "center",
+			justifyContent: "center",
+			marginBottom: isMobile ? "4px" : "8px"
+		});
+		iconContainer.innerHTML = mod.icon || '';
+
+		// Titre
+		const title = document.createElement("div");
+		title.textContent = mod.label;
+		title.style.fontSize = isMobile ? "14px" : "16px";
+		title.style.textAlign = "center";
+
+		// Contrôle selon le type
+		let control: null | HTMLElement = null;
+
+		switch (mod.type) {
+			case "info":
+				control = this.createInfoElement(mod);
+				break;
+			case "input":
+				control = this.createInputElement(mod);
+				break;
+			case "toggle":
+				control = this.createToggleButton(mod);
+				break;
+			case "click":
+				control = this.createClickButton(mod);
+		}
+
+		modCard.appendChild(iconContainer);
+		modCard.appendChild(title);
+		if (control) {
+			modCard.appendChild(control);
+		}
+
+		container.appendChild(modCard);
+		this.blockMousePropagation(modCard);
+	}
+
 	addDragListeners() {
 		this.menu.addEventListener('mousedown', (e: MouseEvent) => {
 			// Ne pas arrêter la propagation si l'événement vient d'un élément interactif
@@ -1124,4 +1406,4 @@ class KxsClientSecondaryMenu {
 	}
 }
 
-export { KxsClientSecondaryMenu, type MenuSection, type MenuOption };
+export { KxsClientSecondaryMenu, type MenuSection, type MenuOption, type Mod };

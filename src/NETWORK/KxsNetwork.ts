@@ -1,6 +1,11 @@
 import KxsClient from "../KxsClient";
 import config from "../../config.json";
 
+interface KxsNetworkSettings {
+	enabled: boolean;
+	nickname_anonymized: boolean;
+}
+
 class KxsNetwork {
 	private currentGamePlayers: string[] = [];
 	public sendGlobalChatMessage(text: string) {
@@ -31,6 +36,8 @@ class KxsNetwork {
 	}
 
 	connect() {
+		if (this.kxsClient.kxsNetworkSettings.enabled === false) return;
+
 		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
 			this.kxsClient.logger.log('[KxsNetwork] WebSocket already connected');
 			return;
@@ -88,8 +95,17 @@ class KxsNetwork {
 		}
 	}
 
+	public generateUsername() {
+		let char = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		let username = '';
+		for (let i = 0; i < 6; i++) {
+			username += char[Math.floor(Math.random() * char.length)];
+		}
+		return "kxs_" + username;
+	}
+
 	public getUsername() {
-		return JSON.parse(localStorage.getItem("surviv_config") || "{}").playerName;
+		return this.kxsClient.kxsNetworkSettings.nickname_anonymized ? this.generateUsername() : JSON.parse(localStorage.getItem("surviv_config") || "{}").playerName;
 	}
 
 	private identify() {
@@ -238,5 +254,6 @@ class KxsNetwork {
 }
 
 export {
-	KxsNetwork
+	KxsNetwork,
+	KxsNetworkSettings
 }
