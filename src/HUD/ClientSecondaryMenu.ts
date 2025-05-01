@@ -524,6 +524,18 @@ class KxsClientSecondaryMenu {
 		});
 
 		this.addOption(HUD, {
+			label: "Health Bar Indicator",
+			value: this.kxsClient.isHealBarIndicatorEnabled,
+			type: "toggle",
+			icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0001 8.59997C13.3334 7.01474 15 5.42847 17 5.42847C19.6667 5.42847 22 7.52847 22 11.2855C22 13.7143 20.2683 16.4912 18.1789 18.9912C16.5956 20.8955 14.7402 22.5713 13.2302 22.5713H10.7698C9.25981 22.5713 7.40446 20.8955 5.82112 18.9912C3.73174 16.4912 2 13.7143 2 11.2855C2 7.52847 4.33333 5.42847 7 5.42847C9 5.42847 10.6667 7.01474 12.0001 8.59997Z" fill="#000000"></path> </g></svg>',
+			category: "HUD",
+			onChange: () => {
+				this.kxsClient.isHealBarIndicatorEnabled = !this.kxsClient.isHealBarIndicatorEnabled;
+				this.kxsClient.updateLocalStorage();
+			},
+		});
+
+		this.addOption(HUD, {
 			label: "Message Open/Close RSHIFT Menu",
 			value: this.kxsClient.isNotifyingForToggleMenu,
 			type: "toggle",

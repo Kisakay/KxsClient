@@ -1146,6 +1146,12 @@ class KxsClientHUD {
 	updateBoostBars() {
 		const boostCounter = document.querySelector("#ui-boost-counter");
 		if (boostCounter) {
+			// Si les indicateurs sont désactivés, on supprime les éléments personnalisés
+			if (!this.kxsClient.isHealBarIndicatorEnabled) {
+				this.cleanBoostDisplay(boostCounter);
+				return;
+			}
+
 			const boostBars = boostCounter.querySelectorAll(
 				".ui-boost-base .ui-bar-inner",
 			);
@@ -1415,16 +1421,34 @@ class KxsClientHUD {
 		//scalable?
 	}
 
-	updateMenuButtonText() {
-		const hideButton = document.getElementById("hideMenuButton")!;
-		hideButton.textContent = this.isMenuVisible
-			? "Hide Menu [P]"
-			: "Show Menu [P]";
+	// Nettoie l'affichage boost personnalisé
+	cleanBoostDisplay(boostCounter: Element) {
+		const boostDisplay = boostCounter.querySelector(".boost-display");
+		if (boostDisplay) {
+			boostDisplay.remove();
+		}
+	}
+
+	// Nettoie l'affichage santé personnalisé
+	cleanHealthDisplay(container: Element) {
+		const percentageText = container.querySelector(".health-text");
+		if (percentageText) {
+			percentageText.remove();
+		}
+
+		const healthChangeElements = container.querySelectorAll(".health-change");
+		healthChangeElements.forEach(el => el.remove());
 	}
 
 	updateHealthBars() {
 		const healthBars = document.querySelectorAll("#ui-health-container");
 		healthBars.forEach((container) => {
+			// Si les indicateurs sont désactivés, on supprime les éléments personnalisés
+			if (!this.kxsClient.isHealBarIndicatorEnabled) {
+				this.cleanHealthDisplay(container);
+				return;
+			}
+
 			const bar = container.querySelector("#ui-health-actual");
 			if (bar) {
 				const currentHealth = Math.round(parseFloat((bar as HTMLElement).style.width));
@@ -1470,10 +1494,16 @@ class KxsClientHUD {
 	}
 
 	private showHealthChangeAnimation(container: HTMLElement, change: number) {
-		const animation = document.createElement("div");
+		const healthContainer = container as HTMLElement;
+
+		if (!healthContainer || !this.kxsClient.isHealBarIndicatorEnabled) return;
+
+		// Create animation element
+		const animationElement = document.createElement("div");
+		animationElement.classList.add("health-change");
 		const isPositive = change > 0;
 
-		Object.assign(animation.style, {
+		Object.assign(animationElement.style, {
 			position: "absolute",
 			color: isPositive ? "#2ecc71" : "#e74c3c",
 			fontSize: "24px",
@@ -1491,16 +1521,16 @@ class KxsClientHUD {
 
 		// Check if change is a valid number before displaying it
 		if (!isNaN(change)) {
-			animation.textContent = `${isPositive ? "+" : ""}${change} HP`;
+			animationElement.textContent = `${isPositive ? "+" : ""}${change} HP`;
 		} else {
 			// Skip showing animation if change is NaN
 			return;
 		}
 
-		container.appendChild(animation);
+		container.appendChild(animationElement);
 
 		this.healthAnimations.push({
-			element: animation,
+			element: animationElement,
 			startTime: performance.now(),
 			duration: 1500, // Animation duration in milliseconds
 			value: change,

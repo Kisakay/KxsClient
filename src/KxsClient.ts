@@ -45,6 +45,7 @@ export default class KxsClient {
 	isFocusModeEnabled: boolean;
 	isVoiceChatEnabled: boolean;
 	isKxsChatEnabled: boolean;
+	isHealBarIndicatorEnabled: boolean;
 
 	all_friends: string;
 	customCrosshair: string | null;
@@ -110,6 +111,8 @@ export default class KxsClient {
 		this.isKxsChatEnabled = true;
 		this.isVoiceChatEnabled = false;
 		this.isFocusModeEnabled = false;
+		this.isHealBarIndicatorEnabled = true;
+
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
 			ping: { left: 20, top: 220 },
@@ -309,7 +312,8 @@ export default class KxsClient {
 				isGunBorderChromatic: this.isGunBorderChromatic,
 				isVoiceChatEnabled: this.isVoiceChatEnabled,
 				isKxsChatEnabled: this.isKxsChatEnabled,
-				kxsNetworkSettings: this.kxsNetworkSettings
+				kxsNetworkSettings: this.kxsNetworkSettings,
+				isHealBarIndicatorEnabled: this.isHealBarIndicatorEnabled
 			}),
 		);
 	};
@@ -765,6 +769,7 @@ export default class KxsClient {
 			this.isVoiceChatEnabled = savedSettings.isVoiceChatEnabled ?? this.isVoiceChatEnabled;
 			this.isKxsChatEnabled = savedSettings.isKxsChatEnabled ?? this.isKxsChatEnabled;
 			this.kxsNetworkSettings = savedSettings.kxsNetworkSettings ?? this.kxsNetworkSettings;
+			this.isHealBarIndicatorEnabled = savedSettings.isHealBarIndicatorEnabled ?? this.isHealBarIndicatorEnabled;
 
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists
