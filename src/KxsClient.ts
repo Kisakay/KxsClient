@@ -770,6 +770,8 @@ export default class KxsClient {
 			this.isKxsChatEnabled = savedSettings.isKxsChatEnabled ?? this.isKxsChatEnabled;
 			this.kxsNetworkSettings = savedSettings.kxsNetworkSettings ?? this.kxsNetworkSettings;
 			this.isHealBarIndicatorEnabled = savedSettings.isHealBarIndicatorEnabled ?? this.isHealBarIndicatorEnabled;
+			this.isWinSoundEnabled = savedSettings.isWinSoundEnabled ?? this.isWinSoundEnabled;
+			this.isDeathSoundEnabled = savedSettings.isDeathSoundEnabled ?? this.isDeathSoundEnabled;
 
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists
