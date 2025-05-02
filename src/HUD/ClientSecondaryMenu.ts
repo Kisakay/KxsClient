@@ -1,5 +1,6 @@
 import { background_image, kxs_logo } from "../UTILS/vars";
 import KxsClient from "../KxsClient";
+import packageInfo from "../../package.json";
 
 export const category = ["ALL", "HUD", "SERVER", "MECHANIC", "MISC"] as const;
 
@@ -72,6 +73,8 @@ class KxsClientSecondaryMenu {
 		document.body.appendChild(this.menu);
 		this.menu.style.display = "none";
 
+
+
 		// Empêcher la propagation des événements souris (clics et molette) vers la page web
 		// Utiliser la phase de bouillonnement (bubbling) au lieu de la phase de capture
 		// pour permettre aux éléments enfants de recevoir les événements d'abord
@@ -143,7 +146,7 @@ class KxsClientSecondaryMenu {
 		// Détection mobile pour styles réduits
 		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
 
-		const logoSize = isMobile ? 16 : 24;
+		const logoSize = isMobile ? 20 : 30;
 		const titleFontSize = isMobile ? 12 : 20;
 		const headerGap = isMobile ? 4 : 10;
 		const headerMarginBottom = isMobile ? 8 : 20;
@@ -156,7 +159,16 @@ class KxsClientSecondaryMenu {
             <div style="display: flex; align-items: center; gap: ${headerGap}px;">
                 <img src="${kxs_logo}" 
                     alt="Logo" style="width: ${logoSize}px; height: ${logoSize}px;">
-                <span style="font-size: ${titleFontSize}px; font-weight: bold;">KXS CLIENT</span>
+                <span style="font-size: ${titleFontSize}px; font-weight: bold;">KXS CLIENT <span style="
+                 font-size: ${isMobile ? 10 : 14}px;
+                 font-weight: 700;
+                 color: #3B82F6;
+                 opacity: 0.95;
+                 position: relative;
+                 top: ${isMobile ? -1 : -2}px;
+                 margin-left: ${isMobile ? 2 : 3}px;
+                 letter-spacing: 0.5px;
+               ">v${packageInfo.version}</span></span>
             </div>
             <div style="display: flex; gap: ${headerGap}px;">
               <button style="
