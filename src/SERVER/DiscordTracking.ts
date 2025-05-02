@@ -56,7 +56,7 @@ const stuff_emojis = {
 
 class WebhookValidator {
 
-	public static isValidWebhookUrl(url: string): boolean {
+	public static isValidWebhookUrl(url: string = ''): boolean {
 		return url.startsWith("https://")
 	}
 
