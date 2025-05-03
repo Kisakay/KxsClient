@@ -137,7 +137,11 @@ class KxsNetwork {
 						// Détecter les nouveaux joueurs (hors soi-même)
 						const newPlayers = currentPlayers.filter((name: string) => !previousPlayers.includes(name));
 						for (const newPlayer of newPlayers) {
-							this.kxsClient.nm.showNotification(`🎉 ${newPlayer} is a Kxs player!`, 'info', 3500);
+							if (this.kxsClient.isKxsChatEnabled) {
+								this.kxsClient.chat.addSystemMessage(`${newPlayer} joined the game as a Kxs player`);
+							} else {
+								this.kxsClient.nm.showNotification(`🎉 ${newPlayer} is a Kxs player!`, 'info', 3500);
+							}
 						}
 						this.currentGamePlayers = currentPlayers;
 					}
@@ -223,7 +227,8 @@ class KxsNetwork {
 				op: 3, // Custom operation code for game info
 				d: {
 					type: 'find_game_response',
-					gameId
+					gameId,
+					user: this.getUsername()
 				}
 			};
 			this.send(payload);

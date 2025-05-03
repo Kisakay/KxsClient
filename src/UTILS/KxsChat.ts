@@ -4,7 +4,7 @@ class KxsChat {
 	private chatInput: HTMLInputElement | null = null;
 	private chatBox: HTMLDivElement | null = null;
 	private messagesContainer: HTMLDivElement | null = null;
-	private chatMessages: { user: string, text: string }[] = [];
+	private chatMessages: { user: string, text: string, isSystem?: boolean }[] = [];
 	private chatOpen = false;
 	private kxsClient: KxsClient;
 
@@ -183,11 +183,38 @@ class KxsChat {
 
 	public addChatMessage(user: string, text: string) {
 		if (!this.chatBox || !this.kxsClient.isKxsChatEnabled) return;
-		this.chatMessages.push({ user, text });
+		this.chatMessages.push({ user, text, isSystem: false });
 		if (this.chatMessages.length > 5) this.chatMessages.shift();
-		if (this.messagesContainer) {
-			this.messagesContainer.innerHTML = this.chatMessages.map(m => `<span><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</span>`).join('');
-		}
+		this.renderMessages();
+	}
+
+	/**
+	 * Ajoute un message système dans le chat
+	 * @param text Texte du message système
+	 */
+	public addSystemMessage(text: string) {
+		if (!this.chatBox || !this.kxsClient.isKxsChatEnabled) return;
+
+		// Ajouter le message système avec un marqueur spécifique isSystem = true
+		this.chatMessages.push({ user: "", text, isSystem: true });
+		if (this.chatMessages.length > 5) this.chatMessages.shift();
+
+		this.renderMessages();
+	}
+
+	/**
+	 * Rend les messages du chat avec leur style approprié
+	 */
+	private renderMessages() {
+		if (!this.messagesContainer) return;
+
+		this.messagesContainer.innerHTML = this.chatMessages.map(m => {
+			if (m.isSystem) {
+				return `<span style='color:#3B82F6; font-style:italic;'>${m.text}</span>`;
+			} else {
+				return `<span><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</span>`;
+			}
+		}).join('');
 	}
 
 	public toggleChat() {
