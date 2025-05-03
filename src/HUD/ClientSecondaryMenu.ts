@@ -1395,7 +1395,7 @@ class KxsClientSecondaryMenu {
 		this.isOpen = this.isClientMenuVisible;
 
 		if (this.kxsClient.isNotifyingForToggleMenu) {
-			this.kxsClient.nm.showNotification(this.isClientMenuVisible ? "Opening menu..." : "Closing menu...", "info", 1400);
+			this.kxsClient.nm.showNotification(this.isClientMenuVisible ? "Opening menu..." : "Closing menu...", "info", 1100);
 		}
 
 		this.menu.style.display = this.isClientMenuVisible ? "block" : "none";
