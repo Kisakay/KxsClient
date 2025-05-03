@@ -196,17 +196,17 @@ export default class KxsClient {
 		}
 	}
 
-
 	private createOnlineMenu() {
 		// Cherche le div #start-overlay
 		const overlay = document.getElementById('start-overlay');
 		if (!overlay) return;
+
 		// Crée le menu
 		const menu = document.createElement('div');
 		menu.id = 'kxs-online-menu';
 		menu.style.position = 'absolute';
 		menu.style.top = '18px';
-		menu.style.right = '18px';
+		menu.style.left = '18px'; // Changé de 'right' à 'left'
 		menu.style.background = 'rgba(30,30,40,0.92)';
 		menu.style.color = '#fff';
 		menu.style.padding = '8px 18px';
@@ -220,21 +220,23 @@ export default class KxsClient {
 		menu.style.display = 'flex';
 		menu.style.alignItems = 'center';
 		menu.innerHTML = `
-			<span id="kxs-online-dot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#3fae2a;margin-right:10px;box-shadow:0 0 8px #3fae2a;animation:kxs-pulse 1s infinite alternate;"></span>
-			<b></b> <span id="kxs-online-count">...</span>
+		  <span id="kxs-online-dot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#3fae2a;margin-right:10px;box-shadow:0 0 8px #3fae2a;animation:kxs-pulse 1s infinite alternate;"></span>
+		  <b></b> <span id="kxs-online-count">...</span>
 		`;
+
 		// Ajoute l'animation CSS
 		if (!document.getElementById('kxs-online-style')) {
 			const style = document.createElement('style');
 			style.id = 'kxs-online-style';
 			style.innerHTML = `
 			@keyframes kxs-pulse {
-				0% { box-shadow:0 0 8px #3fae2a; opacity: 1; }
-				100% { box-shadow:0 0 16px #3fae2a; opacity: 0.6; }
+			  0% { box-shadow:0 0 8px #3fae2a; opacity: 1; }
+			  100% { box-shadow:0 0 16px #3fae2a; opacity: 0.6; }
 			}
-			`;
+		  `;
 			document.head.appendChild(style);
 		}
+
 		overlay.appendChild(menu);
 		this.onlineMenuElement = menu;
 		this.updateOnlineMenu();
