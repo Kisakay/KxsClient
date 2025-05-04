@@ -1034,6 +1034,18 @@ class KxsClientHUD {
 
 			this.kills = this.kxsClient.getKills();
 
+			// Vérifie et crée les compteurs s'ils n'existent pas encore mais sont activés
+			if (this.kxsClient.isFpsVisible && !this.kxsClient.counters.fps) {
+				this.initCounter("fps", "FPS", "60");
+			}
+			if (this.kxsClient.isKillsVisible && !this.kxsClient.counters.kills) {
+				this.initCounter("kills", "Kills", "0");
+			}
+			if (this.kxsClient.isPingVisible && !this.kxsClient.counters.ping) {
+				this.initCounter("ping", "Ping", "45ms");
+			}
+
+			// Met à jour les valeurs des compteurs visibles
 			if (this.kxsClient.isFpsVisible && this.kxsClient.counters.fps) {
 				this.kxsClient.counters.fps.textContent = `FPS: ${this.fps}`;
 			}
@@ -1062,6 +1074,9 @@ class KxsClientHUD {
 	}
 
 	initCounter(name: string, label: string, initialText: string) {
+		// Vérifier si le compteur existe déjà et le supprimer si c'est le cas
+		this.removeCounter(name);
+
 		const counter = document.createElement("div");
 		counter.id = `${name}Counter`;
 		const counterContainer = document.createElement("div");
@@ -1117,6 +1132,43 @@ class KxsClientHUD {
 
 		this.kxsClient.makeDraggable(counterContainer, `${name}CounterPosition`);
 		this.kxsClient.counters[name] = counter;
+	}
+
+	/**
+	 * Supprime un compteur du DOM et de la référence dans kxsClient.counters
+	 * @param name Nom du compteur à supprimer (fps, kills, ping)
+	 */
+	removeCounter(name: string) {
+		// Supprime l'élément du DOM s'il existe
+		const counterContainer = document.getElementById(`${name}CounterContainer`);
+		if (counterContainer) {
+			counterContainer.remove();
+		}
+
+		// Supprime la référence dans kxsClient.counters
+		if (this.kxsClient.counters[name]) {
+			// Utilise delete pour supprimer la propriété au lieu de l'affecter à null
+			delete this.kxsClient.counters[name];
+		}
+	}
+
+	/**
+	 * Gère l'affichage ou le masquage d'un compteur en fonction de son état
+	 * @param name Nom du compteur (fps, kills, ping)
+	 * @param visible État de visibilité souhaité
+	 * @param label Libellé du compteur
+	 * @param initialText Texte initial à afficher
+	 */
+	toggleCounter(name: string, visible: boolean, label: string, initialText: string) {
+		if (visible) {
+			// Si le compteur doit être visible mais n'existe pas, on le crée
+			if (!this.kxsClient.counters[name]) {
+				this.initCounter(name, label, initialText);
+			}
+		} else {
+			// Si le compteur ne doit pas être visible mais existe, on le supprime
+			this.removeCounter(name);
+		}
 	}
 
 	resetCounter(name: string, label: string, initialText: string) {
