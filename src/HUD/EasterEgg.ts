@@ -21,6 +21,7 @@ export class EasterEgg {
 	private serverSelector: ServerSelector | null = null;
 	private serverButton: HTMLElement | null = null;
 	private messageChangeInterval: number | null = null;
+	private originalPageTitle: string = '';
 	private messages: string[] = [
 		"You're already in",
 		"You didnt have found Kxs, is kxs who found you",
@@ -36,6 +37,9 @@ export class EasterEgg {
 	}
 
 	private init(): void {
+		// Save original page title
+		this.originalPageTitle = document.title;
+
 		// Check if we're on the target website
 		if (window.location.hostname === 'kxs.rip' || window.location.hostname === 'www.kxs.rip') {
 			// Initialize sounds
@@ -460,6 +464,9 @@ export class EasterEgg {
 		this.textElement.textContent = '';
 		this.textElement.style.opacity = '1';
 
+		// Update page title with message
+		document.title = message;
+
 		// Calculate typing speed based on message length
 		// Longer messages type faster (inversely proportional)
 		const baseSpeed = 300; // Base speed in ms
@@ -491,8 +498,11 @@ export class EasterEgg {
 					});
 				}
 
-				// Add character
+				// Add character to text element
 				this.textElement.textContent += message.charAt(i);
+
+				// Update page title in real-time with the current text
+				document.title = this.textElement.textContent || message;
 
 				// If last character and we should add a period, do it with a pause
 				if (shouldAddPeriod) {
@@ -504,6 +514,9 @@ export class EasterEgg {
 								console.error('Failed to play period sound:', err);
 							});
 							this.textElement.textContent += '.';
+
+							// Update title with the final period
+							document.title = this.textElement.textContent || (message + '.');
 						}
 					}, 400);
 				}
@@ -738,6 +751,9 @@ export class EasterEgg {
 		if (!this.isInitialized) return;
 		this.isActive = false;
 		this.isInitialized = false;
+
+		// Restore original page title
+		document.title = this.originalPageTitle;
 
 		// Remove overlay if it exists
 		if (this.overlayElement) {
