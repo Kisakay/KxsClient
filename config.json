@@ -15,7 +15,8 @@
 		"*://50v50.online/*",
 		"*://eu-comp.net/*",
 		"*://survev.leia-is.gay/*",
-		"*://survivx.org"
+		"*://survivx.org",
+		"*://kxs.rip/*"
 	],
 	"grant": [
 		"none"
