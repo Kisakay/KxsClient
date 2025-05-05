@@ -46,6 +46,7 @@ export default class KxsClient {
 	isVoiceChatEnabled: boolean;
 	isKxsChatEnabled: boolean;
 	isHealBarIndicatorEnabled: boolean;
+	brightness: number;
 
 	all_friends: string;
 	customCrosshair: string | null;
@@ -112,6 +113,7 @@ export default class KxsClient {
 		this.isVoiceChatEnabled = false;
 		this.isFocusModeEnabled = false;
 		this.isHealBarIndicatorEnabled = true;
+		this.brightness = 50;
 
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
@@ -139,6 +141,7 @@ export default class KxsClient {
 		this.db = new SteganoDB({ database: "KxsClient", tableName: "gameplay_history" });
 		// Before all, load local storage
 		this.loadLocalStorage();
+		this.updateLocalStorage();
 		this.changeSurvevLogo();
 
 		this.nm = NotificationManager.getInstance();
@@ -315,10 +318,18 @@ export default class KxsClient {
 				isVoiceChatEnabled: this.isVoiceChatEnabled,
 				isKxsChatEnabled: this.isKxsChatEnabled,
 				kxsNetworkSettings: this.kxsNetworkSettings,
-				isHealBarIndicatorEnabled: this.isHealBarIndicatorEnabled
+				isHealBarIndicatorEnabled: this.isHealBarIndicatorEnabled,
+				brightness: this.brightness
 			}),
 		);
 	};
+
+	applyBrightness(value: number) {
+		this.brightness = value;
+		const brightnessValue = value / 50; // 0 à 2, avec 1 étant la luminosité normale
+		document.documentElement.style.filter = `brightness(${brightnessValue})`;
+		this.updateLocalStorage();
+	}
 
 	private initDeathDetection(): void {
 		const config = {
@@ -774,6 +785,11 @@ export default class KxsClient {
 			this.isHealBarIndicatorEnabled = savedSettings.isHealBarIndicatorEnabled ?? this.isHealBarIndicatorEnabled;
 			this.isWinSoundEnabled = savedSettings.isWinSoundEnabled ?? this.isWinSoundEnabled;
 			this.isDeathSoundEnabled = savedSettings.isDeathSoundEnabled ?? this.isDeathSoundEnabled;
+			this.brightness = savedSettings.brightness ?? this.brightness;
+
+			// Apply brightness setting
+			const brightnessValue = this.brightness / 50;
+			document.documentElement.style.filter = `brightness(${brightnessValue})`;
 
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists
