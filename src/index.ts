@@ -13,7 +13,7 @@ import { EasterEgg } from "./HUD/EasterEgg";
 
 if (window.location.href === "https://kxs.rip/") {
 	/*
-		- Avoiding intercepting another page as the root page
+		- Injecting Easter Egg
 	*/
 	const easterEgg = new EasterEgg();
 } else if (window.location.pathname === "/") {
