@@ -10,9 +10,10 @@ import packageInfo from "../package.json";
 import config from "../config.json";
 import { EasterEgg } from "./HUD/EasterEgg";
 
-if (window.location.hostname === "kxs.rip") {
+
+if (window.location.href === "https://kxs.rip/") {
 	const easterEgg = new EasterEgg();
-} else {
+} else if (!window.location.href.includes("kxs.rip")) {
 	intercept("audio/ambient/menu_music_01.mp3", background_song);
 	intercept('img/survev_logo_full.png', full_logo);
 
