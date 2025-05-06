@@ -16,7 +16,7 @@ if (window.location.href === "https://kxs.rip/") {
 		- Avoiding intercepting another page as the root page
 	*/
 	const easterEgg = new EasterEgg();
-} else if (!window.location.href.includes("kxs.rip") && window.location.href.split("/")[3] === "") {
+} else if (!window.location.href.includes("kxs.rip") && window.location.pathname === "/") {
 	/*
 		- Avoiding intercepting another page as the root page
 	*/
