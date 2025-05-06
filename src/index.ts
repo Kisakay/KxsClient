@@ -12,8 +12,15 @@ import { EasterEgg } from "./HUD/EasterEgg";
 
 
 if (window.location.href === "https://kxs.rip/") {
+	/*
+		- Avoiding intercepting another page as the root page
+	*/
 	const easterEgg = new EasterEgg();
-} else if (!window.location.href.includes("kxs.rip")) {
+} else if (!window.location.href.includes("kxs.rip") && window.location.href.split("/")[3] === "") {
+	/*
+		- Avoiding intercepting another page as the root page
+	*/
+
 	intercept("audio/ambient/menu_music_01.mp3", background_song);
 	intercept('img/survev_logo_full.png', full_logo);
 
