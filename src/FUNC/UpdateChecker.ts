@@ -17,7 +17,7 @@ class UpdateChecker {
 		}
 	}
 
-	private async downloadScript(): Promise<void> {
+	private async copyScriptToClipboard(): Promise<void> {
 		try {
 			const response: Response = await fetch(this.remoteScriptUrl, {
 				method: "GET",
@@ -28,19 +28,13 @@ class UpdateChecker {
 				}
 			});
 			if (!response.ok) {
-				throw new Error("Error downloading script: " + response.statusText);
+				throw new Error("Error retrieving script: " + response.statusText);
 			}
-			const blob = await response.blob();
-			const downloadUrl = window.URL.createObjectURL(blob);
-			const downloadLink = document.createElement('a');
-			downloadLink.href = downloadUrl;
-			downloadLink.download = 'KxsClient.user.js';
-			document.body.appendChild(downloadLink);
-			downloadLink.click();
-			document.body.removeChild(downloadLink);
-			window.URL.revokeObjectURL(downloadUrl);
+			const scriptContent = await response.text();
+			await navigator.clipboard.writeText(scriptContent);
+			this.kxsClient.nm.showNotification("Script copied to clipboard!", "success", 2300);
 		} catch (error: any) {
-			throw new Error("Error during script download: " + error);
+			throw new Error("Error copying script to clipboard: " + error);
 		}
 	}
 
@@ -91,9 +85,10 @@ class UpdateChecker {
 		modal.style.backgroundColor = "rgb(250, 250, 250)";
 		modal.style.borderRadius = "10px";
 		modal.style.padding = "20px";
-		modal.style.width = "400px";
+		modal.style.width = "500px";
 		modal.style.boxShadow = "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)";
 		modal.style.border = "1px solid rgb(229, 229, 229)";
+		modal.style.zIndex = "10000";
 
 		const header = document.createElement("div");
 		header.style.display = "flex";
@@ -101,9 +96,9 @@ class UpdateChecker {
 		header.style.marginBottom = "15px";
 
 		const title = document.createElement("h3");
-		title.textContent = "Download Update";
+		title.textContent = "Update Available";
 		title.style.margin = "0";
-		title.style.fontSize = "16px";
+		title.style.fontSize = "18px";
 		title.style.fontWeight = "600";
 		header.appendChild(title);
 
@@ -112,35 +107,59 @@ class UpdateChecker {
 		closeButton.style.marginLeft = "auto";
 		closeButton.style.border = "none";
 		closeButton.style.background = "none";
-		closeButton.style.fontSize = "20px";
+		closeButton.style.fontSize = "24px";
 		closeButton.style.cursor = "pointer";
 		closeButton.style.padding = "0 5px";
 		closeButton.onclick = () => modal.remove();
 		header.appendChild(closeButton);
 
 		const content = document.createElement("div");
-		content.innerHTML = `A new version of KxsClient is available!<br>
-    Locale: ${this.getCurrentScriptVersion()} | On web: ${this.hostedScriptVersion}<br>
-    Click the button below to update now.`;
-		content.style.marginBottom = "20px";
+		content.innerHTML = `<div style="margin-bottom: 20px;">
+			<p style="margin-bottom: 10px; font-weight: 500;">A new version of KxsClient is available!</p>
+			<p style="margin-bottom: 10px;">
+				Current version: <span style="font-weight: 500;">${this.getCurrentScriptVersion()}</span> | 
+				New version: <span style="font-weight: 500; color: #4f46e5;">${this.hostedScriptVersion}</span>
+			</p>
+			<p style="margin-bottom: 15px;">To update, follow these steps:</p>
+			<ol style="margin-left: 20px; margin-bottom: 15px;">
+				<li style="margin-bottom: 8px;">Click "Copy Script" below</li>
+				<li style="margin-bottom: 8px;">Open your script manager (Tampermonkey, Violentmonkey, etc.)</li>
+				<li style="margin-bottom: 8px;">Overwrite the current script with the new one and paste the content</li>
+				<li style="margin-bottom: 8px;">Save the script (Ctrl+S or Cmd+S)</li>
+				<li>Reload the game page</li>
+			</ol>
+		</div>`;
 		content.style.color = "rgb(75, 85, 99)";
+		content.style.fontSize = "14px";
+		content.style.lineHeight = "1.5";
 
 		const updateButton = document.createElement("button");
-		updateButton.textContent = "Update Now";
-		updateButton.style.backgroundColor = "rgb(59, 130, 246)";
+		updateButton.textContent = "Copier le script";
+		updateButton.style.backgroundColor = "rgb(79, 70, 229)";
 		updateButton.style.color = "white";
-		updateButton.style.padding = "8px 16px";
+		updateButton.style.padding = "10px 16px";
 		updateButton.style.borderRadius = "6px";
 		updateButton.style.border = "none";
 		updateButton.style.cursor = "pointer";
 		updateButton.style.width = "100%";
+		updateButton.style.fontWeight = "500";
+		updateButton.style.fontSize = "15px";
+		updateButton.style.transition = "background-color 0.2s ease";
+		updateButton.onmouseover = () => updateButton.style.backgroundColor = "rgb(67, 56, 202)";
+		updateButton.onmouseout = () => updateButton.style.backgroundColor = "rgb(79, 70, 229)";
 		updateButton.onclick = async () => {
 			try {
-				await this.downloadScript();
-				this.kxsClient.nm.showNotification("Download started", "success", 2300);
-				modal.remove();
+				await this.copyScriptToClipboard();
+				updateButton.textContent = "Script copied!";
+				updateButton.style.backgroundColor = "rgb(16, 185, 129)";
+				setTimeout(() => {
+					if (updateButton.isConnected) {
+						updateButton.textContent = "Copy Script";
+						updateButton.style.backgroundColor = "rgb(79, 70, 229)";
+					}
+				}, 3000);
 			} catch (error) {
-				this.kxsClient.nm.showNotification("Download failed: " + (error as any).message, "info", 5000);
+				this.kxsClient.nm.showNotification("Error: " + (error as any).message, "error", 5000);
 			}
 		};
 
