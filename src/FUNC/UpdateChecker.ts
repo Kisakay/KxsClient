@@ -134,7 +134,7 @@ class UpdateChecker {
 		content.style.lineHeight = "1.5";
 
 		const updateButton = document.createElement("button");
-		updateButton.textContent = "Copier le script";
+		updateButton.textContent = "Copy Script";
 		updateButton.style.backgroundColor = "rgb(79, 70, 229)";
 		updateButton.style.color = "white";
 		updateButton.style.padding = "10px 16px";
