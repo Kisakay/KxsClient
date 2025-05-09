@@ -22,21 +22,16 @@ class DiscordWebSocket {
 
 		this.ws = new WebSocket('wss://gateway.discord.gg/?v=9&encoding=json');
 
-		this.ws.onopen = () => {
-			this.kxsClient.logger.log('[RichPresence] WebSocket connection established');
-		};
+		this.ws.onopen = () => { };
 
 		this.ws.onmessage = (event) => {
 			const data = JSON.parse(event.data);
 			this.handleMessage(data);
 		};
 
-		this.ws.onerror = (error) => {
-			this.kxsClient.nm.showNotification('WebSocket error: ' + error.type, 'error', 5000);
-		};
+		this.ws.onerror = (error) => { };
 
 		this.ws.onclose = () => {
-			this.kxsClient.nm.showNotification('Disconnected from Discord gateway', 'info', 5000);
 			clearInterval(this.heartbeatInterval);
 			this.isAuthenticated = false;
 		};
