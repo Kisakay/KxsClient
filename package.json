@@ -18,12 +18,11 @@
 		"@types/tampermonkey": "^5.0.4",
 		"ts-loader": "^9.5.2",
 		"typescript": "^5.8.3",
-		"webpack": "^5.99.8",
+		"webpack": "^5.99.9",
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
-		"semver": "^7.7.1",
-		"stegano.db": "^4.3.8",
-		"ws": "^8.18.2"
+		"semver": "^7.7.2",
+		"stegano.db": "^4.3.8"
 	}
 }
