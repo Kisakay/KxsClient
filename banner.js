@@ -1,8 +1,8 @@
-const config = require('./config.json');
 const packageInfo = require('./package.json');
+const config = require('./config.json');
 
 module.exports = {
-    banner: `// ==UserScript==
+	banner: `// ==UserScript==
 // @name         ${packageInfo.placeholder}
 // @namespace    ${packageInfo.namespace}
 // @version      ${packageInfo.version}
