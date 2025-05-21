@@ -148,9 +148,14 @@ class KxsChat {
 				if (eventType === 'keydown') {
 					if (ke.key === 'Enter') {
 						const txt = input.value.trim();
-						if (txt) this.kxsClient.kxsNetwork.sendGlobalChatMessage(txt);
-						input.value = '';
-						this.closeChatInput();
+						if (txt) {
+							this.kxsClient.kxsNetwork.sendGlobalChatMessage(txt);
+							input.value = '';
+							this.closeChatInput();
+						} else {
+							// Ne ferme pas l'input si rien n'a été écrit
+							input.value = '';
+						}
 					} else if (ke.key === 'Escape') {
 						this.closeChatInput();
 					}
