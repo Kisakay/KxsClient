@@ -202,16 +202,14 @@ export default class KxsClient {
 	}
 
 	private createOnlineMenu() {
-		// Cherche le div #start-overlay
 		const overlay = document.getElementById('start-overlay');
 		if (!overlay) return;
 
-		// Crée le menu
 		const menu = document.createElement('div');
 		menu.id = 'kxs-online-menu';
 		menu.style.position = 'absolute';
 		menu.style.top = '18px';
-		menu.style.left = '18px'; // Changé de 'right' à 'left'
+		menu.style.left = '18px';
 		menu.style.background = 'rgba(30,30,40,0.92)';
 		menu.style.color = '#fff';
 		menu.style.padding = '8px 18px';
@@ -224,12 +222,35 @@ export default class KxsClient {
 		menu.style.fontFamily = 'inherit';
 		menu.style.display = 'flex';
 		menu.style.alignItems = 'center';
+		menu.style.cursor = 'pointer';
 		menu.innerHTML = `
 		  <span id="kxs-online-dot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#3fae2a;margin-right:10px;box-shadow:0 0 8px #3fae2a;animation:kxs-pulse 1s infinite alternate;"></span>
 		  <b></b> <span id="kxs-online-count">...</span>
 		`;
 
-		// Ajoute l'animation CSS
+		const userListMenu = document.createElement('div');
+		userListMenu.id = 'kxs-online-users-menu';
+		userListMenu.style.position = 'absolute';
+		userListMenu.style.top = '100%';
+		userListMenu.style.left = '0';
+		userListMenu.style.marginTop = '8px';
+		userListMenu.style.background = 'rgba(30,30,40,0.95)';
+		userListMenu.style.color = '#fff';
+		userListMenu.style.padding = '10px';
+		userListMenu.style.borderRadius = '8px';
+		userListMenu.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
+		userListMenu.style.fontSize = '14px';
+		userListMenu.style.zIndex = '1000';
+		userListMenu.style.minWidth = '180px';
+		userListMenu.style.maxHeight = '300px';
+		userListMenu.style.overflowY = 'auto';
+		userListMenu.style.display = 'none';
+		userListMenu.style.flexDirection = 'column';
+		userListMenu.style.gap = '6px';
+		userListMenu.innerHTML = '<div style="text-align:center;padding:5px;">Chargement...</div>';
+
+		menu.appendChild(userListMenu);
+
 		if (!document.getElementById('kxs-online-style')) {
 			const style = document.createElement('style');
 			style.id = 'kxs-online-style';
@@ -242,6 +263,31 @@ export default class KxsClient {
 			document.head.appendChild(style);
 		}
 
+		menu.addEventListener('click', (e) => {
+			e.stopPropagation();
+			if (userListMenu) {
+				const isVisible = userListMenu.style.display === 'flex';
+				userListMenu.style.display = isVisible ? 'none' : 'flex';
+
+				if (userListMenu.style.display === 'flex') {
+					setTimeout(() => {
+						const closeMenuOnClickOutside = (event: MouseEvent) => {
+							if (!menu.contains(event.target as Node) && !userListMenu.contains(event.target as Node)) {
+								userListMenu.style.display = 'none';
+								document.removeEventListener('click', closeMenuOnClickOutside);
+							}
+						};
+
+						document.addEventListener('click', closeMenuOnClickOutside);
+					}, 0);
+				}
+			}
+		});
+
+		userListMenu.addEventListener('click', (e) => {
+			e.stopPropagation();
+		});
+
 		overlay.appendChild(menu);
 		this.onlineMenuElement = menu;
 		this.updateOnlineMenu();
@@ -252,6 +298,8 @@ export default class KxsClient {
 		if (!this.onlineMenuElement) return;
 		const countEl = this.onlineMenuElement.querySelector('#kxs-online-count');
 		const dot = this.onlineMenuElement.querySelector('#kxs-online-dot') as HTMLElement;
+		const userListMenu = this.onlineMenuElement.querySelector('#kxs-online-users-menu');
+
 		try {
 			const res = this.kxsNetwork.getOnlineCount();
 			const count = typeof res === 'number' ? res : '?';
@@ -261,12 +309,35 @@ export default class KxsClient {
 				dot.style.boxShadow = '0 0 8px #3fae2a';
 				dot.style.animation = 'kxs-pulse 1s infinite alternate';
 			}
+
+			if (userListMenu) {
+				const users = this.kxsNetwork.getKxsUsers();
+				if (users && Array.isArray(users) && users.length > 0) {
+					let userListHTML = '';
+
+					userListHTML += '<div style="text-align:center;font-weight:bold;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.2);margin-bottom:8px;">Online users</div>';
+
+					users.forEach(user => {
+						userListHTML += `<div style="padding:4px 8px;border-radius:4px;background:rgba(255,255,255,0.05);">
+							<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3fae2a;margin-right:8px;"></span>
+							${user}
+						</div>`;
+					});
+
+					userListMenu.innerHTML = userListHTML;
+				} else {
+					userListMenu.innerHTML = '<div style="text-align:center;padding:5px;">No users online</div>';
+				}
+			}
 		} catch (e) {
 			if (countEl) countEl.textContent = 'API offline';
 			if (dot) {
 				dot.style.background = '#888';
 				dot.style.boxShadow = 'none';
 				dot.style.animation = '';
+			}
+			if (userListMenu) {
+				userListMenu.innerHTML = '<div style="text-align:center;padding:5px;">API offline</div>';
 			}
 		}
 	}

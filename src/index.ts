@@ -53,15 +53,13 @@ if (window.location.href === "https://kxs.rip/") {
 	if (startBottomMiddle) {
 		const links = startBottomMiddle.getElementsByTagName("a");
 
-		for (let i = 0; i < links.length; i++) {
-			const link = links[i];
+		if (links.length > 0) {
+			const firstLink = links[0];
+			firstLink.href = newChangelogUrl;
+			firstLink.textContent = packageInfo.version;
 
-			if (link.href.includes("changelogRec.html") || link.href.includes("changelog.html")) {
-				link.href = newChangelogUrl;
-				link.textContent = packageInfo.version;
-			}
-			if (i === 1) {
-				link.remove();
+			while (links.length > 1) {
+				links[1].remove();
 			}
 		}
 	}
