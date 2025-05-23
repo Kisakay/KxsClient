@@ -46,6 +46,7 @@ export default class KxsClient {
 	isVoiceChatEnabled: boolean;
 	isKxsChatEnabled: boolean;
 	isHealBarIndicatorEnabled: boolean;
+	isKxsClientLogoEnable: boolean;
 	brightness: number;
 
 	all_friends: string;
@@ -114,6 +115,7 @@ export default class KxsClient {
 		this.isFocusModeEnabled = false;
 		this.isHealBarIndicatorEnabled = true;
 		this.brightness = 50;
+		this.isKxsClientLogoEnable = true;
 
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
@@ -319,7 +321,8 @@ export default class KxsClient {
 				isKxsChatEnabled: this.isKxsChatEnabled,
 				kxsNetworkSettings: this.kxsNetworkSettings,
 				isHealBarIndicatorEnabled: this.isHealBarIndicatorEnabled,
-				brightness: this.brightness
+				brightness: this.brightness,
+				isKxsClientLogoEnable: this.isKxsClientLogoEnable
 			}),
 		);
 	};
@@ -786,6 +789,7 @@ export default class KxsClient {
 			this.isWinSoundEnabled = savedSettings.isWinSoundEnabled ?? this.isWinSoundEnabled;
 			this.isDeathSoundEnabled = savedSettings.isDeathSoundEnabled ?? this.isDeathSoundEnabled;
 			this.brightness = savedSettings.brightness ?? this.brightness;
+			this.isKxsClientLogoEnable = savedSettings.isKxsClientLogoEnable ?? this.isKxsClientLogoEnable;
 
 			// Apply brightness setting
 			const brightnessValue = this.brightness / 50;

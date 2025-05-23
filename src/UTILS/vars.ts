@@ -11,3 +11,7 @@ export const death_sound = config.base_url + "/assets/dead.m4a";
 export const survev_settings = new SimplifiedSteganoDB({
 	database: "surviv_config",
 });
+
+export const kxs_settings = new SimplifiedSteganoDB({
+	database: "userSettings"
+});

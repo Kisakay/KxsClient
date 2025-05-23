@@ -1,6 +1,6 @@
 import "./UTILS/websocket-hook";
 
-import { background_song, kxs_logo, full_logo, background_image, survev_settings } from "./UTILS/vars";
+import { background_song, kxs_logo, full_logo, background_image, survev_settings, kxs_settings } from "./UTILS/vars";
 import { intercept } from "./MECHANIC/intercept";
 
 import KxsClient from "./KxsClient";
@@ -22,7 +22,9 @@ if (window.location.href === "https://kxs.rip/") {
 	*/
 
 	intercept("audio/ambient/menu_music_01.mp3", background_song);
-	intercept('img/survev_logo_full.png', full_logo);
+	if (kxs_settings.get("isKxsClientLogoEnable") === true) {
+		intercept('img/survev_logo_full.png', full_logo)
+	};
 
 	survev_settings.set("language", "en");
 
