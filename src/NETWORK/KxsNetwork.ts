@@ -125,7 +125,6 @@ class KxsNetwork {
 				{
 					if (d?.count) this.kxsUsers = d.count;
 					if (d?.players) this.kxs_users = d.players;
-					console.log(d?.players)
 				}
 				break;
 			case 3: // Kxs user join game
