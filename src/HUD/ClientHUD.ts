@@ -84,6 +84,8 @@ class KxsClientHUD {
 			this.toggleWeaponBorderHandler();
 		}
 
+		this.updateCountersDraggableState();
+
 		this.startUpdateLoop();
 		this.escapeMenu();
 		this.initFriendDetector();
@@ -101,6 +103,14 @@ class KxsClientHUD {
 		}
 
 		this.setupCtrlFocusModeListener();
+
+		window.addEventListener('load', () => {
+			this.updateCounterCorners();
+		});
+
+		window.addEventListener('resize', () => {
+			this.updateCounterCorners();
+		});
 	}
 
 	private setupCtrlFocusModeListener() {
@@ -1132,6 +1142,17 @@ class KxsClientHUD {
 
 		this.kxsClient.makeDraggable(counterContainer, `${name}CounterPosition`);
 		this.kxsClient.counters[name] = counter;
+
+		this.kxsClient.gridSystem.registerCounter(name, counterContainer);
+
+		const savedPosition = localStorage.getItem(`${name}CounterPosition`);
+		if (savedPosition) {
+			const { x, y } = JSON.parse(savedPosition);
+			counterContainer.style.left = `${x}px`;
+			counterContainer.style.top = `${y}px`;
+		}
+
+		this.updateCounterCorners();
 	}
 
 	/**
@@ -1150,6 +1171,9 @@ class KxsClientHUD {
 			// Utilise delete pour supprimer la propriété au lieu de l'affecter à null
 			delete this.kxsClient.counters[name];
 		}
+
+		this.kxsClient.gridSystem.registerCounter(name, null);
+		this.kxsClient.gridSystem.updateCounterCorners();
 	}
 
 	/**
@@ -1187,12 +1211,17 @@ class KxsClientHUD {
 			width: `${this.kxsClient.defaultSizes[name].width}px`,
 			height: `${this.kxsClient.defaultSizes[name].height}px`,
 			fontSize: "18px",
+			borderRadius: "5px",
 		});
 
 		counter.textContent = `${label}: ${initialText}`;
 
 		// Clear the saved position for this counter only
 		localStorage.removeItem(`${name}CounterPosition`);
+
+		setTimeout(() => {
+			this.kxsClient.gridSystem.updateCounterCorners();
+		}, 50);
 	}
 
 	updateBoostBars() {
@@ -1589,11 +1618,35 @@ class KxsClientHUD {
 		});
 	}
 
-	private updateCountersDraggableState() {
-		const isMenuOpen = this.kxsClient.secondaryMenu?.getMenuVisibility() || false;
-		const counters = ['fps', 'kills', 'ping'];
+	private updateCounterCorners() {
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', () => {
+				this.kxsClient.gridSystem.updateCounterCorners();
+			});
+		} else {
+			setTimeout(() => {
+				this.kxsClient.gridSystem.updateCounterCorners();
+			}, 100);
+		}
+	}
 
-		counters.forEach(name => {
+	private updateCountersDraggableState() {
+		const countersVisibility = {
+			fps: this.kxsClient.isFpsVisible,
+			ping: this.kxsClient.isPingVisible,
+			kills: this.kxsClient.isKillsVisible,
+		};
+
+		Object.entries(countersVisibility).forEach(([name, visible]) => {
+			const label = name.charAt(0).toUpperCase() + name.slice(1);
+			const initialText = name === "fps" ? "60" : name === "ping" ? "45ms" : "0";
+			this.toggleCounter(name, visible, label, initialText);
+		});
+
+		const isMenuOpen = this.kxsClient.secondaryMenu?.getMenuVisibility() || false;
+		const counterNames = ['fps', 'kills', 'ping'];
+
+		counterNames.forEach(name => {
 			const counter = document.getElementById(`${name}Counter`);
 			if (counter) {
 				// Mise à jour des propriétés de draggabilité
@@ -1604,6 +1657,8 @@ class KxsClientHUD {
 				counter.style.resize = isMenuOpen ? 'both' : 'none';
 			}
 		});
+
+		this.updateCounterCorners();
 	}
 
 	private updateHealthAnimations() {

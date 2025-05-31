@@ -776,6 +776,10 @@ export default class KxsClient {
 			element.style.left = `${snapped.x}px`;
 			element.style.top = `${snapped.y}px`;
 		}
+
+		setTimeout(() => {
+			this.gridSystem.updateCounterCorners();
+		}, 100);
 	}
 
 	getKills() {

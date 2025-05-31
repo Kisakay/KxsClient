@@ -4,6 +4,7 @@ class GridSystem {
 	private gridVisible: boolean = false;
 	private gridContainer: HTMLDivElement;
 	private magneticEdges: boolean = true;
+	private counterElements: Record<string, HTMLElement> = {};
 
 	constructor() {
 		this.gridContainer = this.createGridOverlay();
@@ -70,6 +71,100 @@ class GridSystem {
 		this.gridContainer.style.display = this.gridVisible ? "block" : "none";
 	}
 
+	public registerCounter(id: string, element: HTMLElement | null): void {
+		if (element) {
+			this.counterElements[id] = element;
+		} else {
+			delete this.counterElements[id];
+		}
+	}
+
+	private areElementsAdjacent(element1: HTMLElement, element2: HTMLElement): { isAdjacent: boolean, position: string } {
+		const rect1 = element1.getBoundingClientRect();
+		const rect2 = element2.getBoundingClientRect();
+
+		const tolerance = 5;
+
+		const isLeftAdjacent = Math.abs((rect1.left + rect1.width) - rect2.left) < tolerance;
+		const isRightAdjacent = Math.abs((rect2.left + rect2.width) - rect1.left) < tolerance;
+
+		const isTopAdjacent = Math.abs((rect1.top + rect1.height) - rect2.top) < tolerance;
+		const isBottomAdjacent = Math.abs((rect2.top + rect2.height) - rect1.top) < tolerance;
+
+		const overlapVertically =
+			(rect1.top < rect2.bottom && rect1.bottom > rect2.top) ||
+			(rect2.top < rect1.bottom && rect2.bottom > rect1.top);
+		const overlapHorizontally =
+			(rect1.left < rect2.right && rect1.right > rect2.left) ||
+			(rect2.left < rect1.right && rect2.right > rect1.left);
+
+		let position = "";
+		if (isLeftAdjacent && overlapVertically) position = "left";
+		else if (isRightAdjacent && overlapVertically) position = "right";
+		else if (isTopAdjacent && overlapHorizontally) position = "top";
+		else if (isBottomAdjacent && overlapHorizontally) position = "bottom";
+
+		return {
+			isAdjacent: (isLeftAdjacent || isRightAdjacent) && overlapVertically ||
+				(isTopAdjacent || isBottomAdjacent) && overlapHorizontally,
+			position
+		};
+	}
+
+	public updateCounterCorners(): void {
+		const counterIds = Object.keys(this.counterElements);
+
+		counterIds.forEach(id => {
+			const container = this.counterElements[id];
+			const counter = container.querySelector('div') as HTMLElement;
+			if (counter) {
+				counter.style.borderRadius = '5px';
+			}
+		});
+
+		for (let i = 0; i < counterIds.length; i++) {
+			for (let j = i + 1; j < counterIds.length; j++) {
+				const container1 = this.counterElements[counterIds[i]];
+				const container2 = this.counterElements[counterIds[j]];
+				const counter1 = container1.querySelector('div') as HTMLElement;
+				const counter2 = container2.querySelector('div') as HTMLElement;
+
+				if (counter1 && counter2) {
+					const { isAdjacent, position } = this.areElementsAdjacent(container1, container2);
+
+					if (isAdjacent) {
+						switch (position) {
+							case "left":
+								counter1.style.borderTopRightRadius = '0';
+								counter1.style.borderBottomRightRadius = '0';
+								counter2.style.borderTopLeftRadius = '0';
+								counter2.style.borderBottomLeftRadius = '0';
+								break;
+							case "right":
+								counter1.style.borderTopLeftRadius = '0';
+								counter1.style.borderBottomLeftRadius = '0';
+								counter2.style.borderTopRightRadius = '0';
+								counter2.style.borderBottomRightRadius = '0';
+								break;
+							case "top":
+								counter1.style.borderBottomLeftRadius = '0';
+								counter1.style.borderBottomRightRadius = '0';
+								counter2.style.borderTopLeftRadius = '0';
+								counter2.style.borderTopRightRadius = '0';
+								break;
+							case "bottom":
+								counter1.style.borderTopLeftRadius = '0';
+								counter1.style.borderTopRightRadius = '0';
+								counter2.style.borderBottomLeftRadius = '0';
+								counter2.style.borderBottomRightRadius = '0';
+								break;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public snapToGrid(
 		element: HTMLElement,
 		x: number,
@@ -112,6 +207,8 @@ class GridSystem {
 				snappedY = screenEdges.middle;
 			}
 		}
+
+		setTimeout(() => this.updateCounterCorners(), 10);
 
 		return { x: snappedX, y: snappedY };
 	}
