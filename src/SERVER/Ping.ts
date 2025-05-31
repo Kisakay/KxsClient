@@ -51,14 +51,17 @@ class PingTest {
 	}
 
 	private setServerFromDOM() {
-		const { region, url } = this.detectSelectedServer();
+		const selectedServer = this.detectSelectedServer();
+		if (!selectedServer) return;
+
+		const { region, url } = selectedServer;
 		this.region = region;
 		this.url = `wss://${url}/ptc`;
 
 		this.start();
 	}
 
-	private detectSelectedServer(): { region: string; url: string } {
+	private detectSelectedServer(): { region: string; url: string } | undefined {
 		const currentUrl = window.location.href;
 		const isSpecialUrl = /\/#\w+/.test(currentUrl);
 
@@ -79,7 +82,7 @@ class PingTest {
 
 		const selectedServer = servers.find((s) => s.region.toUpperCase() === region.toUpperCase());
 
-		if (!selectedServer) throw new Error("Aucun serveur correspondant trouvé");
+		if (!selectedServer) return undefined;
 
 		return selectedServer;
 	}
@@ -89,7 +92,10 @@ class PingTest {
 		const mainSelectElement = document.getElementById("server-select-main");
 
 		const onChange = () => {
-			const { region } = this.detectSelectedServer();
+			const selectedServer = this.detectSelectedServer();
+			if (!selectedServer) return;
+
+			const { region } = selectedServer;
 			if (region !== this.region) {
 				this.restart();
 			}
