@@ -6,7 +6,7 @@
 
 ### **Rediscover Surviv.io with the Ultimate Enhancement Client**
 
-[![Version](https://img.shields.io/badge/Version-v2.1.15-blue?style=for-the-badge)](https://kxs.rip)
+[![Version](https://img.shields.io/badge/Version-v2.1.21-blue?style=for-the-badge)](https://kxs.rip)
 [![Website](https://img.shields.io/badge/Website-kxs.rip-3B82F6?style=for-the-badge)](https://kxs.rip)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Discord](https://img.shields.io/badge/Discord-kisakay-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com)
@@ -15,11 +15,11 @@
 
 ## 📋 Overview
 
-KxsClient (Kisakay x Surviv) is a premium-quality, free and open-source enhancement client for Surviv.io, written in TypeScript. It delivers over 25 fully configurable mods with a modern, user-friendly interface that enhances your gameplay experience without breaking the game's rules.
+KxsClient (Kisakay x Surviv) is a premium-quality, free and open-source enhancement client for Surviv.io, written in TypeScript. It delivers over 30 fully configurable mods with a modern, user-friendly interface that enhances your gameplay experience without breaking the game's rules.
 
 **Key Highlights:**
 - 🎨 Modern and intuitive UI with minimalist design
-- ⚙️ 25+ performance-enhancing features
+- ⚙️ 30+ performance-enhancing features
 - 🔊 Integrated voice chat for real-time communication
 - 🌐 Multiplayer network integration
 - 🔧 100% customizable HUD elements
