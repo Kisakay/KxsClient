@@ -21,7 +21,7 @@ if (window.location.href === "https://kxs.rip/") {
 		- Avoiding intercepting another page as the root page
 	*/
 
-	intercept("audio/ambient/menu_music_01.mp3", background_song);
+	intercept("audio/ambient/menu_music_01.mp3", kxs_settings.get("soundLibrary.background_sound_url") || background_song);
 	if (kxs_settings.get("isKxsClientLogoEnable") === true) {
 		intercept('img/survev_logo_full.png', full_logo)
 	};
