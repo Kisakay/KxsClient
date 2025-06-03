@@ -28,8 +28,6 @@ if (window.location.href === "https://kxs.rip/") {
 
 	survev_settings.set("language", "en");
 
-	const kxsClient = new KxsClient();
-
 	const loadingScreen = new LoadingScreen(kxs_logo);
 	loadingScreen.show();
 
@@ -64,11 +62,13 @@ if (window.location.href === "https://kxs.rip/") {
 		favicon.href = kxs_logo;
 	}
 
+	const kxsClient = new KxsClient();
+
 	document.head.appendChild(favicon);
 	document.title = "KxsClient";
 
 	const uiStatsLogo = document.querySelector('#ui-stats-logo') as HTMLElement | null;
-	if (uiStatsLogo) {
+	if (uiStatsLogo && kxs_settings.get("isKxsClientLogoEnable") === true) {
 		uiStatsLogo.style.backgroundImage = `url('${full_logo}')`;
 	}
 	const newChangelogUrl = config.base_url;
