@@ -114,20 +114,31 @@ class KxsClientHUD {
 	}
 
 	private setupCtrlFocusModeListener() {
+		// Déterminer la plateforme une seule fois à l'initialisation
+		const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
+		// Utiliser un flag pour suivre l'état des touches
+		let modifierKeyPressed = false;
+
 		document.addEventListener('keydown', (e) => {
-			if (e.code === 'ControlLeft' && !this.ctrlFocusTimer) {
-				this.ctrlFocusTimer = window.setTimeout(() => {
-					this.kxsClient.isFocusModeEnabled = !this.kxsClient.isFocusModeEnabled;
-					this.kxsClient.hud.toggleFocusMode();
-					this.kxsClient.nm.showNotification("Focus mode toggled", "info", 1200)
-				}, 1000);
+			// Détecter si la touche modificatrice est pressée (Command sur macOS, Ctrl sur Windows/Linux)
+			if ((isMac && e.key === 'Meta') || (!isMac && e.key === 'Control')) {
+				modifierKeyPressed = true;
+			}
+
+			// Activer le mode focus seulement si F est pressé pendant que la touche modificatrice est déjà enfoncée
+			if (modifierKeyPressed && e.code === 'KeyF') {
+				e.preventDefault(); // Empêcher le comportement par défaut (recherche)
+				this.kxsClient.isFocusModeEnabled = !this.kxsClient.isFocusModeEnabled;
+				this.kxsClient.hud.toggleFocusMode();
+				this.kxsClient.nm.showNotification("Focus mode toggled", "info", 1200);
 			}
 		});
 
+		// Réinitialiser le flag quand la touche modificatrice est relâchée
 		document.addEventListener('keyup', (e) => {
-			if (e.code === 'ControlLeft' && this.ctrlFocusTimer) {
-				clearTimeout(this.ctrlFocusTimer);
-				this.ctrlFocusTimer = null;
+			if ((isMac && e.key === 'Meta') || (!isMac && e.key === 'Control')) {
+				modifierKeyPressed = false;
 			}
 		});
 	}
