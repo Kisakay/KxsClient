@@ -1,6 +1,7 @@
 import "./UTILS/websocket-hook";
 
 import { background_song, kxs_logo, full_logo, background_image, survev_settings, kxs_settings } from "./UTILS/vars";
+import { setFavicon } from "./UTILS/favicon";
 import { intercept } from "./MECHANIC/intercept";
 
 import KxsClient from "./KxsClient";
@@ -34,37 +35,10 @@ if (window.location.href === "https://kxs.rip/") {
 	const backgroundElement = document.getElementById("background");
 	if (backgroundElement) backgroundElement.style.backgroundImage = `url("${background_image}")`;
 
-	const existingFavicons = document.querySelectorAll('link[rel*="icon"]');
-	existingFavicons.forEach(favicon => favicon.remove());
-
-	const isChrome = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
-	const isFirefox = /Firefox/.test(navigator.userAgent);
-
-	const favicon = document.createElement('link');
-
-	if (isFirefox) {
-		favicon.rel = 'icon';
-		favicon.type = 'image/png';
-		favicon.href = kxs_logo;
-	} else if (isChrome) {
-		favicon.rel = 'shortcut icon';
-		favicon.href = kxs_logo;
-
-		const link = document.createElement('link');
-		link.rel = 'icon';
-		link.href = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFdwI2QJIiywAAAABJRU5ErkJggg==';
-		document.head.appendChild(link);
-		setTimeout(() => {
-			link.href = kxs_logo;
-		}, 50);
-	} else {
-		favicon.rel = 'icon';
-		favicon.href = kxs_logo;
-	}
+	setFavicon(kxs_logo);
 
 	const kxsClient = new KxsClient();
 
-	document.head.appendChild(favicon);
 	document.title = "KxsClient";
 
 	const uiStatsLogo = document.querySelector('#ui-stats-logo') as HTMLElement | null;
