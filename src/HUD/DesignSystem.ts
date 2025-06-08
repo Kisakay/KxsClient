@@ -531,11 +531,13 @@ export class DesignSystem {
 		if (duration > 0) {
 			setTimeout(() => {
 				notification.style.animation = `fadeOut ${this.animation.normal} forwards`;
-				setTimeout(() => {
+				// Use event listener for animation end instead of setTimeout
+				notification.addEventListener('animationend', function onAnimationEnd() {
 					if (notification.parentNode) {
 						notification.parentNode.removeChild(notification);
 					}
-				}, 300);
+					notification.removeEventListener('animationend', onAnimationEnd);
+				}, { once: true });
 			}, duration);
 		}
 

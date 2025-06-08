@@ -219,16 +219,25 @@ class HealthWarning {
 		}
 	}
 
+	private mouseMoveThrottle = false;
+
 	private handleMouseMove(event: MouseEvent) {
-		if (!this.isDragging || !this.warningElement) return;
+		if (!this.isDragging || !this.warningElement || this.mouseMoveThrottle) return;
 
-		// Calculate new position
-		const newX = event.clientX - this.dragOffset.x;
-		const newY = event.clientY - this.dragOffset.y;
+		// Optimized: throttle mousemove for better performance
+		this.mouseMoveThrottle = true;
+		requestAnimationFrame(() => {
+			// Calculate new position
+			const newX = event.clientX - this.dragOffset.x;
+			const newY = event.clientY - this.dragOffset.y;
 
-		// Update element position
-		this.warningElement.style.left = `${newX}px`;
-		this.warningElement.style.top = `${newY}px`;
+			// Update element position
+			if (this.warningElement) {
+				this.warningElement.style.left = `${newX}px`;
+				this.warningElement.style.top = `${newY}px`;
+			}
+			this.mouseMoveThrottle = false;
+		});
 	}
 
 	private handleMouseUp() {
@@ -249,17 +258,13 @@ class HealthWarning {
 	}
 
 	private startMenuCheckInterval() {
-		// Utiliser un système d'événements plus efficace au lieu d'un polling constant
-		// Vérifier seulement quand nécessaire avec un throttle
-		let lastCheck = 0;
-		const checkThrottle = 500; // Réduire la fréquence à 500ms
-		
-		this.menuCheckInterval = window.setInterval(() => {
-			const now = Date.now();
-			if (now - lastCheck < checkThrottle) return;
-			lastCheck = now;
-			
-			// Vérifier si le menu secondaire est ouvert
+		// Optimisé: utiliser des événements au lieu du polling constant
+		this.setupMenuEventListeners();
+	}
+
+	private setupMenuEventListeners(): void {
+		// Écouter les événements d'ouverture/fermeture du menu au lieu du polling
+		const checkMenuState = () => {
 			const isMenuOpen = this.kxsClient.secondaryMenu?.isOpen || false;
 
 			// Si le menu est ouvert et que nous ne sommes pas en mode placement, activer le mode placement
@@ -270,7 +275,13 @@ class HealthWarning {
 			else if (!isMenuOpen && this.isDraggable) {
 				this.disableDragging();
 			}
-		}, 500); // Optimisé: vérifier toutes les 500ms au lieu de 100ms
+		};
+
+		// Vérifier l'état initial
+		checkMenuState();
+
+		// Utiliser un intervalle optimisé avec une fréquence réduite
+		this.menuCheckInterval = window.setInterval(checkMenuState, 1000); // Réduit à 1 seconde
 	}
 }
 

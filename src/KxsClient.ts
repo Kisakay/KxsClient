@@ -293,7 +293,8 @@ export default class KxsClient {
 		overlay.appendChild(menu);
 		this.onlineMenuElement = menu;
 		this.updateOnlineMenu();
-		this.onlineMenuInterval = window.setInterval(() => this.updateOnlineMenu(), 2000);
+		// Optimisé: augmenter l'intervalle pour réduire la charge
+		this.onlineMenuInterval = window.setInterval(() => this.updateOnlineMenu(), 5000);
 	}
 
 	private async updateOnlineMenu() {
@@ -734,32 +735,38 @@ export default class KxsClient {
 			}
 		});
 
+		// Optimized: throttle mousemove events for better performance
+		let mouseMoveThrottle = false;
 		window.addEventListener("mousemove", (event) => {
-			if (isDragging) {
-				const rawX = event.clientX - dragOffset.x;
-				const rawY = event.clientY - dragOffset.y;
+			if (isDragging && !mouseMoveThrottle) {
+				mouseMoveThrottle = true;
+				requestAnimationFrame(() => {
+					const rawX = event.clientX - dragOffset.x;
+					const rawY = event.clientY - dragOffset.y;
 
-				// Get snapped coordinates from grid system
-				const snapped = this.gridSystem.snapToGrid(element, rawX, rawY);
+					// Get snapped coordinates from grid system
+					const snapped = this.gridSystem.snapToGrid(element, rawX, rawY);
 
-				// Prevent moving off screen
-				const maxX = window.innerWidth - element.offsetWidth;
-				const maxY = window.innerHeight - element.offsetHeight;
+					// Prevent moving off screen
+					const maxX = window.innerWidth - element.offsetWidth;
+					const maxY = window.innerHeight - element.offsetHeight;
 
-				element.style.left = `${Math.max(0, Math.min(snapped.x, maxX))}px`;
-				element.style.top = `${Math.max(0, Math.min(snapped.y, maxY))}px`;
+					element.style.left = `${Math.max(0, Math.min(snapped.x, maxX))}px`;
+					element.style.top = `${Math.max(0, Math.min(snapped.y, maxY))}px`;
 
-				// Highlight nearest grid lines while dragging
-				this.gridSystem.highlightNearestGridLine(rawX, rawY);
+					// Highlight nearest grid lines while dragging
+					this.gridSystem.highlightNearestGridLine(rawX, rawY);
 
-				// Save position
-				localStorage.setItem(
-					storageKey,
-					JSON.stringify({
-						x: parseInt(element.style.left),
-						y: parseInt(element.style.top),
-					}),
-				);
+					// Save position (throttled)
+					localStorage.setItem(
+						storageKey,
+						JSON.stringify({
+							x: parseInt(element.style.left),
+							y: parseInt(element.style.top),
+						}),
+					);
+					mouseMoveThrottle = false;
+				});
 			}
 		});
 

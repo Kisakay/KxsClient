@@ -130,13 +130,13 @@ export class EasterEgg {
 			// Fade out
 			this.overlayElement.style.opacity = '0';
 
-			// Remove after transition
-			setTimeout(() => {
+			// Remove after transition (optimized)
+			this.overlayElement.addEventListener('transitionend', () => {
 				if (this.overlayElement && this.overlayElement.parentNode) {
 					this.overlayElement.parentNode.removeChild(this.overlayElement);
 					this.overlayElement = null;
 				}
-			}, 500);
+			}, { once: true });
 		}
 	}
 
@@ -180,7 +180,7 @@ export class EasterEgg {
 		// Play ambient sound
 		this.playAmbientSound();
 
-		// Display the message with sound effect
+		// Display the message with sound effect (optimized)
 		setTimeout(() => {
 			this.displayMessage();
 
@@ -516,7 +516,7 @@ export class EasterEgg {
 				// Update page title in real-time with the current text
 				document.title = this.textElement.textContent || message;
 
-				// If last character and we should add a period, do it with a pause
+				// If last character and we should add a period, do it with a pause (optimized)
 				if (shouldAddPeriod) {
 					setTimeout(() => {
 						if (this.textElement && this.periodSound) {

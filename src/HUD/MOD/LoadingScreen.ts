@@ -163,10 +163,11 @@ export class LoadingScreen {
 	 */
 	public hide(): void {
 		this.container.style.opacity = '0';
-		setTimeout(() => {
+		// Optimized: use event listener for transition end instead of setTimeout
+		this.container.addEventListener('transitionend', () => {
 			if (this.container.parentNode) {
 				document.body.removeChild(this.container);
 			}
-		}, 500); // Wait for the transition to finish before removing the element
+		}, { once: true });
 	}
 }

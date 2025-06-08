@@ -538,8 +538,9 @@ class KxsClientHUD {
 		const customStylesMobile = `
     .ui-game-menu-desktop {
         background: rgba(30, 35, 50, 0.15) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        will-change: transform, opacity !important;
         border: 1px solid rgba(60, 70, 90, 0.3) !important;
         border-radius: 16px !important;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(80, 90, 110, 0.2) !important;
@@ -592,8 +593,9 @@ class KxsClientHUD {
 		const customStylesDesktop = `
 .ui-game-menu-desktop {
 	background: rgba(25, 30, 45, 0.12) !important;
-	backdrop-filter: blur(25px) !important;
-	-webkit-backdrop-filter: blur(25px) !important;
+	backdrop-filter: blur(12px) !important;
+	-webkit-backdrop-filter: blur(12px) !important;
+	will-change: transform, opacity !important;
 	border: 1px solid rgba(55, 65, 85, 0.25) !important;
 	border-radius: 20px !important;
 	box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(75, 85, 105, 0.2), 0 0 0 1px rgba(45, 55, 75, 0.1) !important;
@@ -727,14 +729,16 @@ class KxsClientHUD {
 	transform: translateY(-3px) scale(1.02) !important;
 	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
 	border-color: rgba(255, 255, 255, 0.25) !important;
-	backdrop-filter: blur(20px) saturate(200%) !important;
-	-webkit-backdrop-filter: blur(20px) saturate(200%) !important;
+	backdrop-filter: blur(10px) saturate(150%) !important;
+	-webkit-backdrop-filter: blur(10px) saturate(150%) !important;
+	will-change: transform !important;
 }
 
 .slider-container {
 	background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
-	backdrop-filter: blur(20px) saturate(180%) !important;
-	-webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+	backdrop-filter: blur(10px) saturate(150%) !important;
+	-webkit-backdrop-filter: blur(10px) saturate(150%) !important;
+	will-change: transform, opacity !important;
 	border: 1px solid rgba(255, 255, 255, 0.15) !important;
 	border-radius: 16px !important;
 	padding: 16px 20px !important;
@@ -754,7 +758,8 @@ class KxsClientHUD {
 	width: 100% !important;
 	height: 100% !important;
 	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent) !important;
-	animation: containerShine 3s ease-in-out infinite !important;
+	animation: containerShine 6s ease-in-out infinite !important;
+	will-change: transform !important;
 	z-index: 0 !important;
 }
 
@@ -1025,7 +1030,8 @@ class KxsClientHUD {
             background-size: 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: glint 3s linear infinite;
+            animation: glint 6s linear infinite;
+			will-change: background-position;
         }
   
         @keyframes glint {
@@ -1671,7 +1677,8 @@ class KxsClientHUD {
 .kxs-chromatic-border {
 	border: 3px solid transparent !important;
 	border-image: linear-gradient(120deg, #ff004c, #fffa00, #00ff90, #004cff, #ff004c) 1;
-	animation: kxs-rainbow 3s linear infinite, kxs-glint 2s ease-in-out infinite, kxs-bg-rainbow 8s linear infinite;
+	animation: kxs-rainbow 6s linear infinite, kxs-glint 4s ease-in-out infinite, kxs-bg-rainbow 12s linear infinite;
+	will-change: border-image, background-position;
 	border-radius: 8px !important;
 	background: linear-gradient(270deg, #ff004c, #fffa00, #00ff90, #004cff, #ff004c);
 	background-size: 1200% 1200%;
@@ -1877,9 +1884,10 @@ class KxsClientHUD {
 				this.kxsClient.gridSystem.updateCounterCorners();
 			});
 		} else {
-			setTimeout(() => {
+			// Optimized: use requestAnimationFrame instead of setTimeout
+			requestAnimationFrame(() => {
 				this.kxsClient.gridSystem.updateCounterCorners();
-			}, 100);
+			});
 		}
 	}
 

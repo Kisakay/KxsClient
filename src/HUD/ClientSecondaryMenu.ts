@@ -122,10 +122,11 @@ class KxsClientSecondaryMenu {
 			overflow: "hidden",
 			boxSizing: "border-box",
 			transition: `all ${DesignSystem.animation.normal} ease`,
-			// Effet glassmorphism amélioré
+			// Effet glassmorphism optimisé pour les performances
 			backgroundColor: "rgba(15, 23, 42, 0.85)",
-			backdropFilter: "blur(25px) saturate(180%)",
-			WebkitBackdropFilter: "blur(25px) saturate(180%)",
+			backdropFilter: "blur(12px) saturate(150%)",
+			WebkitBackdropFilter: "blur(12px) saturate(150%)",
+			willChange: "transform, opacity",
 			border: "1px solid rgba(255, 255, 255, 0.12)",
 			borderRadius: "14px",
 			boxShadow: "0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08)"
@@ -141,9 +142,10 @@ class KxsClientSecondaryMenu {
 				fontSize: "11px",
 				maxHeight: "65vh",
 				top: "5%",
-				// Glassmorphism mobile optimisé
-				backdropFilter: "blur(20px) saturate(160%)",
-				WebkitBackdropFilter: "blur(20px) saturate(160%)",
+				// Glassmorphism mobile optimisé pour les performances
+				backdropFilter: "blur(10px) saturate(140%)",
+				WebkitBackdropFilter: "blur(10px) saturate(140%)",
+				willChange: "transform, opacity",
 				backgroundColor: "rgba(15, 23, 42, 0.9)",
 				boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
 			});
@@ -1230,9 +1232,10 @@ class KxsClientSecondaryMenu {
 			}
 
 			btn.appendChild(ripple);
-			setTimeout(() => {
+			// Use event listener for animation end instead of setTimeout
+			ripple.addEventListener('animationend', () => {
 				ripple.remove();
-			}, 600);
+			}, { once: true });
 
 			option.onChange?.(true);
 		});
@@ -1316,11 +1319,13 @@ class KxsClientSecondaryMenu {
 			option.value = input.value;
 			option.onChange?.(input.value);
 
-			// Visual feedback on change
+			// Visual feedback on change (optimized)
 			input.style.animation = "glow 0.5s ease";
-			setTimeout(() => {
+			// Use event listener for animation end instead of setTimeout
+			input.addEventListener('animationend', function onAnimationEnd() {
 				input.style.animation = "";
-			}, 500);
+				input.removeEventListener('animationend', onAnimationEnd);
+			}, { once: true });
 		});
 
 		// Add glow animation if it doesn't exist
@@ -1411,11 +1416,14 @@ class KxsClientSecondaryMenu {
 
 	private mouseMoveListener = (e: MouseEvent) => {
 		if (this.isDragging) {
-			const x = e.clientX - this.dragOffset.x;
-			const y = e.clientY - this.dragOffset.y;
-			this.menu.style.transform = 'none';
-			this.menu.style.left = `${x}px`;
-			this.menu.style.top = `${y}px`;
+			// Optimized: use requestAnimationFrame for smooth dragging
+			requestAnimationFrame(() => {
+				const x = e.clientX - this.dragOffset.x;
+				const y = e.clientY - this.dragOffset.y;
+				this.menu.style.transform = 'none';
+				this.menu.style.left = `${x}px`;
+				this.menu.style.top = `${y}px`;
+			});
 		}
 	};
 
@@ -1742,13 +1750,19 @@ class KxsClientSecondaryMenu {
 			}
 		});
 
+		// Optimized: use throttled mousemove for better performance
+		let mouseMoveThrottle = false;
 		document.addEventListener('mousemove', (e: MouseEvent) => {
-			if (this.isDragging) {
-				const x = e.clientX - this.dragOffset.x;
-				const y = e.clientY - this.dragOffset.y;
-				this.menu.style.transform = 'none';
-				this.menu.style.left = `${x}px`;
-				this.menu.style.top = `${y}px`;
+			if (this.isDragging && !mouseMoveThrottle) {
+				mouseMoveThrottle = true;
+				requestAnimationFrame(() => {
+					const x = e.clientX - this.dragOffset.x;
+					const y = e.clientY - this.dragOffset.y;
+					this.menu.style.transform = 'none';
+					this.menu.style.left = `${x}px`;
+					this.menu.style.top = `${y}px`;
+					mouseMoveThrottle = false;
+				});
 			}
 		});
 
