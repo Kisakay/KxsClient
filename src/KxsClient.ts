@@ -212,11 +212,14 @@ export default class KxsClient {
 		menu.style.position = 'absolute';
 		menu.style.top = '18px';
 		menu.style.left = '18px';
-		menu.style.background = 'rgba(30,30,40,0.92)';
+		menu.style.background = 'rgba(255, 255, 255, 0.1)';
+		menu.style.backdropFilter = 'blur(20px) saturate(180%)';
+		menu.style.backdropFilter = 'blur(20px) saturate(180%)';
+		menu.style.border = '1px solid rgba(255, 255, 255, 0.2)';
 		menu.style.color = '#fff';
 		menu.style.padding = '8px 18px';
-		menu.style.borderRadius = '12px';
-		menu.style.boxShadow = '0 2px 8px rgba(0,0,0,0.18)';
+		menu.style.borderRadius = '16px';
+		menu.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
 		menu.style.fontSize = '15px';
 		menu.style.zIndex = '999';
 		menu.style.userSelect = 'none';
@@ -236,11 +239,14 @@ export default class KxsClient {
 		userListMenu.style.top = '100%';
 		userListMenu.style.left = '0';
 		userListMenu.style.marginTop = '8px';
-		userListMenu.style.background = 'rgba(30,30,40,0.95)';
+		userListMenu.style.background = 'rgba(255, 255, 255, 0.08)';
+		userListMenu.style.backdropFilter = 'blur(25px) saturate(180%)';
+		userListMenu.style.backdropFilter = 'blur(25px) saturate(180%)';
+		userListMenu.style.border = '1px solid rgba(255, 255, 255, 0.15)';
 		userListMenu.style.color = '#fff';
 		userListMenu.style.padding = '10px';
-		userListMenu.style.borderRadius = '8px';
-		userListMenu.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
+		userListMenu.style.borderRadius = '12px';
+		userListMenu.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
 		userListMenu.style.fontSize = '14px';
 		userListMenu.style.zIndex = '1000';
 		userListMenu.style.minWidth = '180px';
@@ -318,11 +324,11 @@ export default class KxsClient {
 				if (users && Array.isArray(users) && users.length > 0) {
 					let userListHTML = '';
 
-					userListHTML += '<div style="text-align:center;font-weight:bold;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.2);margin-bottom:8px;">Online users</div>';
+					userListHTML += '<div style="text-align:center;font-weight:bold;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.3);margin-bottom:8px;background:rgba(255,255,255,0.05);border-radius:6px;padding:8px;">Online users</div>';
 
 					users.forEach(user => {
-						userListHTML += `<div style="padding:4px 8px;border-radius:4px;background:rgba(255,255,255,0.05);">
-							<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3fae2a;margin-right:8px;"></span>
+						userListHTML += `<div style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);transition:all 0.2s ease;">
+							<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3fae2a;margin-right:8px;box-shadow:0 0 6px rgba(63,174,42,0.6);"></span>
 							${user}
 						</div>`;
 					});
