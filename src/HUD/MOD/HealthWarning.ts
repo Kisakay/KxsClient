@@ -1,4 +1,5 @@
 import KxsClient from "../../KxsClient";
+import { DesignSystem } from "../DesignSystem";
 
 class HealthWarning {
 	private warningElement: HTMLDivElement | null;
@@ -23,28 +24,30 @@ class HealthWarning {
 		const warning = document.createElement("div");
 		const uiTopLeft = document.getElementById("ui-top-left");
 
-		warning.style.cssText = `
-            position: fixed;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #ff0000;
-            border-radius: 5px;
-            padding: 10px 15px;
-            color: #ff0000;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            z-index: 9999;
-            display: none;
-            backdrop-filter: blur(5px);
-            pointer-events: none;
-            transition: border-color 0.3s ease;
-        `;
+		// Apply enhanced glassmorphism effect using DesignSystem
+		DesignSystem.applyGlassEffect(warning, 'medium', {
+			position: 'fixed',
+			border: '2px solid rgba(255, 0, 0, 0.8)',
+			padding: DesignSystem.spacing.md + ' ' + DesignSystem.spacing.lg,
+			color: '#ff4444',
+			fontFamily: DesignSystem.fonts.primary,
+			fontSize: DesignSystem.fonts.sizes.base,
+			fontWeight: '600',
+			zIndex: DesignSystem.layers.notification.toString(),
+			display: 'none',
+			pointerEvents: 'none',
+			transition: `all ${DesignSystem.animation.normal} ease`,
+			boxShadow: '0 8px 32px rgba(255, 0, 0, 0.3), 0 0 20px rgba(255, 0, 0, 0.2)',
+			textShadow: '0 0 10px rgba(255, 0, 0, 0.5)'
+		});
 
 		const content = document.createElement("div");
-		content.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        `;
+		Object.assign(content.style, {
+			display: 'flex',
+			alignItems: 'center',
+			gap: DesignSystem.spacing.sm,
+			filter: 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.4))'
+		});
 
 		const icon = document.createElement("div");
 		icon.innerHTML = `

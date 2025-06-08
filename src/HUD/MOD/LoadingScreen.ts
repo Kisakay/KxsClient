@@ -5,6 +5,8 @@
  * that displays during the loading of game resources.
  */
 
+import { DesignSystem } from "../DesignSystem";
+
 export class LoadingScreen {
 	private container: HTMLDivElement;
 	private logoUrl: string;
@@ -24,22 +26,21 @@ export class LoadingScreen {
 	 * Initializes CSS styles for the loading screen
 	 */
 	private initializeStyles(): void {
-		// Styles for the main container
-		Object.assign(this.container.style, {
+		// Apply glassmorphism effect using DesignSystem
+		DesignSystem.applyGlassEffect(this.container, 'dark', {
 			position: 'fixed',
 			top: '0',
 			left: '0',
 			width: '100%',
 			height: '100%',
-			backgroundColor: 'rgba(0, 0, 0, 0.9)',
 			display: 'flex',
 			flexDirection: 'column',
 			justifyContent: 'center',
 			alignItems: 'center',
-			zIndex: '9999',
-			transition: 'opacity 0.5s ease-in-out',
+			zIndex: DesignSystem.layers.modal.toString(),
+			transition: `opacity ${DesignSystem.animation.slow} ease-in-out`,
 			animation: 'fadeIn 0.5s ease-in-out',
-			backdropFilter: 'blur(5px)'
+			borderRadius: '0'
 		});
 	}
 

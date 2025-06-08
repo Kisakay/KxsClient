@@ -1,3 +1,5 @@
+import { DesignSystem } from "../DesignSystem";
+
 class NotificationManager {
 	private static instance: NotificationManager;
 	private notifications: HTMLElement[] = [];
@@ -85,23 +87,21 @@ class NotificationManager {
 	public showNotification(message: string, type: "success" | "info" | "error", duration: number = 5000): void {
 		const notification = document.createElement("div");
 
-		// Base styles
-		Object.assign(notification.style, {
+		// Apply glassmorphism effect using DesignSystem
+		DesignSystem.applyGlassEffect(notification, 'light', {
 			position: "fixed",
 			top: "20px",
 			left: "20px",
-			padding: "12px 20px",
-			backgroundColor: "#333333",
+			padding: DesignSystem.spacing.md + " " + DesignSystem.spacing.lg,
 			color: "white",
-			zIndex: "9999",
+			zIndex: DesignSystem.layers.notification.toString(),
 			minWidth: "200px",
-			borderRadius: "4px",
 			display: "flex",
 			alignItems: "center",
-			gap: "10px",
+			gap: DesignSystem.spacing.sm,
 			transform: "translateX(-120%)",
 			opacity: "0",
-			boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
+			fontFamily: DesignSystem.fonts.primary
 		});
 
 		// Create icon
@@ -124,11 +124,14 @@ class NotificationManager {
 		messageDiv.textContent = message;
 		messageDiv.style.flex = "1";
 
-		// Create progress bar
+		// Create progress bar with glass morphism style
 		const progressBar = document.createElement("div");
 		Object.assign(progressBar.style, {
 			height: "4px",
-			backgroundColor: "#e6f3ff",
+			background: "rgba(255, 255, 255, 0.3)",
+			backdropFilter: "blur(5px)",
+			webkitBackdropFilter: "blur(5px)",
+			borderRadius: `0 0 ${DesignSystem.radius.lg} ${DesignSystem.radius.lg}`,
 			width: "100%",
 			position: "absolute",
 			bottom: "0",
