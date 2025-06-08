@@ -1155,8 +1155,9 @@ class KxsClientSecondaryMenu {
 
 		// Appliquer un style glassmorphism moderne
 		btn.style.width = "100%";
-		btn.style.padding = isMobile ? "8px 12px" : "12px 16px";
-		btn.style.height = isMobile ? "32px" : "40px";
+		btn.style.padding = isMobile ? "6px 8px" : "10px 12px";
+		btn.style.height = isMobile ? "32px" : "auto";
+		btn.style.minHeight = isMobile ? "32px" : "40px";
 		btn.style.background = "linear-gradient(135deg, rgba(66, 135, 245, 0.15) 0%, rgba(59, 118, 217, 0.12) 100%)";
 		btn.style.backdropFilter = "blur(16px) saturate(180%)";
 		(btn.style as any)['-webkit-backdrop-filter'] = "blur(16px) saturate(180%)";
@@ -1165,14 +1166,20 @@ class KxsClientSecondaryMenu {
 		btn.style.color = "#ffffff";
 		btn.style.cursor = "pointer";
 		btn.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
-		btn.style.fontSize = isMobile ? "12px" : "14px";
+		btn.style.fontSize = isMobile ? "11px" : "13px";
 		btn.style.fontWeight = "500";
-		btn.style.letterSpacing = "0.3px";
+		btn.style.letterSpacing = "0.2px";
 		btn.style.fontFamily = "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 		btn.style.boxShadow = "0 4px 16px rgba(66, 135, 245, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)";
 		btn.style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.3)";
 		btn.style.position = "relative";
 		btn.style.overflow = "hidden";
+		btn.style.whiteSpace = "nowrap";
+		btn.style.textOverflow = "ellipsis";
+		btn.style.display = "flex";
+		btn.style.alignItems = "center";
+		btn.style.justifyContent = "center";
+		btn.style.textAlign = "center";
 
 		btn.textContent = option.label;
 
