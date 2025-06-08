@@ -48,6 +48,7 @@ export default class KxsClient {
 	isHealBarIndicatorEnabled: boolean;
 	isKxsClientLogoEnable: boolean;
 	brightness: number;
+	currentFocusModeState: boolean;
 
 	all_friends: string;
 	customCrosshair: string | null;
@@ -112,10 +113,11 @@ export default class KxsClient {
 		this.isGunBorderChromatic = false;
 		this.isKxsChatEnabled = true;
 		this.isVoiceChatEnabled = false;
-		this.isFocusModeEnabled = false;
 		this.isHealBarIndicatorEnabled = true;
 		this.brightness = 50;
 		this.isKxsClientLogoEnable = true;
+		this.isFocusModeEnabled = true;
+		this.currentFocusModeState = false;
 
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
@@ -393,7 +395,8 @@ export default class KxsClient {
 				kxsNetworkSettings: this.kxsNetworkSettings,
 				isHealBarIndicatorEnabled: this.isHealBarIndicatorEnabled,
 				brightness: this.brightness,
-				isKxsClientLogoEnable: this.isKxsClientLogoEnable
+				isKxsClientLogoEnable: this.isKxsClientLogoEnable,
+				isFocusModeEnabled: this.isFocusModeEnabled
 			}),
 		);
 	};
@@ -865,6 +868,7 @@ export default class KxsClient {
 			this.isDeathSoundEnabled = savedSettings.isDeathSoundEnabled ?? this.isDeathSoundEnabled;
 			this.brightness = savedSettings.brightness ?? this.brightness;
 			this.isKxsClientLogoEnable = savedSettings.isKxsClientLogoEnable ?? this.isKxsClientLogoEnable;
+			this.isFocusModeEnabled = savedSettings.isFocusModeEnabled ?? this.isFocusModeEnabled;
 
 			// Apply brightness setting
 			const brightnessValue = this.brightness / 50;

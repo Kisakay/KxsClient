@@ -127,9 +127,9 @@ class KxsClientHUD {
 			}
 
 			// Activer le mode focus seulement si F est pressé pendant que la touche modificatrice est déjà enfoncée
-			if (modifierKeyPressed && e.code === 'KeyF') {
+			if (modifierKeyPressed && e.code === 'KeyF' && this.kxsClient.isFocusModeEnabled) {
 				e.preventDefault(); // Empêcher le comportement par défaut (recherche)
-				this.kxsClient.isFocusModeEnabled = !this.kxsClient.isFocusModeEnabled;
+				this.kxsClient.currentFocusModeState = !this.kxsClient.currentFocusModeState;
 				this.kxsClient.hud.toggleFocusMode();
 				this.kxsClient.nm.showNotification("Focus mode toggled", "info", 1200);
 			}
@@ -340,7 +340,7 @@ class KxsClientHUD {
 
 
 	public toggleFocusMode() {
-		if (this.kxsClient.isFocusModeEnabled) {
+		if (this.kxsClient.currentFocusModeState) {
 			this.observeHudOpacity(0.05);
 		} else {
 			// 1. Stoppe tous les observers
