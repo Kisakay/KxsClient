@@ -403,7 +403,7 @@ export default class KxsClient {
 
 	applyBrightness(value: number) {
 		this.brightness = value;
-		const brightnessValue = value / 50; // 0 à 2, avec 1 étant la luminosité normale
+		const brightnessValue = value / 50;
 		document.documentElement.style.filter = `brightness(${brightnessValue})`;
 		this.updateLocalStorage();
 	}
@@ -871,8 +871,7 @@ export default class KxsClient {
 			this.isFocusModeEnabled = savedSettings.isFocusModeEnabled ?? this.isFocusModeEnabled;
 
 			// Apply brightness setting
-			const brightnessValue = this.brightness / 50;
-			document.documentElement.style.filter = `brightness(${brightnessValue})`;
+			this.applyBrightness(this.brightness);
 
 			if (savedSettings.soundLibrary) {
 				// Check if the sound value exists
@@ -1413,12 +1412,13 @@ export default class KxsClient {
 		if (startMenu) {
 			// Apply styles to the main container
 			Object.assign(startMenu.style, {
-				background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.95) 0%, rgba(15, 15, 25, 0.98) 100%)',
-				border: '1px solid rgba(255, 255, 255, 0.1)',
-				borderRadius: '12px',
-				boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+				background: 'linear-gradient(135deg, rgba(45, 55, 70, 0.15) 0%, rgba(35, 45, 60, 0.25) 100%)',
+				border: '1px solid rgba(255, 255, 255, 0.18)',
+				borderRadius: '16px',
+				boxShadow: '0 8px 32px rgba(0, 0, 0, 0.37)',
 				padding: '15px',
-				backdropFilter: 'blur(10px)',
+				backdropFilter: 'blur(16px) saturate(180%)',
+				webkitBackdropFilter: 'blur(16px) saturate(180%)',
 				margin: '0 auto'
 			});
 		}
@@ -1429,10 +1429,12 @@ export default class KxsClient {
 				if (button.classList.contains('btn-green')) {
 					// Boutons Play
 					Object.assign(button.style, {
-						background: 'linear-gradient(135deg, #4287f5 0%, #3b76d9 100%)',
-						borderRadius: '8px',
-						border: '1px solid rgba(255, 255, 255, 0.2)',
-						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+						background: 'linear-gradient(135deg, rgba(60, 75, 95, 0.2) 0%, rgba(50, 65, 85, 0.3) 100%)',
+						borderRadius: '12px',
+						border: '1px solid rgba(255, 255, 255, 0.18)',
+						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+						backdropFilter: 'blur(12px) saturate(180%)',
+						webkitBackdropFilter: 'blur(12px) saturate(180%)',
 						transition: 'all 0.2s ease',
 						color: 'white',
 						fontWeight: 'bold'
@@ -1440,9 +1442,11 @@ export default class KxsClient {
 				} else {
 					// Autres boutons
 					Object.assign(button.style, {
-						background: 'rgba(40, 45, 60, 0.7)',
-						borderRadius: '8px',
-						border: '1px solid rgba(255, 255, 255, 0.1)',
+						background: 'rgba(55, 65, 80, 0.15)',
+						borderRadius: '12px',
+						border: '1px solid rgba(255, 255, 255, 0.15)',
+						backdropFilter: 'blur(10px) saturate(180%)',
+						webkitBackdropFilter: 'blur(10px) saturate(180%)',
 						transition: 'all 0.2s ease',
 						color: 'white'
 					});
@@ -1451,15 +1455,26 @@ export default class KxsClient {
 				// Hover effect for all buttons
 				button.addEventListener('mouseover', () => {
 					button.style.transform = 'translateY(-2px)';
-					button.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.3)';
-					button.style.filter = 'brightness(1.1)';
+					button.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.4)';
+					if (button.classList.contains('btn-green')) {
+						button.style.background = 'linear-gradient(135deg, rgba(60, 75, 95, 0.3) 0%, rgba(50, 65, 85, 0.4) 100%)';
+					} else {
+						button.style.background = 'rgba(55, 65, 80, 0.25)';
+					}
+					button.style.border = '1px solid rgba(255, 255, 255, 0.25)';
 				});
 
 				button.addEventListener('mouseout', () => {
 					button.style.transform = 'translateY(0)';
-					button.style.boxShadow = button.classList.contains('btn-green') ?
-						'0 4px 12px rgba(0, 0, 0, 0.2)' : 'none';
-					button.style.filter = 'brightness(1)';
+					if (button.classList.contains('btn-green')) {
+						button.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25)';
+						button.style.background = 'linear-gradient(135deg, rgba(60, 75, 95, 0.2) 0%, rgba(50, 65, 85, 0.3) 100%)';
+					} else {
+						button.style.boxShadow = 'none';
+						button.style.background = 'rgba(55, 65, 80, 0.15)';
+					}
+					button.style.border = button.classList.contains('btn-green') ?
+						'1px solid rgba(255, 255, 255, 0.18)' : '1px solid rgba(255, 255, 255, 0.15)';
 				});
 			}
 		});
@@ -1467,9 +1482,9 @@ export default class KxsClient {
 		// Styliser le sélecteur de serveur
 		if (serverSelect instanceof HTMLSelectElement) {
 			Object.assign(serverSelect.style, {
-				background: 'rgba(30, 35, 50, 0.8)',
+				background: 'rgba(50, 60, 75, 0.8)',
 				borderRadius: '8px',
-				border: '1px solid rgba(255, 255, 255, 0.1)',
+				border: '1px solid rgba(75, 85, 100, 0.3)',
 				color: 'white',
 				padding: '8px 12px',
 				outline: 'none'
@@ -1479,9 +1494,9 @@ export default class KxsClient {
 		// Styliser l'input du nom
 		if (nameInput instanceof HTMLInputElement) {
 			Object.assign(nameInput.style, {
-				background: 'rgba(30, 35, 50, 0.8)',
+				background: 'rgba(50, 60, 75, 0.8)',
 				borderRadius: '8px',
-				border: '1px solid rgba(255, 255, 255, 0.1)',
+				border: '1px solid rgba(75, 85, 100, 0.3)',
 				color: 'white',
 				padding: '8px 12px',
 				outline: 'none'
@@ -1489,12 +1504,12 @@ export default class KxsClient {
 
 			// Focus style
 			nameInput.addEventListener('focus', () => {
-				nameInput.style.border = '1px solid #4287f5';
-				nameInput.style.boxShadow = '0 0 8px rgba(66, 135, 245, 0.5)';
+				nameInput.style.border = '1px solid rgba(70, 85, 105, 0.8)';
+				nameInput.style.boxShadow = '0 0 8px rgba(60, 75, 95, 0.5)';
 			});
 
 			nameInput.addEventListener('blur', () => {
-				nameInput.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+				nameInput.style.border = '1px solid rgba(75, 85, 100, 0.3)';
 				nameInput.style.boxShadow = 'none';
 			});
 		}
@@ -1502,14 +1517,14 @@ export default class KxsClient {
 		// Styliser la section d'aide
 		if (helpSection) {
 			Object.assign(helpSection.style, {
-				background: 'rgba(20, 25, 40, 0.7)',
+				background: 'rgba(40, 50, 65, 0.7)',
 				borderRadius: '8px',
 				padding: '15px',
 				margin: '15px 0',
 				maxHeight: '300px',
 				overflowY: 'auto',
 				scrollbarWidth: 'thin',
-				scrollbarColor: '#4287f5 rgba(25, 25, 35, 0.5)'
+				scrollbarColor: '#7f8c8d rgba(25, 25, 35, 0.5)'
 			});
 
 			// Style the help section titles
@@ -1517,7 +1532,7 @@ export default class KxsClient {
 			helpTitles.forEach(title => {
 				if (title instanceof HTMLElement) {
 					Object.assign(title.style, {
-						color: '#4287f5',
+						color: 'rgba(90, 105, 125, 1)',
 						fontSize: '18px',
 						marginTop: '15px',
 						marginBottom: '8px'
@@ -1547,7 +1562,7 @@ export default class KxsClient {
 			const controlTerms = helpSection.querySelectorAll('.help-control');
 			controlTerms.forEach(term => {
 				if (term instanceof HTMLElement) {
-					term.style.color = '#4287f5'; // Bleu
+					term.style.color = 'rgba(80, 95, 115, 1)'; // Dark blue/grey
 					term.style.fontWeight = 'bold';
 				}
 			});

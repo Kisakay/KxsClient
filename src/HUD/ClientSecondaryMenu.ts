@@ -1,6 +1,7 @@
 import { background_image, background_song, kxs_logo } from "../UTILS/vars";
 import KxsClient from "../KxsClient";
 import packageInfo from "../../package.json";
+import { DesignSystem } from "./DesignSystem";
 
 export const category = ["ALL", "HUD", "SERVER", "MECHANIC", "MISC"] as const;
 
@@ -96,42 +97,56 @@ class KxsClientSecondaryMenu {
 	}
 
 	private applyMenuStyles(): void {
-		// Styles par défaut (desktop/tablette)
-		const defaultStyles = {
-			backgroundColor: "rgba(17, 24, 39, 0.95)",
-			padding: "20px",
-			borderRadius: "12px",
-			boxShadow: "0 4px 20px rgba(0, 0, 0, 0.8)",
-			zIndex: "10001",
-			width: "800px",
-			fontFamily: "'Segoe UI', Arial, sans-serif",
-			color: "#fff",
-			maxHeight: "80vh",
-			overflowY: "auto",
-			overflowX: "hidden", // Prevent horizontal scrolling
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
+
+		// Injecter les polices et animations du DesignSystem
+		DesignSystem.injectFonts();
+
+		// Appliquer le style glassmorphism du DesignSystem avec dimensions réduites
+		DesignSystem.applyGlassEffect(this.menu, 'dark', {
 			position: "fixed",
-			top: "10%",
 			left: "50%",
-			transform: "translateX(-50%)",
+			top: "50%",
+			transform: "translate(-50%, -50%)",
+			width: isMobile ? "85%" : "55%",
+			maxWidth: "650px",
+			maxHeight: "70vh",
+			color: "#fff",
+			padding: isMobile ? "10px" : "18px",
+			zIndex: "10000",
 			display: "none",
-			boxSizing: "border-box", // Include padding in width calculation
-		};
+			flexDirection: "column",
+			fontFamily: DesignSystem.fonts.primary,
+			cursor: "grab",
+			userSelect: "none",
+			overflow: "hidden",
+			boxSizing: "border-box",
+			transition: `all ${DesignSystem.animation.normal} ease`,
+			// Effet glassmorphism amélioré
+			backgroundColor: "rgba(15, 23, 42, 0.85)",
+			backdropFilter: "blur(25px) saturate(180%)",
+			WebkitBackdropFilter: "blur(25px) saturate(180%)",
+			border: "1px solid rgba(255, 255, 255, 0.12)",
+			borderRadius: "14px",
+			boxShadow: "0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+		});
 
-		// Styles réduits pour mobile
-		const mobileStyles = {
-			padding: "6px",
-			borderRadius: "7px",
-			width: "78vw",
-			maxWidth: "84vw",
-			fontSize: "10px",
-			maxHeight: "60vh",
-			top: "4%",
-			left: "50%",
-		};
-
-		Object.assign(this.menu.style, defaultStyles);
-		if (this.kxsClient.isMobile && this.kxsClient.isMobile()) {
-			Object.assign(this.menu.style, mobileStyles);
+		// Styles réduits pour mobile avec glassmorphism optimisé
+		if (isMobile) {
+			Object.assign(this.menu.style, {
+				padding: "8px",
+				borderRadius: "12px",
+				width: "75vw",
+				maxWidth: "80vw",
+				fontSize: "11px",
+				maxHeight: "65vh",
+				top: "5%",
+				// Glassmorphism mobile optimisé
+				backdropFilter: "blur(20px) saturate(160%)",
+				WebkitBackdropFilter: "blur(20px) saturate(160%)",
+				backgroundColor: "rgba(15, 23, 42, 0.9)",
+				boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
+			});
 		}
 	}
 
@@ -282,8 +297,8 @@ class KxsClientSecondaryMenu {
 					return;
 				}
 
-				// Pour les autres cas, seulement si aucun autre élément n'a le focus
-				setTimeout(() => {
+				// Pour les autres cas, seulement si aucun autre élément n'a le focus (optimized)
+				requestAnimationFrame(() => {
 					const activeElement = document.activeElement as HTMLElement | null;
 					if (this.isClientMenuVisible &&
 						activeElement &&
@@ -292,7 +307,7 @@ class KxsClientSecondaryMenu {
 						activeElement.tagName !== 'TEXTAREA') {
 						searchInput.focus();
 					}
-				}, 100);
+				});
 			});
 		}
 
@@ -989,32 +1004,143 @@ class KxsClientSecondaryMenu {
 	}
 
 	private createToggleButton(option: MenuOption): HTMLButtonElement {
+		// Créer le bouton principal
 		const btn = document.createElement("button");
 		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
-		Object.assign(btn.style, {
-			width: "100%",
-			padding: isMobile ? "2px 0px" : "8px",
-			height: isMobile ? "24px" : "auto",
-			background: (option.value as boolean) ? "#059669" : "#DC2626",
-			border: "none",
-			borderRadius: isMobile ? "3px" : "6px",
-			color: "white",
-			cursor: "pointer",
-			transition: "background 0.2s",
-			fontSize: isMobile ? "9px" : "14px",
-			fontWeight: "bold",
-			minHeight: isMobile ? "20px" : "unset",
-			letterSpacing: isMobile ? "0.5px" : "1px"
+
+		// Créer l'indicateur (point vert/rouge)
+		const indicator = document.createElement("div");
+
+		// Appliquer le style de base au bouton avec glassmorphism moderne
+		btn.style.width = "100%";
+		btn.style.padding = isMobile ? "8px 14px" : "12px 18px";
+		btn.style.height = isMobile ? "32px" : "42px";
+		btn.style.background = "linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%)";
+		btn.style.backdropFilter = "blur(16px) saturate(180%)";
+		(btn.style as any)['-webkit-backdrop-filter'] = "blur(16px) saturate(180%)";
+		btn.style.border = "1px solid rgba(255, 255, 255, 0.18)";
+		btn.style.borderRadius = "12px";
+		btn.style.color = "#ffffff";
+		btn.style.cursor = "pointer";
+		btn.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+		btn.style.fontSize = isMobile ? "11px" : "14px";
+		btn.style.fontWeight = "500";
+		btn.style.letterSpacing = "0.3px";
+		btn.style.fontFamily = "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+		btn.style.position = "relative";
+		btn.style.display = "flex";
+		btn.style.alignItems = "center";
+		btn.style.justifyContent = "space-between";
+		btn.style.textAlign = "left";
+		btn.style.boxShadow = "0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)";
+		btn.style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.3)";
+		btn.style.overflow = "hidden";
+
+		// Appliquer le style à l'indicateur avec effet glassmorphism
+		indicator.style.width = isMobile ? "10px" : "12px";
+		indicator.style.height = isMobile ? "10px" : "12px";
+		indicator.style.borderRadius = "50%";
+		indicator.style.marginLeft = "12px";
+		indicator.style.flexShrink = "0";
+		indicator.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+		indicator.style.border = "2px solid rgba(255, 255, 255, 0.2)";
+		indicator.style.backdropFilter = "blur(8px)";
+		(indicator.style as any)['-webkit-backdrop-filter'] = "blur(8px)";
+
+		// Créer un conteneur pour le texte
+		const textSpan = document.createElement("span");
+		textSpan.style.flexGrow = "1";
+
+		// Fonction pour mettre à jour l'apparence du bouton
+		const updateButtonState = () => {
+			console.log("Updating button state, current value:", option.value);
+			const isEnabled = option.value as boolean;
+
+			// Mettre à jour le texte
+			textSpan.textContent = isEnabled ? "ENABLED" : "DISABLED";
+
+			// Mettre à jour le style du bouton avec glassmorphism
+			btn.style.background = isEnabled ?
+				"linear-gradient(135deg, rgba(74, 222, 128, 0.15) 0%, rgba(34, 197, 94, 0.12) 100%)" :
+				"linear-gradient(135deg, rgba(248, 113, 113, 0.15) 0%, rgba(239, 68, 68, 0.12) 100%)";
+			btn.style.border = isEnabled ?
+				"1px solid rgba(74, 222, 128, 0.3)" :
+				"1px solid rgba(248, 113, 113, 0.3)";
+			btn.style.boxShadow = isEnabled ?
+				"0 4px 16px rgba(74, 222, 128, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)" :
+				"0 4px 16px rgba(248, 113, 113, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)";
+
+			// Mettre à jour l'indicateur avec effet glassmorphism
+			indicator.style.background = isEnabled ?
+				"radial-gradient(circle, #4ade80 0%, #22c55e 100%)" :
+				"radial-gradient(circle, #f87171 0%, #ef4444 100%)";
+			indicator.style.boxShadow = isEnabled ?
+				"0 0 12px rgba(74, 222, 128, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3)" :
+				"0 0 12px rgba(248, 113, 113, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3)";
+		};
+
+		// Ajouter les éléments au DOM
+		btn.appendChild(textSpan);
+		btn.appendChild(indicator);
+
+		// Définir l'état initial
+		updateButtonState();
+
+		// Gérer les événements de survol avec glassmorphism amélioré
+		btn.addEventListener("mouseenter", () => {
+			const isEnabled = option.value as boolean;
+			btn.style.transform = "translateY(-3px) scale(1.02)";
+			btn.style.backdropFilter = "blur(20px) saturate(200%)";
+			(btn.style as any)['-webkit-backdrop-filter'] = "blur(20px) saturate(200%)";
+			btn.style.boxShadow = isEnabled ?
+				"0 8px 24px rgba(74, 222, 128, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(74, 222, 128, 0.2)" :
+				"0 8px 24px rgba(248, 113, 113, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(248, 113, 113, 0.2)";
+			btn.style.border = isEnabled ?
+				"1px solid rgba(74, 222, 128, 0.4)" :
+				"1px solid rgba(248, 113, 113, 0.4)";
 		});
 
-		btn.textContent = (option.value as boolean) ? "ENABLED" : "DISABLED";
+		btn.addEventListener("mouseleave", () => {
+			const isEnabled = option.value as boolean;
+			btn.style.transform = "translateY(0) scale(1)";
+			btn.style.backdropFilter = "blur(16px) saturate(180%)";
+			(btn.style as any)['-webkit-backdrop-filter'] = "blur(16px) saturate(180%)";
+			btn.style.boxShadow = isEnabled ?
+				"0 4px 16px rgba(74, 222, 128, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)" :
+				"0 4px 16px rgba(248, 113, 113, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)";
+			btn.style.border = isEnabled ?
+				"1px solid rgba(74, 222, 128, 0.3)" :
+				"1px solid rgba(248, 113, 113, 0.3)";
+		});
 
-		btn.addEventListener("click", () => {
+		// Gérer le clic
+		btn.addEventListener("click", (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+
+			// Inverser la valeur
 			const newValue = !(option.value as boolean);
+			console.log("Toggle button clicked, changing value from", option.value, "to", newValue);
 			option.value = newValue;
-			btn.textContent = newValue ? "ENABLED" : "DISABLED";
-			btn.style.background = newValue ? "#059669" : "#DC2626";
-			option.onChange?.(newValue);
+
+			// Mettre à jour l'apparence
+			updateButtonState();
+
+			// Ajouter une animation de pulsation (optimized)
+			btn.style.animation = `${DesignSystem.animation.pulse} 0.5s ease`;
+			// Use event listener for animation end instead of setTimeout
+			btn.addEventListener('animationend', function onAnimationEnd() {
+				btn.style.animation = '';
+				btn.removeEventListener('animationend', onAnimationEnd);
+			}, { once: true });
+
+			// Appeler le gestionnaire onChange
+			if (option.onChange) {
+				console.log("Calling onChange handler with value:", newValue);
+				option.onChange(newValue);
+			}
+
+			return false;
 		});
 
 		this.blockMousePropagation(btn);
@@ -1024,23 +1150,90 @@ class KxsClientSecondaryMenu {
 	private createClickButton(option: MenuOption): HTMLButtonElement {
 		const btn = document.createElement("button");
 		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
-		Object.assign(btn.style, {
-			width: "100%",
-			padding: isMobile ? "2px 0px" : "8px",
-			height: isMobile ? "24px" : "auto",
-			background: "#3B82F6",
-			border: "none",
-			borderRadius: "6px",
-			color: "white",
-			cursor: "pointer",
-			transition: "background 0.2s",
-			fontSize: "14px",
-			fontWeight: "bold"
-		});
+
+		// Appliquer un style glassmorphism moderne
+		btn.style.width = "100%";
+		btn.style.padding = isMobile ? "8px 12px" : "12px 16px";
+		btn.style.height = isMobile ? "32px" : "40px";
+		btn.style.background = "linear-gradient(135deg, rgba(66, 135, 245, 0.15) 0%, rgba(59, 118, 217, 0.12) 100%)";
+		btn.style.backdropFilter = "blur(16px) saturate(180%)";
+		(btn.style as any)['-webkit-backdrop-filter'] = "blur(16px) saturate(180%)";
+		btn.style.border = "1px solid rgba(66, 135, 245, 0.25)";
+		btn.style.borderRadius = "12px";
+		btn.style.color = "#ffffff";
+		btn.style.cursor = "pointer";
+		btn.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+		btn.style.fontSize = isMobile ? "12px" : "14px";
+		btn.style.fontWeight = "500";
+		btn.style.letterSpacing = "0.3px";
+		btn.style.fontFamily = "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+		btn.style.boxShadow = "0 4px 16px rgba(66, 135, 245, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)";
+		btn.style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.3)";
+		btn.style.position = "relative";
+		btn.style.overflow = "hidden";
 
 		btn.textContent = option.label;
 
+		// Ajouter les effets hover modernes
+		btn.addEventListener("mouseenter", () => {
+			btn.style.transform = "translateY(-3px) scale(1.02)";
+			btn.style.backdropFilter = "blur(20px) saturate(200%)";
+			(btn.style as any)['-webkit-backdrop-filter'] = "blur(20px) saturate(200%)";
+			btn.style.boxShadow = "0 8px 24px rgba(66, 135, 245, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(66, 135, 245, 0.2)";
+			btn.style.border = "1px solid rgba(66, 135, 245, 0.35)";
+		});
+
+		btn.addEventListener("mouseleave", () => {
+			btn.style.transform = "translateY(0) scale(1)";
+			btn.style.backdropFilter = "blur(16px) saturate(180%)";
+			(btn.style as any)['-webkit-backdrop-filter'] = "blur(16px) saturate(180%)";
+			btn.style.boxShadow = "0 4px 16px rgba(66, 135, 245, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)";
+			btn.style.border = "1px solid rgba(66, 135, 245, 0.25)";
+		});
+
+		// Ajouter l'effet actif
+		btn.addEventListener("mousedown", () => {
+			btn.style.transform = "translateY(-1px) scale(0.98)";
+			btn.style.boxShadow = "0 2px 8px rgba(66, 135, 245, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)";
+		});
+
 		btn.addEventListener("click", () => {
+			// Add ripple effect for feedback
+			const ripple = document.createElement("span");
+			Object.assign(ripple.style, {
+				position: "absolute",
+				top: "50%",
+				left: "50%",
+				transform: "translate(-50%, -50%)",
+				background: "rgba(255, 255, 255, 0.3)",
+				borderRadius: "50%",
+				width: "0",
+				height: "0",
+				animation: "ripple 0.6s linear",
+				zIndex: "1"
+			});
+
+			// Add ripple animation if it doesn't exist
+			if (!document.getElementById("kxs-ripple-animation")) {
+				const style = document.createElement("style");
+				style.id = "kxs-ripple-animation";
+				style.textContent = `
+					@keyframes ripple {
+						to {
+							width: 200px;
+							height: 200px;
+							opacity: 0;
+						}
+					}
+				`;
+				document.head.appendChild(style);
+			}
+
+			btn.appendChild(ripple);
+			setTimeout(() => {
+				ripple.remove();
+			}, 600);
+
 			option.onChange?.(true);
 		});
 
@@ -1048,7 +1241,7 @@ class KxsClientSecondaryMenu {
 		return btn;
 	}
 
-	addShiftListener() {
+	private addShiftListener(): void {
 		// Gestionnaire pour la touche Shift (ouverture du menu)
 		window.addEventListener("keydown", (event) => {
 			if (event.key === "Shift" && event.location == 2) {
@@ -1075,32 +1268,77 @@ class KxsClientSecondaryMenu {
 	}
 
 	private createInputElement(option: MenuOption): HTMLElement {
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
+
+		// Create container for input with label effect
+		const container = document.createElement("div");
+		Object.assign(container.style, {
+			position: "relative",
+			width: "100%",
+			margin: "4px 0"
+		});
+
+		// Create the input element
 		const input = document.createElement("input");
 		input.type = "text";
 		input.value = String(option.value);
 		if (option.placeholder) {
 			input.placeholder = option.placeholder;
 		}
-		Object.assign(input.style, {
+
+		// Apply glassmorphism effect to input
+		DesignSystem.applyGlassEffect(input, 'dark', {
 			width: "100%",
-			padding: "8px",
-			background: "rgba(55, 65, 81, 0.8)",
-			border: "none",
+			padding: isMobile ? "6px 8px" : "8px 10px",
+			background: "rgba(17, 24, 39, 0.7)",
 			borderRadius: "6px",
-			color: "#FFAE00",
-			fontSize: "14px"
+			color: "#FFAE00", // Gold color
+			fontSize: isMobile ? "12px" : "14px",
+			fontFamily: DesignSystem.fonts.primary,
+			boxSizing: "border-box",
+			border: "1px solid rgba(255, 174, 0, 0.3)",
+			transition: `all ${DesignSystem.animation.normal} ease`,
+			outline: "none"
+		});
+
+		// Add focus effects
+		input.addEventListener("focus", () => {
+			input.style.boxShadow = "0 0 0 2px rgba(255, 174, 0, 0.2)";
+			input.style.border = "1px solid rgba(255, 174, 0, 0.5)";
+		});
+
+		input.addEventListener("blur", () => {
+			input.style.boxShadow = "none";
+			input.style.border = "1px solid rgba(255, 174, 0, 0.3)";
 		});
 
 		input.addEventListener("change", () => {
 			option.value = input.value;
 			option.onChange?.(input.value);
+
+			// Visual feedback on change
+			input.style.animation = "glow 0.5s ease";
+			setTimeout(() => {
+				input.style.animation = "";
+			}, 500);
 		});
 
-		// Empêcher la propagation des touches de texte vers la page web
-		// mais permettre l'interaction avec l'input
+		// Add glow animation if it doesn't exist
+		if (!document.getElementById("kxs-input-animations")) {
+			const style = document.createElement("style");
+			style.id = "kxs-input-animations";
+			style.textContent = `
+				@keyframes glow {
+					0% { box-shadow: 0 0 0 0 rgba(255, 174, 0, 0.4); }
+					50% { box-shadow: 0 0 10px 3px rgba(255, 174, 0, 0.4); }
+					100% { box-shadow: 0 0 0 0 rgba(255, 174, 0, 0.4); }
+				}
+			`;
+			document.head.appendChild(style);
+		}
+
+		// Prevent key propagation to the game
 		input.addEventListener("keydown", (e) => {
-			// Ne pas arrêter la propagation des touches de navigation (flèches, tab, etc.)
-			// qui sont nécessaires pour naviguer dans le champ de texte
 			e.stopPropagation();
 		});
 
@@ -1113,182 +1351,36 @@ class KxsClientSecondaryMenu {
 		});
 
 		this.blockMousePropagation(input);
-		return input;
+		container.appendChild(input);
+		return container;
 	}
 
 	private createSliderElement(option: MenuOption): HTMLElement {
-		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
-		const container = document.createElement("div");
-		Object.assign(container.style, {
-			display: "flex",
-			flexDirection: "column",
+		// Create the slider using DesignSystem with proper event handling
+		const sliderElement = DesignSystem.createSliderElement(
+			option.min || 0,
+			option.max || 100,
+			Number(option.value),
+			(newValue) => {
+				option.value = newValue;
+				option.onChange?.(newValue);
+			},
+			true
+		);
+
+		// Prevent mouse events from propagating to the game
+		const sliderInput = sliderElement.querySelector("input");
+		if (sliderInput) {
+			this.blockMousePropagation(sliderInput, false);
+		}
+
+		// Apply consistent styling
+		Object.assign(sliderElement.style, {
 			width: "100%",
-			marginTop: isMobile ? "3px" : "5px",
+			margin: "5px 0"
 		});
 
-		// Conteneur pour le slider et la valeur
-		const sliderContainer = document.createElement("div");
-		Object.assign(sliderContainer.style, {
-			display: "flex",
-			alignItems: "center",
-			width: "100%",
-			gap: isMobile ? "8px" : "12px",
-		});
-
-		// Wrapper du slider pour gérer la couleur de fond
-		const sliderWrapper = document.createElement("div");
-		Object.assign(sliderWrapper.style, {
-			position: "relative",
-			width: "100%",
-			height: isMobile ? "10px" : "12px",
-			background: "rgba(30, 35, 45, 0.5)",
-			borderRadius: "6px",
-			overflow: "hidden",
-			border: "1px solid rgba(59, 130, 246, 0.25)",
-		});
-
-		// Barre de progression bleue
-		const progressBar = document.createElement("div");
-		Object.assign(progressBar.style, {
-			position: "absolute",
-			left: "0",
-			top: "0",
-			height: "100%",
-			width: `${((Number(option.value) - (option.min || 0)) / ((option.max || 100) - (option.min || 0))) * 100}%`,
-			background: "#3B82F6", // Couleur bleue pleine
-			borderRadius: "6px 0 0 6px", // Arrondi uniquement à gauche
-			transition: "width 0.1s ease-out",
-		});
-
-		// Créer le slider
-		const slider = document.createElement("input");
-		slider.type = "range";
-		slider.min = String(option.min || 0);
-		slider.max = String(option.max || 100);
-		slider.step = String(option.step || 1);
-		slider.value = String(option.value);
-		slider.className = "kxs-minimal-slider";
-
-		Object.assign(slider.style, {
-			position: "absolute",
-			left: "0",
-			top: "0",
-			width: "100%",
-			height: "100%",
-			margin: "0",
-			appearance: "none",
-			background: "transparent", // Transparent pour voir la barre de progression
-			cursor: "pointer",
-			outline: "none",
-			border: "none",
-			zIndex: "2", // Au-dessus de la barre de progression
-		});
-
-		// Valeur actuelle avec style simple
-		const valueDisplay = document.createElement("div");
-		valueDisplay.textContent = String(option.value);
-		Object.assign(valueDisplay.style, {
-			minWidth: isMobile ? "28px" : "36px",
-			textAlign: "center",
-			color: "#ffffff",
-			fontSize: isMobile ? "11px" : "13px",
-			fontFamily: "'Segoe UI', Arial, sans-serif",
-			background: "rgba(59, 130, 246, 0.1)",
-			padding: isMobile ? "2px 4px" : "3px 6px",
-			borderRadius: "4px",
-			border: "1px solid rgba(59, 130, 246, 0.3)",
-			transition: "all 0.15s ease-out",
-		});
-
-		// Styles personnalisés pour le curseur du slider uniquement
-		const sliderStyles = `
-			/* Style du curseur */
-			.kxs-minimal-slider::-webkit-slider-thumb {
-				appearance: none;
-				width: ${isMobile ? "14px" : "16px"};
-				height: ${isMobile ? "14px" : "16px"};
-				border-radius: 50%;
-				background: linear-gradient(135deg, #4f8bf9, #3B82F6);
-				cursor: pointer;
-				border: none;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-				transition: background 0.2s, transform 0.1s;
-				z-index: 3;
-			}
-
-			.kxs-minimal-slider::-moz-range-thumb {
-				width: ${isMobile ? "14px" : "16px"};
-				height: ${isMobile ? "14px" : "16px"};
-				border-radius: 50%;
-				background: linear-gradient(135deg, #4f8bf9, #3B82F6);
-				cursor: pointer;
-				border: none;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-				transition: background 0.2s, transform 0.1s;
-				z-index: 3;
-			}
-
-			/* Masquer la piste par défaut */
-			.kxs-minimal-slider::-webkit-slider-runnable-track {
-				background: transparent;
-				height: 100%;
-			}
-			
-			.kxs-minimal-slider::-moz-range-track {
-				background: transparent;
-				height: 100%;
-			}
-
-			/* Effets au survol */
-			.kxs-minimal-slider:hover::-webkit-slider-thumb {
-				background: linear-gradient(135deg, #5a93fa, #4289f7);
-				transform: scale(1.05);
-			}
-
-			.kxs-minimal-slider:hover::-moz-range-thumb {
-				background: linear-gradient(135deg, #5a93fa, #4289f7);
-				transform: scale(1.05);
-			}
-		`;
-
-		// Ajouter les styles personnalisés
-		const style = document.createElement("style");
-		style.textContent = sliderStyles;
-		document.head.appendChild(style);
-
-		// Ajouter les gestionnaires d'événements
-		slider.addEventListener("input", () => {
-			// Mettre à jour la valeur affichée
-			valueDisplay.textContent = slider.value;
-
-			// Mettre à jour la largeur de la barre de progression
-			const percentage = ((Number(slider.value) - (option.min || 0)) / ((option.max || 100) - (option.min || 0))) * 100;
-			progressBar.style.width = `${percentage}%`;
-
-			// Mettre à jour la valeur de l'option
-			option.value = Number(slider.value);
-			option.onChange?.(Number(slider.value));
-
-			// Effet visuel sur la valeur
-			valueDisplay.style.background = "rgba(59, 130, 246, 0.25)";
-			setTimeout(() => {
-				valueDisplay.style.background = "rgba(59, 130, 246, 0.1)";
-			}, 150);
-		});
-
-		// Empêcher les événements de se propager vers le jeu
-		slider.addEventListener("mousedown", (e) => e.stopPropagation());
-		slider.addEventListener("mouseup", (e) => e.stopPropagation());
-		this.blockMousePropagation(slider, false);
-
-		// Assembler tous les éléments
-		sliderWrapper.appendChild(progressBar);
-		sliderWrapper.appendChild(slider);
-		sliderContainer.appendChild(sliderWrapper);
-		sliderContainer.appendChild(valueDisplay);
-		container.appendChild(sliderContainer);
-
-		return container;
+		return sliderElement;
 	}
 
 	private createInfoElement(option: MenuOption): HTMLElement {
@@ -1337,24 +1429,60 @@ class KxsClientSecondaryMenu {
 		const btn = document.createElement("button");
 		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
 
-		// Styles pour le bouton de sous-menu (gris par défaut)
-		Object.assign(btn.style, {
+		// Apply modern glassmorphism effect
+		DesignSystem.applyGlassEffect(btn, 'dark', {
 			width: "100%",
-			padding: isMobile ? "2px 0px" : "8px",
-			height: isMobile ? "24px" : "auto",
-			background: "#6B7280", // Couleur grise par défaut
-			border: "none",
-			borderRadius: isMobile ? "3px" : "6px",
-			color: "white",
+			padding: isMobile ? "6px 8px" : "12px 16px",
+			height: isMobile ? "32px" : "auto",
+			background: "linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.25) 100%)",
+			backdropFilter: "blur(12px) saturate(180%)",
+			WebkitBackdropFilter: "blur(12px) saturate(180%)",
+			border: "1px solid rgba(59, 130, 246, 0.3)",
+			borderRadius: isMobile ? "8px" : "12px",
+			color: "#ffffff",
 			cursor: "pointer",
-			transition: "background 0.2s",
-			fontSize: isMobile ? "9px" : "14px",
-			fontWeight: "bold",
-			minHeight: isMobile ? "20px" : "unset",
-			letterSpacing: isMobile ? "0.5px" : "1px"
+			transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+			fontSize: isMobile ? "11px" : "14px",
+			fontWeight: "600",
+			letterSpacing: "0.5px",
+			fontFamily: DesignSystem.fonts.primary,
+			boxShadow: "0 4px 16px rgba(59, 130, 246, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+			textShadow: "0 1px 2px rgba(0, 0, 0, 0.3)",
+			position: "relative",
+			overflow: "hidden"
 		});
 
-		btn.textContent = "CONFIGURE";
+		// Add a subtle icon to indicate configuration
+		btn.innerHTML = `<span style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+			<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+				<path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.258 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.0113 9.77251C4.28059 9.5799 4.48572 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
+			CONFIGURE
+		</span>`;
+
+		// Add sophisticated hover effects
+		btn.addEventListener("mouseenter", () => {
+			btn.style.transform = "translateY(-2px) scale(1.02)";
+			btn.style.backdropFilter = "blur(16px) saturate(200%)";
+			btn.style.setProperty('-webkit-backdrop-filter', 'blur(16px) saturate(200%)');
+			btn.style.boxShadow = "0 8px 24px rgba(59, 130, 246, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)";
+			btn.style.border = "1px solid rgba(59, 130, 246, 0.5)";
+		});
+
+		btn.addEventListener("mouseleave", () => {
+			btn.style.transform = "translateY(0) scale(1)";
+			btn.style.backdropFilter = "blur(12px) saturate(180%)";
+			btn.style.backdropFilter = "blur(12px) saturate(180%)";
+			btn.style.boxShadow = "0 4px 16px rgba(59, 130, 246, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)";
+			btn.style.border = "1px solid rgba(59, 130, 246, 0.3)";
+		});
+
+		// Add active effect
+		btn.addEventListener("mousedown", () => {
+			btn.style.transform = "translateY(0) scale(0.98)";
+			btn.style.boxShadow = "0 2px 8px rgba(59, 130, 246, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.1)";
+		});
 
 		// Variables pour le sous-menu
 		let subMenuContainer: HTMLElement | null = null;
@@ -1585,7 +1713,7 @@ class KxsClientSecondaryMenu {
 		this.blockMousePropagation(modCard);
 	}
 
-	addDragListeners() {
+	private addDragListeners(): void {
 		this.menu.addEventListener('mousedown', (e: MouseEvent) => {
 			// Ne pas arrêter la propagation si l'événement vient d'un élément interactif
 			if (
@@ -1640,7 +1768,7 @@ class KxsClientSecondaryMenu {
 		});
 	}
 
-	toggleMenuVisibility() {
+	public toggleMenuVisibility(): void {
 		this.isClientMenuVisible = !this.isClientMenuVisible;
 		// Mettre à jour la propriété publique en même temps
 		this.isOpen = this.isClientMenuVisible;
@@ -1703,7 +1831,7 @@ class KxsClientSecondaryMenu {
 		this.kxsClient = null as any;
 	}
 
-	getMenuVisibility(): boolean {
+	public getMenuVisibility(): boolean {
 		return this.isClientMenuVisible;
 	}
 }

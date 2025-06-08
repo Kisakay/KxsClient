@@ -152,13 +152,14 @@ class NotificationManager {
 			notification.style.animation = "slideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards";
 		});
 
-		// Exit animation and cleanup
+		// Exit animation and cleanup (optimized)
 		setTimeout(() => {
 			notification.style.animation = "slideOut 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards";
-			setTimeout(() => {
+			// Use event listener for animation end instead of setTimeout
+			notification.addEventListener('animationend', () => {
 				this.removeNotification(notification);
 				notification.remove();
-			}, 500);
+			}, { once: true });
 		}, duration);
 	}
 }

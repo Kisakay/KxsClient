@@ -249,8 +249,16 @@ class HealthWarning {
 	}
 
 	private startMenuCheckInterval() {
-		// Créer un intervalle qui vérifie régulièrement l'état du menu RSHIFT
+		// Utiliser un système d'événements plus efficace au lieu d'un polling constant
+		// Vérifier seulement quand nécessaire avec un throttle
+		let lastCheck = 0;
+		const checkThrottle = 500; // Réduire la fréquence à 500ms
+		
 		this.menuCheckInterval = window.setInterval(() => {
+			const now = Date.now();
+			if (now - lastCheck < checkThrottle) return;
+			lastCheck = now;
+			
 			// Vérifier si le menu secondaire est ouvert
 			const isMenuOpen = this.kxsClient.secondaryMenu?.isOpen || false;
 
@@ -262,7 +270,7 @@ class HealthWarning {
 			else if (!isMenuOpen && this.isDraggable) {
 				this.disableDragging();
 			}
-		}, 100); // Vérifier toutes les 100ms
+		}, 500); // Optimisé: vérifier toutes les 500ms au lieu de 100ms
 	}
 }
 

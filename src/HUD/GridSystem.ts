@@ -208,7 +208,8 @@ class GridSystem {
 			}
 		}
 
-		setTimeout(() => this.updateCounterCorners(), 10);
+		// Optimized: use requestAnimationFrame instead of setTimeout
+		requestAnimationFrame(() => this.updateCounterCorners());
 
 		return { x: snappedX, y: snappedY };
 	}

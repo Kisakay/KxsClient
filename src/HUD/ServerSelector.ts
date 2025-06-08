@@ -204,14 +204,20 @@ export class ServerSelector {
 	 * Start animations for the 3D carousel
 	 */
 	private startAnimations(): void {
-		// Subtle continuous movement for more 3D effect
+		// Subtle continuous movement for more 3D effect using requestAnimationFrame
 		let angle = 0;
-		this.animation = window.setInterval(() => {
+		let animationId: number;
+		
+		const animate = () => {
 			angle += 0.005;
 			if (this.serverContainer) {
 				this.serverContainer.style.transform = `rotateY(${Math.sin(angle) * 5}deg) rotateX(${Math.cos(angle) * 3}deg)`;
 			}
-		}, 16);
+			animationId = requestAnimationFrame(animate);
+		};
+		
+		// Store the animation ID for cleanup
+		this.animation = animationId = requestAnimationFrame(animate);
 	}
 
 	/**

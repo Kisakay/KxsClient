@@ -1,5 +1,6 @@
 import KxsClient from "../KxsClient";
 import { PingTest } from "../SERVER/Ping";
+import { DesignSystem } from "./DesignSystem";
 
 interface HealthChangeAnimation {
 	element: HTMLElement;
@@ -536,10 +537,12 @@ class KxsClientHUD {
 	private escapeMenu() {
 		const customStylesMobile = `
     .ui-game-menu-desktop {
-        background: linear-gradient(135deg, rgba(25, 25, 35, 0.95) 0%, rgba(15, 15, 25, 0.98) 100%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 4px !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+        background: rgba(30, 35, 50, 0.15) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(60, 70, 90, 0.3) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(80, 90, 110, 0.2) !important;
         padding: 2px 2px !important;
         max-width: 45vw !important;
         width: 45vw !important;
@@ -588,12 +591,13 @@ class KxsClientHUD {
 
 		const customStylesDesktop = `
 .ui-game-menu-desktop {
-	background: linear-gradient(135deg, rgba(25, 25, 35, 0.95) 0%, rgba(15, 15, 25, 0.98) 100%) !important;
-	border: 1px solid rgba(255, 255, 255, 0.1) !important;
-	border-radius: 12px !important;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+	background: rgba(25, 30, 45, 0.12) !important;
+	backdrop-filter: blur(25px) !important;
+	-webkit-backdrop-filter: blur(25px) !important;
+	border: 1px solid rgba(55, 65, 85, 0.25) !important;
+	border-radius: 20px !important;
+	box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(75, 85, 105, 0.2), 0 0 0 1px rgba(45, 55, 75, 0.1) !important;
 	padding: 20px !important;
-	backdrop-filter: blur(10px) !important;
 	max-width: 350px !important;
 	/* max-height: 80vh !important; */ /* Optional: Limit the maximum height */
 	margin: auto !important;
@@ -627,17 +631,17 @@ class KxsClientHUD {
 	border-radius: 10px !important;
 }
 .ui-game-menu-desktop::-webkit-scrollbar-thumb {
-	background-color: #4287f5 !important;
+	background-color: #7f8c8d !important;
 	border-radius: 10px !important;
 	border: 2px solid rgba(25, 25, 35, 0.5) !important;
 }
 .ui-game-menu-desktop::-webkit-scrollbar-thumb:hover {
-	background-color: #5a9eff !important;
+	background-color: #95a5a6 !important;
 }
 
 .ui-game-menu-desktop {
 	scrollbar-width: thin !important;
-	scrollbar-color: #4287f5 rgba(25, 25, 35, 0.5) !important;
+	scrollbar-color: #7f8c8d rgba(25, 25, 35, 0.5) !important;
 }
 
 .kxs-header {
@@ -645,8 +649,13 @@ class KxsClientHUD {
 	align-items: center;
 	justify-content: flex-start;
 	margin-bottom: 20px;
-	padding: 10px;
-	border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+	padding: 15px;
+	border-bottom: 1px solid rgba(55, 65, 85, 0.2);
+	background: rgba(20, 25, 40, 0.08);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border-radius: 12px;
+	box-shadow: inset 0 1px 0 rgba(70, 80, 100, 0.15);
 }
 
 .kxs-logo {
@@ -661,77 +670,160 @@ class KxsClientHUD {
 	font-weight: 700;
 	color: #ffffff;
 	text-transform: uppercase;
-	text-shadow: 0 0 10px rgba(66, 135, 245, 0.5);
+	text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(70, 80, 120, 0.4);
 	font-family: 'Arial', sans-serif;
 	letter-spacing: 2px;
+	filter: drop-shadow(0 0 10px rgba(60, 70, 100, 0.3));
 }
 
 .kxs-title span {
-	color: #4287f5;
+	color: #6b7db0;
 }
 	
 
 .btn-game-menu {
-	background: linear-gradient(135deg, rgba(66, 135, 245, 0.1) 0%, rgba(66, 135, 245, 0.2) 100%) !important;
-	border: 1px solid rgba(66, 135, 245, 0.3) !important;
-	border-radius: 8px !important;
+	background: linear-gradient(135deg, rgba(45, 55, 75, 0.15) 0%, rgba(35, 45, 65, 0.25) 100%) !important;
+	backdrop-filter: blur(16px) saturate(180%) !important;
+	-webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+	border: 1px solid rgba(255, 255, 255, 0.18) !important;
+	border-radius: 14px !important;
 	color: #ffffff !important;
-	transition: all 0.3s ease !important;
-	margin: 5px 0 !important;
-	padding: 12px !important;
-	font-weight: 600 !important;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	margin: 8px 0 !important;
+	padding: 14px 18px !important;
+	font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+	font-weight: 500 !important;
+	font-size: 14px !important;
+	letter-spacing: 0.3px !important;
 	width: 100% !important;
 	text-align: center !important;
 	display: block !important;
 	box-sizing: border-box !important;
-	line-height: 15px !important;
+	line-height: 1.4 !important;
+	position: relative !important;
+	overflow: hidden !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.btn-game-menu::before {
+	content: '' !important;
+	position: absolute !important;
+	top: 0 !important;
+	left: -100% !important;
+	width: 100% !important;
+	height: 100% !important;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent) !important;
+	transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	z-index: 1 !important;
+}
+
+.btn-game-menu:hover::before {
+	left: 100% !important;
 }
 
 .btn-game-menu:hover {
-	background: linear-gradient(135deg, rgba(66, 135, 245, 0.2) 0%, rgba(66, 135, 245, 0.3) 100%) !important;
-	transform: translateY(-2px) !important;
-	box-shadow: 0 4px 12px rgba(66, 135, 245, 0.2) !important;
+	background: linear-gradient(135deg, rgba(55, 65, 85, 0.25) 0%, rgba(45, 55, 75, 0.35) 100%) !important;
+	transform: translateY(-3px) scale(1.02) !important;
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+	border-color: rgba(255, 255, 255, 0.25) !important;
+	backdrop-filter: blur(20px) saturate(200%) !important;
+	-webkit-backdrop-filter: blur(20px) saturate(200%) !important;
 }
 
 .slider-container {
-	background: rgba(66, 135, 245, 0.1) !important;
-	border-radius: 8px !important;
-	padding: 10px 15px !important;
-	margin: 10px 0 !important;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
+	backdrop-filter: blur(20px) saturate(180%) !important;
+	-webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+	border: 1px solid rgba(255, 255, 255, 0.15) !important;
+	border-radius: 16px !important;
+	padding: 16px 20px !important;
+	margin: 12px 0 !important;
 	width: 100% !important;
 	box-sizing: border-box !important;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+	position: relative !important;
+	overflow: hidden !important;
+}
+
+.slider-container::before {
+	content: '' !important;
+	position: absolute !important;
+	top: 0 !important;
+	left: -100% !important;
+	width: 100% !important;
+	height: 100% !important;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent) !important;
+	animation: containerShine 3s ease-in-out infinite !important;
+	z-index: 0 !important;
+}
+
+@keyframes containerShine {
+	0% { left: -100%; }
+	50% { left: 100%; }
+	100% { left: 100%; }
 }
 
 .slider-text {
 	color: #ffffff !important;
-	font-size: 14px !important;
-	margin-bottom: 8px !important;
+	font-size: 15px !important;
+	font-weight: 600 !important;
+	margin-bottom: 12px !important;
 	text-align: center !important;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+	letter-spacing: 0.5px !important;
+	position: relative !important;
+	z-index: 1 !important;
 }
 
 .slider {
 	-webkit-appearance: none !important;
 	width: 100% !important;
-	height: 6px !important;
-	border-radius: 3px !important;
-	background: rgba(66, 135, 245, 0.3) !important;
+	height: 8px !important;
+	border-radius: 12px !important;
+	background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.8) 100%) !important;
 	outline: none !important;
-	margin: 10px 0 !important;
+	margin: 12px 0 !important;
+	backdrop-filter: blur(8px) !important;
+	-webkit-backdrop-filter: blur(8px) !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+	position: relative !important;
+	z-index: 1 !important;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.slider:hover {
+	background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 1) 100%) !important;
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(255, 255, 255, 0.15), 0 0 16px rgba(59, 130, 246, 0.2) !important;
 }
 
 .slider::-webkit-slider-thumb {
 	-webkit-appearance: none !important;
-	width: 16px !important;
-	height: 16px !important;
+	width: 24px !important;
+	height: 24px !important;
 	border-radius: 50% !important;
-	background: #4287f5 !important;
-	cursor: pointer !important;
-	transition: all 0.3s ease !important;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%) !important;
+	backdrop-filter: blur(12px) saturate(180%) !important;
+	-webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+	border: 2px solid rgba(59, 130, 246, 0.6) !important;
+	cursor: grab !important;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3), 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+	position: relative !important;
 }
 
 .slider::-webkit-slider-thumb:hover {
-	transform: scale(1.2) !important;
-	box-shadow: 0 0 10px rgba(66, 135, 245, 0.5) !important;
+	transform: scale(1.1) !important;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
+	box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4), 0 3px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
+	border: 2px solid rgba(59, 130, 246, 0.8) !important;
+}
+
+.slider::-webkit-slider-thumb:active {
+	cursor: grabbing !important;
+	transform: scale(1.05) !important;
+	box-shadow: 0 3px 12px rgba(59, 130, 246, 0.5), 0 1px 6px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 .btns-game-double-row {
@@ -834,9 +926,18 @@ class KxsClientHUD {
 
 						element.style.opacity = '1';
 
-						setTimeout(() => {
-							element.style.opacity = '0';
-						}, 5000);
+						// Use CSS transition instead of setTimeout for better performance
+						element.style.transition = 'opacity 0.3s ease';
+						// Schedule fade out using requestAnimationFrame with delay
+						const startTime = performance.now();
+						const fadeOut = (currentTime: number) => {
+							if (currentTime - startTime >= 5000) {
+								element.style.opacity = '0';
+							} else {
+								requestAnimationFrame(fadeOut);
+							}
+						};
+						requestAnimationFrame(fadeOut);
 					}
 				} else {
 					element.style.opacity = '0';
@@ -1068,11 +1169,35 @@ class KxsClientHUD {
 
 			// Met à jour les valeurs des compteurs visibles
 			if (this.kxsClient.isFpsVisible && this.kxsClient.counters.fps) {
-				this.kxsClient.counters.fps.textContent = `FPS: ${this.fps}`;
+				const valueElement = this.kxsClient.counters.fps.querySelector('span:last-child') as HTMLElement;
+				if (valueElement) {
+					valueElement.textContent = `${this.fps}`;
+
+					// Add a visual pulse effect when value changes (optimized)
+					if (valueElement.textContent !== `${this.pingManager.getPingResult().ping} ms`) {
+						valueElement.style.animation = 'none';
+						// Use requestAnimationFrame instead of setTimeout for better performance
+						requestAnimationFrame(() => {
+							valueElement.style.animation = `${DesignSystem.animation.pulse} 0.5s ease`;
+						});
+					}
+				}
 			}
 
 			if (this.kxsClient.isKillsVisible && this.kxsClient.counters.kills) {
-				this.kxsClient.counters.kills.textContent = `Kills: ${this.kills}`;
+				const valueElement = this.kxsClient.counters.kills.querySelector('span:last-child') as HTMLElement;
+				if (valueElement) {
+					valueElement.textContent = `${this.kills}`;
+
+					// Add a visual pulse effect when value changes (optimized)
+					if (valueElement.textContent !== `${this.pingManager.getPingResult().ping} ms`) {
+						valueElement.style.animation = 'none';
+						// Use requestAnimationFrame instead of setTimeout for better performance
+						requestAnimationFrame(() => {
+							valueElement.style.animation = `${DesignSystem.animation.pulse} 0.5s ease`;
+						});
+					}
+				}
 			}
 
 			if (
@@ -1081,7 +1206,28 @@ class KxsClientHUD {
 				this.pingManager
 			) {
 				const result = this.pingManager.getPingResult();
-				this.kxsClient.counters.ping.textContent = `PING: ${result.ping} ms`;
+				const valueElement = this.kxsClient.counters.ping.querySelector('span:last-child') as HTMLElement;
+				if (valueElement) {
+					valueElement.textContent = `${result.ping} ms`;
+
+					// Add a visual pulse effect when value changes (optimized)
+					if (valueElement.textContent !== `${result.ping} ms`) {
+						valueElement.style.animation = 'none';
+						// Use requestAnimationFrame instead of setTimeout for better performance
+						requestAnimationFrame(() => {
+							valueElement.style.animation = `${DesignSystem.animation.pulse} 0.5s ease`;
+						});
+					}
+
+					// Change color based on ping value
+					if (result.ping < 50) {
+						valueElement.style.color = DesignSystem.colors.success;
+					} else if (result.ping < 100) {
+						valueElement.style.color = DesignSystem.colors.warning;
+					} else {
+						valueElement.style.color = DesignSystem.colors.danger;
+					}
+				}
 			}
 		}
 
@@ -1094,7 +1240,11 @@ class KxsClientHUD {
 		this.kxsClient.kill_leader?.update(this.kills);
 	}
 
+
 	initCounter(name: string, label: string, initialText: string) {
+		// Ensure design system fonts are loaded
+		DesignSystem.injectFonts();
+
 		// Vérifier si le compteur existe déjà et le supprimer si c'est le cas
 		this.removeCounter(name);
 
@@ -1102,33 +1252,57 @@ class KxsClientHUD {
 		counter.id = `${name}Counter`;
 		const counterContainer = document.createElement("div");
 		counterContainer.id = `${name}CounterContainer`;
+		counterContainer.dataset.counterName = name;
 
 		Object.assign(counterContainer.style, {
 			position: "absolute",
 			left: `${this.kxsClient.defaultPositions[name].left}px`,
 			top: `${this.kxsClient.defaultPositions[name].top}px`,
 			zIndex: "10000",
+			transition: `all ${DesignSystem.animation.normal} ease`,
 		});
 
-		Object.assign(counter.style, {
-			color: "white",
-			backgroundColor: "rgba(0, 0, 0, 0.2)",
-			borderRadius: "5px",
-			fontFamily: "Arial, sans-serif",
-			padding: "5px 10px",
-			pointerEvents: "none",
-			cursor: "default",
-			width: `${this.kxsClient.defaultSizes[name].width}px`,
-			height: `${this.kxsClient.defaultSizes[name].height}px`,
-			display: "flex",
-			alignItems: "center",
-			justifyContent: "center",
-			textAlign: "center",
-			resize: "both",
-			overflow: "hidden",
-		});
+		// Apply simple white glassmorphism effect to counter
+		counter.style.backgroundColor = "rgba(255, 255, 255, 0.15)";
+		counter.style.backdropFilter = "blur(8px)";
+		// Apply webkit prefix for Safari compatibility
+		(counter.style as any)['-webkit-backdrop-filter'] = "blur(8px)";
+		counter.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+		counter.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
+		counter.style.borderRadius = "8px";
+		counter.style.color = "#ffffff";
+		counter.style.fontFamily = DesignSystem.fonts.secondary;
+		counter.style.fontWeight = "500";
+		counter.style.padding = "8px 12px";
+		counter.style.pointerEvents = "none";
+		counter.style.cursor = "default";
+		counter.style.width = `${this.kxsClient.defaultSizes[name].width}px`;
+		counter.style.height = `${this.kxsClient.defaultSizes[name].height}px`;
+		counter.style.display = "flex";
+		counter.style.alignItems = "center";
+		counter.style.justifyContent = "center";
+		counter.style.textAlign = "center";
+		counter.style.resize = "both";
+		counter.style.overflow = "hidden";
+		counter.style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.5)";
+		counter.style.transition = `all ${DesignSystem.animation.normal} ease`;
 
-		counter.textContent = `${label}: ${initialText}`;
+		// Create a label element with clean styling
+		const labelElement = document.createElement("span");
+		labelElement.style.fontWeight = "600";
+		labelElement.style.marginRight = "6px";
+		labelElement.style.color = "#ffffff";
+		labelElement.textContent = `${label}:`;
+
+		// Create a value element with clean styling
+		const valueElement = document.createElement("span");
+		valueElement.style.fontWeight = "500";
+		valueElement.textContent = initialText;
+
+		// Clear counter and append new elements
+		counter.innerHTML = "";
+		counter.appendChild(labelElement);
+		counter.appendChild(valueElement);
 		counterContainer.appendChild(counter);
 
 		const uiTopLeft = document.getElementById("ui-top-left");
@@ -1136,10 +1310,25 @@ class KxsClientHUD {
 			uiTopLeft.appendChild(counterContainer);
 		}
 
+		// Setup drag events to check for counter merging
+		this.setupCounterDragEvents(counterContainer);
+
+		// Add subtle hover effect
+		counterContainer.addEventListener("mouseenter", () => {
+			counter.style.transform = "scale(1.05)";
+			counter.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.3)";
+		});
+
+		counterContainer.addEventListener("mouseleave", () => {
+			counter.style.transform = "scale(1)";
+			counter.style.boxShadow = DesignSystem.glass.dark.shadow;
+		});
+
 		const adjustFontSize = () => {
 			const { width, height } = counter.getBoundingClientRect();
 			const size = Math.min(width, height) * 0.4;
-			counter.style.fontSize = `${size}px`;
+			labelElement.style.fontSize = `${size}px`;
+			valueElement.style.fontSize = `${size}px`;
 		};
 
 		new ResizeObserver(adjustFontSize).observe(counter);
@@ -1216,23 +1405,76 @@ class KxsClientHUD {
 		Object.assign(container.style, {
 			left: `${this.kxsClient.defaultPositions[name].left}px`,
 			top: `${this.kxsClient.defaultPositions[name].top}px`,
+			transition: `all ${DesignSystem.animation.normal} ease`,
 		});
 
-		Object.assign(counter.style, {
-			width: `${this.kxsClient.defaultSizes[name].width}px`,
-			height: `${this.kxsClient.defaultSizes[name].height}px`,
-			fontSize: "18px",
-			borderRadius: "5px",
-		});
+		// Apply simple white glassmorphism effect to counter
+		counter.style.backgroundColor = "rgba(255, 255, 255, 0.15)";
+		counter.style.backdropFilter = "blur(8px)";
+		// Apply webkit prefix for Safari compatibility
+		(counter.style as any)['-webkit-backdrop-filter'] = "blur(8px)";
+		counter.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+		counter.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
+		counter.style.borderRadius = "8px";
+		counter.style.color = "#ffffff";
+		counter.style.fontFamily = DesignSystem.fonts.secondary;
+		counter.style.fontWeight = "500";
+		counter.style.padding = "8px 12px";
+		counter.style.pointerEvents = "none";
+		counter.style.cursor = "default";
+		counter.style.width = `${this.kxsClient.defaultSizes[name].width}px`;
+		counter.style.height = `${this.kxsClient.defaultSizes[name].height}px`;
+		counter.style.display = "flex";
+		counter.style.alignItems = "center";
+		counter.style.justifyContent = "center";
+		counter.style.textAlign = "center";
+		counter.style.resize = "both";
+		counter.style.overflow = "hidden";
+		counter.style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.5)";
+		counter.style.transition = `all ${DesignSystem.animation.normal} ease`;
 
-		counter.textContent = `${label}: ${initialText}`;
+		// Reset the counter value
+		const labelElement = counter.querySelector('span:first-child');
+		const valueElement = counter.querySelector('span:last-child');
+
+		if (labelElement && valueElement) {
+			labelElement.textContent = `${label}:`;
+			valueElement.textContent = initialText;
+
+			// Ensure label styling is consistent
+			(labelElement as HTMLElement).style.fontWeight = "600";
+			(labelElement as HTMLElement).style.marginRight = "6px";
+			(labelElement as HTMLElement).style.color = "#ffffff";
+
+			// Ensure value styling is consistent
+			(valueElement as HTMLElement).style.fontWeight = "500";
+		} else {
+			// Fallback if the spans don't exist
+			counter.innerHTML = "";
+
+			// Create new label and value elements
+			const newLabelElement = document.createElement("span");
+			newLabelElement.style.fontWeight = "700";
+			newLabelElement.style.marginRight = DesignSystem.spacing.sm;
+			newLabelElement.style.color = DesignSystem.colors.primary;
+			newLabelElement.textContent = `${label}:`;
+
+			const newValueElement = document.createElement("span");
+			newValueElement.style.fontWeight = "500";
+			newValueElement.textContent = initialText;
+
+			counter.appendChild(newLabelElement);
+			counter.appendChild(newValueElement);
+		}
 
 		// Clear the saved position for this counter only
 		localStorage.removeItem(`${name}CounterPosition`);
 
-		setTimeout(() => {
+		// Optimized: use requestAnimationFrame instead of setTimeout
+		requestAnimationFrame(() => {
 			this.kxsClient.gridSystem.updateCounterCorners();
-		}, 50);
+			// Check for counter merging after reset
+		});
 	}
 
 	updateBoostBars() {
@@ -1693,6 +1935,31 @@ class KxsClientHUD {
 				animation.element.remove();
 				return false;
 			}
+		});
+	}
+
+	// Setup drag events for counters to detect when they move
+	private setupCounterDragEvents(counterContainer: HTMLElement) {
+		let isDragging = false;
+		let startX = 0;
+		let startY = 0;
+
+		counterContainer.addEventListener("mousedown", (e: MouseEvent) => {
+			// Only handle left mouse button
+			if (e.button !== 0) return;
+
+			isDragging = true;
+			startX = e.clientX;
+			startY = e.clientY;
+
+			const upHandler = () => {
+				isDragging = false;
+				document.removeEventListener("mouseup", upHandler);
+
+				// Final check after drag ends
+			};
+
+			document.addEventListener("mouseup", upHandler);
 		});
 	}
 }

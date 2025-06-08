@@ -335,9 +335,10 @@ class GameHistoryMenu {
 		// Add fade-in animation
 		this.container.style.opacity = '0';
 		this.container.style.transition = 'opacity 0.2s ease-in-out';
-		setTimeout(() => {
+		// Optimized: use requestAnimationFrame instead of setTimeout
+		requestAnimationFrame(() => {
 			this.container.style.opacity = '1';
-		}, 10);
+		});
 
 		document.body.appendChild(this.container);
 	}

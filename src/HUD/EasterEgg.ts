@@ -356,14 +356,26 @@ export class EasterEgg {
 	private animatePillars(): void {
 		if (!this.isActive) return;
 
-		// Create a slow rotation effect for the pillars
+		// Create a slow rotation effect for the pillars using requestAnimationFrame
 		let angle = 0;
-		setInterval(() => {
-			angle += 0.5;
-			this.pillars.forEach((pillar, index) => {
-				pillar.style.transform = `rotateY(${index * 60 + angle}deg) translateZ(400px)`;
-			});
-		}, 100);
+		let lastTime = 0;
+
+		const animate = (currentTime: number) => {
+			if (!this.isActive) return;
+
+			// Throttle to ~10fps instead of 60fps for this slow animation
+			if (currentTime - lastTime >= 100) {
+				angle += 0.5;
+				this.pillars.forEach((pillar, index) => {
+					pillar.style.transform = `rotateY(${index * 60 + angle}deg) translateZ(400px)`;
+				});
+				lastTime = currentTime;
+			}
+
+			requestAnimationFrame(animate);
+		};
+
+		requestAnimationFrame(animate);
 	}
 
 	private playAmbientSound(): void {
