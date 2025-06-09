@@ -215,10 +215,14 @@ class KxsVoiceChat {
 			top: '10px',
 			right: '10px',
 			width: '200px',
-			backgroundColor: 'rgba(0, 0, 0, 0.7)',
+			backgroundColor: 'rgba(255, 255, 255, 0.1)',
+			backdropFilter: 'blur(10px)',
+			webkitBackdropFilter: 'blur(10px)',
+			border: '1px solid rgba(255, 255, 255, 0.2)',
+			boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
 			color: 'white',
 			padding: '10px',
-			borderRadius: '5px',
+			borderRadius: '15px',
 			zIndex: '1000',
 			fontFamily: 'Arial, sans-serif',
 			fontSize: '14px',
@@ -418,8 +422,12 @@ class KxsVoiceChat {
 			alignItems: 'center',
 			margin: '3px 0',
 			padding: '3px',
-			borderRadius: '3px',
-			backgroundColor: 'rgba(255, 255, 255, 0.1)'
+			borderRadius: '8px',
+			backgroundColor: 'rgba(255, 255, 255, 0.15)',
+			backdropFilter: 'blur(5px)',
+			webkitBackdropFilter: 'blur(5px)',
+			border: '1px solid rgba(255, 255, 255, 0.1)',
+			boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
 		});
 
 		// Status indicator
@@ -482,10 +490,13 @@ class KxsVoiceChat {
 		muteButton.textContent = user.isMuted ? 'UNMUTE' : 'MUTE';
 
 		Object.assign(muteButton.style, {
-			backgroundColor: user.isMuted ? '#e74c3c' : '#7f8c8d',
+			backgroundColor: user.isMuted ? 'rgba(231, 76, 60, 0.8)' : 'rgba(127, 140, 141, 0.8)',
+			backdropFilter: 'blur(5px)',
+			webkitBackdropFilter: 'blur(5px)',
+			border: '1px solid rgba(255, 255, 255, 0.2)',
+			boxShadow: '0 2px 8px 0 rgba(31, 38, 135, 0.2)',
 			color: 'white',
-			border: 'none',
-			borderRadius: '3px',
+			borderRadius: '6px',
 			padding: '2px 5px',
 			marginLeft: '5px',
 			cursor: 'pointer',
@@ -569,10 +580,13 @@ class KxsVoiceChat {
 		muteButton.id = 'kxs-voice-chat-local-mute';
 
 		Object.assign(muteButton.style, {
-			backgroundColor: this.isLocalMuted ? '#e74c3c' : '#3498db',
+			backgroundColor: this.isLocalMuted ? 'rgba(231, 76, 60, 0.8)' : 'rgba(52, 152, 219, 0.8)',
+			backdropFilter: 'blur(5px)',
+			webkitBackdropFilter: 'blur(5px)',
+			border: '1px solid rgba(255, 255, 255, 0.2)',
+			boxShadow: '0 2px 8px 0 rgba(31, 38, 135, 0.2)',
 			color: 'white',
-			border: 'none',
-			borderRadius: '3px',
+			borderRadius: '6px',
 			padding: '2px 5px',
 			cursor: 'pointer',
 			fontSize: '11px',
@@ -611,7 +625,7 @@ class KxsVoiceChat {
 		if (this.localMuteButton) {
 			// Définir clairement le texte et la couleur du bouton en fonction de l'état
 			this.localMuteButton.textContent = this.isLocalMuted ? 'UNMUTE' : 'MUTE';
-			this.localMuteButton.style.backgroundColor = this.isLocalMuted ? '#e74c3c' : '#3498db';
+			this.localMuteButton.style.backgroundColor = this.isLocalMuted ? 'rgba(231, 76, 60, 0.8)' : 'rgba(52, 152, 219, 0.8)';
 		}
 
 		// Type de notification en fonction de si nous sommes sur error, info ou success
