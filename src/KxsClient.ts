@@ -267,6 +267,51 @@ export default class KxsClient {
 			  0% { box-shadow:0 0 8px #3fae2a; opacity: 1; }
 			  100% { box-shadow:0 0 16px #3fae2a; opacity: 0.6; }
 			}
+			
+			/* Glassmorphism scrollbar styles */
+			#kxs-online-users-menu {
+			  /* Firefox scrollbar */
+			  scrollbar-width: thin;
+			  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.05);
+			}
+			
+			/* Webkit browsers (Chrome, Safari, Edge) */
+			#kxs-online-users-menu::-webkit-scrollbar {
+			  width: 8px;
+			}
+			
+			#kxs-online-users-menu::-webkit-scrollbar-track {
+			  background: rgba(255, 255, 255, 0.05);
+			  border-radius: 10px;
+			  backdrop-filter: blur(10px);
+			  border: 1px solid rgba(255, 255, 255, 0.1);
+			}
+			
+			#kxs-online-users-menu::-webkit-scrollbar-thumb {
+			  background: rgba(255, 255, 255, 0.2);
+			  border-radius: 10px;
+			  backdrop-filter: blur(15px);
+			  border: 1px solid rgba(255, 255, 255, 0.3);
+			  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+			  transition: all 0.3s ease;
+			}
+			
+			#kxs-online-users-menu::-webkit-scrollbar-thumb:hover {
+			  background: rgba(255, 255, 255, 0.3);
+			  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+			  transform: scale(1.1);
+			}
+			
+			#kxs-online-users-menu::-webkit-scrollbar-thumb:active {
+			  background: rgba(255, 255, 255, 0.4);
+			  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+			}
+			
+			/* Scrollbar corner */
+			#kxs-online-users-menu::-webkit-scrollbar-corner {
+			  background: rgba(255, 255, 255, 0.05);
+			  border-radius: 10px;
+			}
 		  `;
 			document.head.appendChild(style);
 		}
