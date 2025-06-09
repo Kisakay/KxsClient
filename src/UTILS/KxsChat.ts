@@ -50,9 +50,12 @@ class KxsChat {
 		chatBox.style.transform = 'translateX(-50%)';
 		chatBox.style.minWidth = '260px';
 		chatBox.style.maxWidth = '480px';
-		chatBox.style.background = 'rgba(30,30,40,0.80)';
+		chatBox.style.background = 'rgba(255, 255, 255, 0.1)';
+		chatBox.style.backdropFilter = 'blur(10px)';
+		chatBox.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+		chatBox.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.37)';
 		chatBox.style.color = '#fff';
-		chatBox.style.borderRadius = '10px';
+		chatBox.style.borderRadius = '15px';
 		chatBox.style.padding = '7px 14px 4px 14px';
 		chatBox.style.fontSize = '15px';
 		chatBox.style.fontFamily = 'inherit';
@@ -109,7 +112,10 @@ class KxsChat {
 		input.style.padding = '8px 12px';
 		input.style.borderRadius = '8px';
 		input.style.border = 'none';
-		input.style.background = 'rgba(40,40,50,0.95)';
+		input.style.background = 'rgba(255, 255, 255, 0.15)';
+		input.style.backdropFilter = 'blur(5px)';
+		input.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+		input.style.boxShadow = '0 4px 16px 0 rgba(31, 38, 135, 0.2)';
 		input.style.color = '#fff';
 		input.style.fontSize = '15px';
 		input.style.fontFamily = 'inherit';
