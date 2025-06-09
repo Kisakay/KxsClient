@@ -83,30 +83,49 @@ class GridSystem {
 		const rect1 = element1.getBoundingClientRect();
 		const rect2 = element2.getBoundingClientRect();
 
-		const tolerance = 5;
+		// Tolérance plus généreuse pour détecter l'adjacence
+		const tolerance = 15;
 
-		const isLeftAdjacent = Math.abs((rect1.left + rect1.width) - rect2.left) < tolerance;
-		const isRightAdjacent = Math.abs((rect2.left + rect2.width) - rect1.left) < tolerance;
+		// Calculer les distances entre les éléments
+		const horizontalGap = Math.min(
+			Math.abs(rect1.right - rect2.left),
+			Math.abs(rect2.right - rect1.left)
+		);
+		const verticalGap = Math.min(
+			Math.abs(rect1.bottom - rect2.top),
+			Math.abs(rect2.bottom - rect1.top)
+		);
 
-		const isTopAdjacent = Math.abs((rect1.top + rect1.height) - rect2.top) < tolerance;
-		const isBottomAdjacent = Math.abs((rect2.top + rect2.height) - rect1.top) < tolerance;
+		// Vérification de l'adjacence horizontale
+		const isLeftAdjacent = Math.abs(rect1.right - rect2.left) <= tolerance;
+		const isRightAdjacent = Math.abs(rect2.right - rect1.left) <= tolerance;
 
+		// Vérification de l'adjacence verticale
+		const isTopAdjacent = Math.abs(rect1.bottom - rect2.top) <= tolerance;
+		const isBottomAdjacent = Math.abs(rect2.bottom - rect1.top) <= tolerance;
+
+		// Vérification du chevauchement avec une marge plus généreuse
+		const overlapMargin = 20;
 		const overlapVertically =
-			(rect1.top < rect2.bottom && rect1.bottom > rect2.top) ||
-			(rect2.top < rect1.bottom && rect2.bottom > rect1.top);
+			(rect1.top - overlapMargin < rect2.bottom && rect1.bottom + overlapMargin > rect2.top);
 		const overlapHorizontally =
-			(rect1.left < rect2.right && rect1.right > rect2.left) ||
-			(rect2.left < rect1.right && rect2.right > rect1.left);
+			(rect1.left - overlapMargin < rect2.right && rect1.right + overlapMargin > rect2.left);
+
+		// Debug: afficher les informations d'adjacence
 
 		let position = "";
-		if (isLeftAdjacent && overlapVertically) position = "left";
-		else if (isRightAdjacent && overlapVertically) position = "right";
-		else if (isTopAdjacent && overlapHorizontally) position = "top";
-		else if (isBottomAdjacent && overlapHorizontally) position = "bottom";
+		if (isLeftAdjacent && overlapVertically) {
+			position = "left";
+		} else if (isRightAdjacent && overlapVertically) {
+			position = "right";
+		} else if (isTopAdjacent && overlapHorizontally) {
+			position = "top";
+		} else if (isBottomAdjacent && overlapHorizontally) {
+			position = "bottom";
+		}
 
 		return {
-			isAdjacent: (isLeftAdjacent || isRightAdjacent) && overlapVertically ||
-				(isTopAdjacent || isBottomAdjacent) && overlapHorizontally,
+			isAdjacent: position !== "",
 			position
 		};
 	}
@@ -114,14 +133,47 @@ class GridSystem {
 	public updateCounterCorners(): void {
 		const counterIds = Object.keys(this.counterElements);
 
+		// Reset all counters to default styling
 		counterIds.forEach(id => {
 			const container = this.counterElements[id];
 			const counter = container.querySelector('div') as HTMLElement;
 			if (counter) {
-				counter.style.borderRadius = '5px';
+				// Maintenir la transition fluide
+				counter.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+				container.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+
+				// Supprimer les attributs de debug
+				counter.removeAttribute('data-fused');
+				counter.removeAttribute('data-fused-position');
+
+				// Reset to default rounded corners
+				counter.style.borderRadius = '8px';
+
+				// Reset borders to default
+				counter.style.borderLeft = '1px solid rgba(255, 255, 255, 0.2)';
+				counter.style.borderRight = '1px solid rgba(255, 255, 255, 0.2)';
+				counter.style.borderTop = '1px solid rgba(255, 255, 255, 0.2)';
+				counter.style.borderBottom = '1px solid rgba(255, 255, 255, 0.2)';
+
+				// Reset any fusion effects
+				counter.style.marginLeft = '0';
+				counter.style.marginRight = '0';
+				counter.style.marginTop = '0';
+				counter.style.marginBottom = '0';
+
+				// Reset container transformations
+				container.style.transform = 'none';
+				container.style.zIndex = '10000';
+
+				// Reset to default glassmorphism effect
+				counter.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+				counter.style.backdropFilter = 'blur(8px)';
+				(counter.style as any)['-webkit-backdrop-filter'] = 'blur(8px)';
+				counter.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
 			}
 		});
 
+		// Apply fusion effects for adjacent counters
 		for (let i = 0; i < counterIds.length; i++) {
 			for (let j = i + 1; j < counterIds.length; j++) {
 				const container1 = this.counterElements[counterIds[i]];
@@ -133,36 +185,104 @@ class GridSystem {
 					const { isAdjacent, position } = this.areElementsAdjacent(container1, container2);
 
 					if (isAdjacent) {
-						switch (position) {
-							case "left":
-								counter1.style.borderTopRightRadius = '0';
-								counter1.style.borderBottomRightRadius = '0';
-								counter2.style.borderTopLeftRadius = '0';
-								counter2.style.borderBottomLeftRadius = '0';
-								break;
-							case "right":
-								counter1.style.borderTopLeftRadius = '0';
-								counter1.style.borderBottomLeftRadius = '0';
-								counter2.style.borderTopRightRadius = '0';
-								counter2.style.borderBottomRightRadius = '0';
-								break;
-							case "top":
-								counter1.style.borderBottomLeftRadius = '0';
-								counter1.style.borderBottomRightRadius = '0';
-								counter2.style.borderTopLeftRadius = '0';
-								counter2.style.borderTopRightRadius = '0';
-								break;
-							case "bottom":
-								counter1.style.borderTopLeftRadius = '0';
-								counter1.style.borderTopRightRadius = '0';
-								counter2.style.borderBottomLeftRadius = '0';
-								counter2.style.borderBottomRightRadius = '0';
-								break;
-						}
+						this.applyFusionEffect(counter1, counter2, position);
 					}
 				}
 			}
 		}
+	}
+
+	private applyFusionEffect(counter1: HTMLElement, counter2: HTMLElement, position: string): void {
+		// Transition fluide pour l'effet de fusion
+		const transitionStyle = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+		counter1.style.transition = transitionStyle;
+		counter2.style.transition = transitionStyle;
+
+		// Obtenir les conteneurs parents
+		const container1 = counter1.parentElement as HTMLElement;
+		const container2 = counter2.parentElement as HTMLElement;
+
+		// Appliquer les transitions aux conteneurs aussi
+		if (container1) container1.style.transition = transitionStyle;
+		if (container2) container2.style.transition = transitionStyle;
+
+		// Debug: marquer les éléments comme fusionnés
+		counter1.setAttribute('data-fused', 'true');
+		counter2.setAttribute('data-fused', 'true');
+		counter1.setAttribute('data-fused-position', position);
+		counter2.setAttribute('data-fused-position', position);
+
+		switch (position) {
+			case "left":
+				// Counter1 est à gauche de counter2
+				counter1.style.borderTopRightRadius = '0';
+				counter1.style.borderBottomRightRadius = '0';
+				counter1.style.borderRight = 'none';
+				counter1.style.marginRight = '-3px';
+
+				counter2.style.borderTopLeftRadius = '0';
+				counter2.style.borderBottomLeftRadius = '0';
+				counter2.style.borderLeft = 'none';
+				counter2.style.marginLeft = '-3px';
+				break;
+
+			case "right":
+				// Counter1 est à droite de counter2
+				counter1.style.borderTopLeftRadius = '0';
+				counter1.style.borderBottomLeftRadius = '0';
+				counter1.style.borderLeft = 'none';
+				counter1.style.marginLeft = '-3px';
+
+				counter2.style.borderTopRightRadius = '0';
+				counter2.style.borderBottomRightRadius = '0';
+				counter2.style.borderRight = 'none';
+				counter2.style.marginRight = '-3px';
+				break;
+
+			case "top":
+				// Counter1 est au-dessus de counter2
+				counter1.style.borderBottomLeftRadius = '0';
+				counter1.style.borderBottomRightRadius = '0';
+				counter1.style.borderBottom = 'none';
+				counter1.style.marginBottom = '-3px';
+
+				counter2.style.borderTopLeftRadius = '0';
+				counter2.style.borderTopRightRadius = '0';
+				counter2.style.borderTop = 'none';
+				counter2.style.marginTop = '-3px';
+				break;
+
+			case "bottom":
+				// Counter1 est en dessous de counter2
+				counter1.style.borderTopLeftRadius = '0';
+				counter1.style.borderTopRightRadius = '0';
+				counter1.style.borderTop = 'none';
+				counter1.style.marginTop = '-3px';
+
+				counter2.style.borderBottomLeftRadius = '0';
+				counter2.style.borderBottomRightRadius = '0';
+				counter2.style.borderBottom = 'none';
+				counter2.style.marginBottom = '-3px';
+				break;
+		}
+
+		// Effet glassmorphism unifié pour les compteurs fusionnés
+		const fusedBackground = 'rgba(255, 255, 255, 0.22)';
+		const fusedBlur = 'blur(16px)';
+		const fusedShadow = '0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25)';
+
+		counter1.style.backgroundColor = fusedBackground;
+		counter2.style.backgroundColor = fusedBackground;
+		counter1.style.backdropFilter = fusedBlur;
+		counter2.style.backdropFilter = fusedBlur;
+		(counter1.style as any)['-webkit-backdrop-filter'] = fusedBlur;
+		(counter2.style as any)['-webkit-backdrop-filter'] = fusedBlur;
+		counter1.style.boxShadow = fusedShadow;
+		counter2.style.boxShadow = fusedShadow;
+
+		// Augmenter le z-index pour les compteurs fusionnés
+		if (container1) container1.style.zIndex = '10001';
+		if (container2) container2.style.zIndex = '10001';
 	}
 
 	public snapToGrid(

@@ -1055,7 +1055,6 @@ class KxsClientSecondaryMenu {
 
 		// Fonction pour mettre à jour l'apparence du bouton
 		const updateButtonState = () => {
-			console.log("Updating button state, current value:", option.value);
 			const isEnabled = option.value as boolean;
 
 			// Mettre à jour le texte
@@ -1122,7 +1121,6 @@ class KxsClientSecondaryMenu {
 
 			// Inverser la valeur
 			const newValue = !(option.value as boolean);
-			console.log("Toggle button clicked, changing value from", option.value, "to", newValue);
 			option.value = newValue;
 
 			// Mettre à jour l'apparence
@@ -1138,7 +1136,6 @@ class KxsClientSecondaryMenu {
 
 			// Appeler le gestionnaire onChange
 			if (option.onChange) {
-				console.log("Calling onChange handler with value:", newValue);
 				option.onChange(newValue);
 			}
 
