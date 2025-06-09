@@ -55,6 +55,8 @@ class KxsClientSecondaryMenu {
 	public isOpen: boolean;
 	// Fonction pour fermer un sous-menu
 	public closeSubMenu: () => void = () => { };
+	// Callbacks pour notifier les changements d'état du menu
+	public onMenuToggle: (() => void)[] = [];
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
@@ -1801,6 +1803,15 @@ class KxsClientSecondaryMenu {
 		if (this.isClientMenuVisible) {
 			this.filterOptions();
 		}
+
+		// Notifier immédiatement tous les callbacks enregistrés
+		this.onMenuToggle.forEach(callback => {
+			try {
+				callback();
+			} catch (error) {
+				console.error('Erreur lors de l\'exécution du callback onMenuToggle:', error);
+			}
+		});
 	}
 
 	destroy() {

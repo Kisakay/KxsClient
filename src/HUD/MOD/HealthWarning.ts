@@ -8,7 +8,7 @@ class HealthWarning {
 	private isDragging: boolean = false;
 	private dragOffset: { x: number, y: number } = { x: 0, y: 0 };
 	private readonly POSITION_KEY = 'lowHpWarning';
-	private menuCheckInterval: number | null = null;
+
 
 	constructor(kxsClient: KxsClient) {
 		this.warningElement = null;
@@ -261,12 +261,12 @@ class HealthWarning {
 	}
 
 	private startMenuCheckInterval() {
-		// Optimisé: utiliser des événements au lieu du polling constant
-		this.setupMenuEventListeners();
+		// Écouter directement les événements RSHIFT pour une réaction immédiate
+		this.setupRShiftListener();
 	}
 
-	private setupMenuEventListeners(): void {
-		// Écouter les événements d'ouverture/fermeture du menu au lieu du polling
+	private setupRShiftListener(): void {
+		// Fonction pour vérifier et mettre à jour l'état du mode placement
 		const checkMenuState = () => {
 			const isMenuOpen = this.kxsClient.secondaryMenu?.isOpen || false;
 
@@ -280,11 +280,32 @@ class HealthWarning {
 			}
 		};
 
+		// S'abonner aux notifications de changement d'état du menu
+		if (!this.kxsClient.secondaryMenu.onMenuToggle) {
+			this.kxsClient.secondaryMenu.onMenuToggle = [];
+		}
+		this.kxsClient.secondaryMenu.onMenuToggle.push(checkMenuState);
+
 		// Vérifier l'état initial
 		checkMenuState();
+	}
 
-		// Utiliser un intervalle optimisé avec une fréquence réduite
-		this.menuCheckInterval = window.setInterval(checkMenuState, 1000); // Réduit à 1 seconde
+	public destroy(): void {
+		// Supprimer le callback du menu secondaire
+		if (this.kxsClient.secondaryMenu?.onMenuToggle) {
+			const index = this.kxsClient.secondaryMenu.onMenuToggle.findIndex(callback => 
+				callback.toString().includes('checkMenuState')
+			);
+			if (index !== -1) {
+				this.kxsClient.secondaryMenu.onMenuToggle.splice(index, 1);
+			}
+		}
+
+		// Supprimer l'élément du DOM
+		if (this.warningElement) {
+			this.warningElement.remove();
+			this.warningElement = null;
+		}
 	}
 }
 

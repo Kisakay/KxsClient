@@ -152,6 +152,7 @@ export default class KxsClient {
 		this.discordRPC = new DiscordWebSocket(this, this.parseToken(this.discordToken));
 		this.updater = new UpdateChecker(this);
 		this.kill_leader = new KillLeaderTracker(this);
+		this.secondaryMenu = new KxsClientSecondaryMenu(this);
 		this.healWarning = new HealthWarning(this);
 		this.historyManager = new GameHistoryMenu(this);
 		this.kxsNetwork = new KxsNetwork(this);
@@ -161,8 +162,6 @@ export default class KxsClient {
 		this.initDeathDetection();
 		this.discordRPC.connect();
 		this.hud = new KxsClientHUD(this);
-
-		this.secondaryMenu = new KxsClientSecondaryMenu(this);
 
 		this.discordTracker = new DiscordTracking(this, this.discordWebhookUrl!);
 		this.chat = new KxsChat(this);
