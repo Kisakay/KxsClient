@@ -104,14 +104,6 @@ class KxsClientHUD {
 		}
 
 		this.setupCtrlFocusModeListener();
-
-		window.addEventListener('load', () => {
-			this.updateCounterCorners();
-		});
-
-		window.addEventListener('resize', () => {
-			this.updateCounterCorners();
-		});
 	}
 
 	private setupCtrlFocusModeListener() {
@@ -1156,6 +1148,10 @@ class KxsClientHUD {
 		this.frameCount++;
 
 		if (delta >= 1000) {
+			const previousFps = this.fps;
+			const previousKills = this.kills;
+			const previousPing = this.pingManager ? this.pingManager.getPingResult().ping : 0;
+
 			this.fps = Math.round((this.frameCount * 1000) / delta);
 			this.frameCount = 0;
 			this.kxsClient.lastFrameTime = now;
@@ -1179,10 +1175,9 @@ class KxsClientHUD {
 				if (valueElement) {
 					valueElement.textContent = `${this.fps}`;
 
-					// Add a visual pulse effect when value changes (optimized)
-					if (valueElement.textContent !== `${this.pingManager.getPingResult().ping} ms`) {
+					// Add a visual pulse effect when value changes (fixed logic)
+					if (this.fps !== previousFps) {
 						valueElement.style.animation = 'none';
-						// Use requestAnimationFrame instead of setTimeout for better performance
 						requestAnimationFrame(() => {
 							valueElement.style.animation = `${DesignSystem.animation.pulse} 0.5s ease`;
 						});
@@ -1195,10 +1190,9 @@ class KxsClientHUD {
 				if (valueElement) {
 					valueElement.textContent = `${this.kills}`;
 
-					// Add a visual pulse effect when value changes (optimized)
-					if (valueElement.textContent !== `${this.pingManager.getPingResult().ping} ms`) {
+					// Add a visual pulse effect when value changes (fixed logic)
+					if (this.kills !== previousKills) {
 						valueElement.style.animation = 'none';
-						// Use requestAnimationFrame instead of setTimeout for better performance
 						requestAnimationFrame(() => {
 							valueElement.style.animation = `${DesignSystem.animation.pulse} 0.5s ease`;
 						});
@@ -1216,10 +1210,9 @@ class KxsClientHUD {
 				if (valueElement) {
 					valueElement.textContent = `${result.ping} ms`;
 
-					// Add a visual pulse effect when value changes (optimized)
-					if (valueElement.textContent !== `${result.ping} ms`) {
+					// Add a visual pulse effect when value changes (fixed logic)
+					if (result.ping !== previousPing) {
 						valueElement.style.animation = 'none';
-						// Use requestAnimationFrame instead of setTimeout for better performance
 						requestAnimationFrame(() => {
 							valueElement.style.animation = `${DesignSystem.animation.pulse} 0.5s ease`;
 						});
@@ -1357,8 +1350,6 @@ class KxsClientHUD {
 			counterContainer.style.left = `${x}px`;
 			counterContainer.style.top = `${y}px`;
 		}
-
-		this.updateCounterCorners();
 	}
 
 	/**
@@ -1379,7 +1370,6 @@ class KxsClientHUD {
 		}
 
 		this.kxsClient.gridSystem.registerCounter(name, null);
-		this.kxsClient.gridSystem.updateCounterCorners();
 	}
 
 	/**
@@ -1475,12 +1465,6 @@ class KxsClientHUD {
 
 		// Clear the saved position for this counter only
 		localStorage.removeItem(`${name}CounterPosition`);
-
-		// Optimized: use requestAnimationFrame instead of setTimeout
-		requestAnimationFrame(() => {
-			this.kxsClient.gridSystem.updateCounterCorners();
-			// Check for counter merging after reset
-		});
 	}
 
 	updateBoostBars() {
@@ -1878,19 +1862,6 @@ class KxsClientHUD {
 		});
 	}
 
-	private updateCounterCorners() {
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', () => {
-				this.kxsClient.gridSystem.updateCounterCorners();
-			});
-		} else {
-			// Optimized: use requestAnimationFrame instead of setTimeout
-			requestAnimationFrame(() => {
-				this.kxsClient.gridSystem.updateCounterCorners();
-			});
-		}
-	}
-
 	private updateCountersDraggableState() {
 		const countersVisibility = {
 			fps: this.kxsClient.isFpsVisible,
@@ -1918,8 +1889,6 @@ class KxsClientHUD {
 				counter.style.resize = isMenuOpen ? 'both' : 'none';
 			}
 		});
-
-		this.updateCounterCorners();
 	}
 
 	private updateHealthAnimations() {
