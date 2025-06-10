@@ -171,7 +171,7 @@ class KillLeaderTracker {
 			} else if (this.killLeaderKillCount < this.MINIMUM_KILLS_FOR_LEADER) {
 				// Ne rien faire si le kill leader n'a pas atteint le minimum requis
 				return;
-			} else if (this.isKillLeader()) {
+			} else if (this.isKillLeader() && myKills > 0) {
 				this.showEncouragement(0);
 				this.wasKillLeader = true;
 			} else {
