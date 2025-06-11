@@ -9,9 +9,11 @@ export class BroadcastHUD {
 	private static instance: BroadcastHUD | null = null;
 	private container: HTMLDivElement;
 	private messageElement: HTMLDivElement;
+	private progressBar: HTMLDivElement;
 	private currentMessage: string = "";
 	private isVisible: boolean = false;
 	private hideTimeout: number | null = null;
+	private progressAnimation: Animation | null = null;
 	private kxsClient: KxsClient;
 
 	/**
@@ -34,6 +36,7 @@ export class BroadcastHUD {
 		this.kxsClient = kxsClient;
 		this.container = document.createElement("div");
 		this.messageElement = document.createElement("div");
+		this.progressBar = document.createElement("div");
 		this.createHUD();
 	}
 
@@ -46,7 +49,7 @@ export class BroadcastHUD {
 			position: "fixed",
 			top: "20px",
 			right: "20px",
-			padding: "8px 18px",
+			padding: "8px 18px 0 18px", // Remove bottom padding to accommodate progress bar
 			zIndex: "999",
 			minWidth: "280px",
 			maxWidth: "400px",
@@ -65,7 +68,8 @@ export class BroadcastHUD {
 			boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
 			fontSize: "15px",
 			userSelect: "none",
-			fontFamily: "inherit"
+			fontFamily: "inherit",
+			overflow: "hidden" // Ensure progress bar doesn't overflow
 		});
 
 		// Create header
@@ -120,10 +124,23 @@ export class BroadcastHUD {
 			margin: "8px 0"
 		});
 
+		// Create progress bar
+		Object.assign(this.progressBar.style, {
+			position: "absolute",
+			bottom: "0",
+			left: "0",
+			height: "3px",
+			width: "100%",
+			background: "linear-gradient(90deg, #3fae2a, #8fef7a)",
+			transformOrigin: "left",
+			transform: "scaleX(0)"
+		});
+
 		// Assemble HUD
 		this.container.appendChild(header);
 		this.container.appendChild(decorativeLine);
 		this.container.appendChild(this.messageElement);
+		this.container.appendChild(this.progressBar);
 
 		// Add to document
 		document.body.appendChild(this.container);
@@ -153,11 +170,19 @@ export class BroadcastHUD {
 	public showMessage(message: string, duration: number = 8000): void {
 		if (!this.container || !this.messageElement) return;
 
-		// Clear any existing timeout
+		// Clear any existing timeout and animation
 		if (this.hideTimeout !== null) {
 			clearTimeout(this.hideTimeout);
 			this.hideTimeout = null;
 		}
+		
+		if (this.progressAnimation) {
+			this.progressAnimation.cancel();
+			this.progressAnimation = null;
+		}
+
+		// Reset progress bar
+		this.progressBar.style.transform = "scaleX(0)";
 
 		// Update message
 		this.currentMessage = message;
@@ -182,6 +207,19 @@ export class BroadcastHUD {
 			}
 		}
 
+		// Animate progress bar
+		this.progressAnimation = this.progressBar.animate(
+			[
+				{ transform: "scaleX(0)" },
+				{ transform: "scaleX(1)" }
+			],
+			{
+				duration: duration,
+				easing: "linear",
+				fill: "forwards"
+			}
+		);
+
 		// Set timeout to hide the message
 		this.hideTimeout = setTimeout(() => {
 			this.hideMessage();
@@ -203,5 +241,13 @@ export class BroadcastHUD {
 			clearTimeout(this.hideTimeout);
 			this.hideTimeout = null;
 		}
+
+		if (this.progressAnimation) {
+			this.progressAnimation.cancel();
+			this.progressAnimation = null;
+		}
+		
+		// Reset progress bar
+		this.progressBar.style.transform = "scaleX(0)";
 	}
 }
