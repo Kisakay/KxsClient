@@ -1,5 +1,6 @@
 import KxsClient from "../KxsClient";
 import config from "../../config.json";
+import { BroadcastHUD } from "../HUD/MOD/BroadcastHUD";
 
 interface KxsNetworkSettings {
 	nickname_anonymized: boolean;
@@ -15,7 +16,7 @@ class KxsNetwork {
 	private reconnectAttempts: number = 0;
 	private maxReconnectAttempts: number = 3;
 	private reconnectTimeout: number = 0;
-	private reconnectDelay: number = 15000; // Initial reconnect delay of 1 second
+	private reconnectDelay: number = 15000;
 	private kxsUsers: number = 0;
 	private privateUsername: string = this.generateRandomUsername();
 	private kxs_users: string[] = [];
@@ -174,6 +175,15 @@ class KxsNetwork {
 				{
 					if (d && !d.isVoiceChat && d.user) {
 						this.kxsClient.voiceChat.removeUserFromVoice(d.user);
+					}
+				}
+				break;
+			case 87: // BROADCAST MESSAGE
+				{
+					if (d && d.msg) {
+						// Get the broadcast HUD instance and show the message
+						const broadcastHUD = BroadcastHUD.getInstance(this.kxsClient);
+						broadcastHUD.showMessage(d.msg, d.duration || 8000);
 					}
 				}
 				break;

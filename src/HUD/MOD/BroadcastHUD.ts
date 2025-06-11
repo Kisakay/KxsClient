@@ -1,0 +1,207 @@
+import { DesignSystem } from "../DesignSystem";
+import KxsClient from "../../KxsClient";
+
+/**
+ * BroadcastHUD - Displays broadcast messages in a glassmorphism HUD
+ * matching the online menu style from KxsClient
+ */
+export class BroadcastHUD {
+	private static instance: BroadcastHUD | null = null;
+	private container: HTMLDivElement;
+	private messageElement: HTMLDivElement;
+	private currentMessage: string = "";
+	private isVisible: boolean = false;
+	private hideTimeout: number | null = null;
+	private kxsClient: KxsClient;
+
+	/**
+	 * Get the singleton instance of BroadcastHUD
+	 * @param kxsClient Reference to the KxsClient instance
+	 * @returns BroadcastHUD instance
+	 */
+	public static getInstance(kxsClient: KxsClient): BroadcastHUD {
+		if (!BroadcastHUD.instance) {
+			BroadcastHUD.instance = new BroadcastHUD(kxsClient);
+		}
+		return BroadcastHUD.instance;
+	}
+
+	/**
+	 * Private constructor to enforce singleton pattern
+	 * @param kxsClient Reference to the KxsClient instance
+	 */
+	private constructor(kxsClient: KxsClient) {
+		this.kxsClient = kxsClient;
+		this.container = document.createElement("div");
+		this.messageElement = document.createElement("div");
+		this.createHUD();
+	}
+
+	/**
+	 * Create the HUD container and elements
+	 */
+	private createHUD(): void {
+		// Apply glassmorphism effect matching the online menu style
+		Object.assign(this.container.style, {
+			position: "fixed",
+			top: "20px",
+			right: "20px",
+			padding: "8px 18px",
+			zIndex: "999",
+			minWidth: "280px",
+			maxWidth: "400px",
+			display: "flex",
+			flexDirection: "column",
+			alignItems: "flex-start",
+			opacity: "0",
+			pointerEvents: "none",
+			transition: "all 0.3s ease",
+			transform: "translateY(-20px)",
+			background: "rgba(255, 255, 255, 0.1)",
+			backdropFilter: "blur(20px) saturate(180%)",
+			WebkitBackdropFilter: "blur(20px) saturate(180%)",
+			border: "1px solid rgba(255, 255, 255, 0.2)",
+			borderRadius: "16px",
+			boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
+			fontSize: "15px",
+			userSelect: "none",
+			fontFamily: "inherit"
+		});
+
+		// Create header
+		const header = document.createElement("div");
+		Object.assign(header.style, {
+			display: "flex",
+			alignItems: "center",
+			marginBottom: "8px",
+			width: "100%"
+		});
+
+		// Create notification dot (similar to online dot)
+		const dot = document.createElement("span");
+		Object.assign(dot.style, {
+			display: "inline-block",
+			width: "12px",
+			height: "12px",
+			borderRadius: "50%",
+			background: "#3fae2a",
+			marginRight: "10px",
+			boxShadow: "0 0 8px #3fae2a"
+		});
+
+		// Create title
+		const title = document.createElement("div");
+		title.textContent = "BROADCAST MESSAGE FROM KXS CREATOR";
+		Object.assign(title.style, {
+			fontWeight: "bold",
+			color: "#fff",
+			fontSize: "15px"
+		});
+
+		header.appendChild(dot);
+		header.appendChild(title);
+
+		// Create message element
+		Object.assign(this.messageElement.style, {
+			fontFamily: "inherit",
+			fontSize: "14px",
+			lineHeight: "1.5",
+			color: "#fff",
+			width: "100%",
+			wordBreak: "break-word"
+		});
+
+		// Create decorative line
+		const decorativeLine = document.createElement("div");
+		Object.assign(decorativeLine.style, {
+			height: "1px",
+			background: "linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.05) 100%)",
+			width: "100%",
+			margin: "8px 0"
+		});
+
+		// Assemble HUD
+		this.container.appendChild(header);
+		this.container.appendChild(decorativeLine);
+		this.container.appendChild(this.messageElement);
+
+		// Add to document
+		document.body.appendChild(this.container);
+
+		// Create animation style for the dot
+		if (!document.getElementById('kxs-broadcast-style')) {
+			const style = document.createElement('style');
+			style.id = 'kxs-broadcast-style';
+			style.innerHTML = `
+                @keyframes kxs-broadcast-pulse {
+                    0% { box-shadow:0 0 8px #3fae2a; opacity: 1; }
+                    100% { box-shadow:0 0 16px #3fae2a; opacity: 0.6; }
+                }
+            `;
+			document.head.appendChild(style);
+
+			// Apply animation to dot
+			dot.style.animation = "kxs-broadcast-pulse 1s infinite alternate";
+		}
+	}
+
+	/**
+	 * Show a broadcast message in the HUD
+	 * @param message The message to display
+	 * @param duration How long to show the message (ms)
+	 */
+	public showMessage(message: string, duration: number = 8000): void {
+		if (!this.container || !this.messageElement) return;
+
+		// Clear any existing timeout
+		if (this.hideTimeout !== null) {
+			clearTimeout(this.hideTimeout);
+			this.hideTimeout = null;
+		}
+
+		// Update message
+		this.currentMessage = message;
+		this.messageElement.textContent = message;
+
+		// Show HUD if not already visible
+		if (!this.isVisible) {
+			this.container.style.opacity = "1";
+			this.container.style.transform = "translateY(0)";
+			this.container.style.pointerEvents = "auto";
+			this.isVisible = true;
+		} else {
+			// Apply a quick pulse effect to draw attention to the new message
+			const dot = this.container.querySelector('span');
+			if (dot) {
+				dot.style.animation = "none";
+				setTimeout(() => {
+					if (dot) {
+						dot.style.animation = "kxs-broadcast-pulse 1s infinite alternate";
+					}
+				}, 10);
+			}
+		}
+
+		// Set timeout to hide the message
+		this.hideTimeout = setTimeout(() => {
+			this.hideMessage();
+		}, duration) as unknown as number;
+	}
+
+	/**
+	 * Hide the broadcast message HUD
+	 */
+	private hideMessage(): void {
+		if (!this.container) return;
+
+		this.container.style.opacity = "0";
+		this.container.style.transform = "translateY(-20px)";
+		this.container.style.pointerEvents = "none";
+		this.isVisible = false;
+
+		if (this.hideTimeout !== null) {
+			clearTimeout(this.hideTimeout);
+			this.hideTimeout = null;
+		}
+	}
+}
