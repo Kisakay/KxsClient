@@ -12,7 +12,7 @@ module.exports = {
 // @run-at       document-end
 // @downloadURL  ${config.base_url}/download/latest-dev.js
 // @icon         ${packageInfo.icon}
-${config.match.map((match) => `// @match        ${match}`).join('\n')}
+${config.match.map((match) => `// @match        *://${match}/*`).join('\n')}
 ${config.grant.map((grant) => `// @grant        ${grant}`).join('\n')}
 // ==/UserScript==
 ;`

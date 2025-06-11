@@ -7,6 +7,7 @@ class KxsChat {
 	private chatMessages: { user: string, text: string, isSystem?: boolean }[] = [];
 	private chatOpen = false;
 	private kxsClient: KxsClient;
+	private resizeObserver: ResizeObserver | null = null;
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
@@ -42,6 +43,10 @@ class KxsChat {
 		messagesContainer.style.display = 'flex';
 		messagesContainer.style.flexDirection = 'column';
 		messagesContainer.style.gap = '3px';
+		messagesContainer.style.flexGrow = '1'; // Prend tout l'espace disponible
+		messagesContainer.style.overflow = 'auto'; // Ajoute un défilement si nécessaire
+		messagesContainer.style.minHeight = '100px'; // Hauteur minimale pour assurer l'espace
+		messagesContainer.style.maxHeight = '300px'; // Hauteur maximale pour éviter qu'il ne devienne trop grand
 		chatBox.appendChild(messagesContainer);
 		this.messagesContainer = messagesContainer;
 		chatBox.style.position = 'absolute';
@@ -50,6 +55,8 @@ class KxsChat {
 		chatBox.style.transform = 'translateX(-50%)';
 		chatBox.style.minWidth = '260px';
 		chatBox.style.maxWidth = '480px';
+		chatBox.style.minHeight = '150px'; // Hauteur minimale pour le chat box
+		chatBox.style.height = '200px'; // Hauteur par défaut
 		chatBox.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';
 		chatBox.style.backdropFilter = 'blur(40px) saturate(180%)';
 		(chatBox.style as any)['-webkitBackdropFilter'] = 'blur(40px) saturate(180%)';
@@ -67,6 +74,8 @@ class KxsChat {
 		chatBox.style.flexDirection = 'column';
 		chatBox.style.gap = '3px';
 		chatBox.style.opacity = '0.5';
+		chatBox.style.resize = 'both'; // Permet à l'utilisateur de redimensionner la boîte
+		chatBox.style.overflow = 'hidden'; // Nécessaire pour le redimensionnement
 
 		// Charger la position sauvegardée dès l'initialisation
 		const savedPosition = localStorage.getItem('kxs-chat-box-position');
@@ -81,6 +90,18 @@ class KxsChat {
 
 		area.appendChild(chatBox);
 		this.chatBox = chatBox;
+		
+		// Configurer un ResizeObserver pour détecter les changements de taille de la chatBox
+		this.resizeObserver = new ResizeObserver(() => {
+			// Quand la taille change, mettre à jour l'affichage des messages
+			this.renderMessages();
+		});
+		
+		// Observer la chatBox pour les changements de dimensions
+		if (this.chatBox) {
+			this.resizeObserver.observe(this.chatBox);
+		}
+		
 		// Rendre la chatbox draggable UNIQUEMENT si le menu secondaire est ouvert
 		const updateChatDraggable = () => {
 			const isMenuOpen = this.kxsClient.secondaryMenu.getMenuVisibility()
@@ -197,7 +218,6 @@ class KxsChat {
 	public addChatMessage(user: string, text: string) {
 		if (!this.chatBox || !this.kxsClient.isKxsChatEnabled) return;
 		this.chatMessages.push({ user, text, isSystem: false });
-		if (this.chatMessages.length > 5) this.chatMessages.shift();
 		this.renderMessages();
 	}
 
@@ -210,9 +230,48 @@ class KxsChat {
 
 		// Ajouter le message système avec un marqueur spécifique isSystem = true
 		this.chatMessages.push({ user: "", text, isSystem: true });
-		if (this.chatMessages.length > 5) this.chatMessages.shift();
-
 		this.renderMessages();
+	}
+
+	/**
+	 * Calcule le nombre de messages qui peuvent s'afficher dans la division du chat
+	 * @returns Le nombre de messages qui peuvent s'afficher
+	 */
+	private calculateVisibleMessageCount(): number {
+		if (!this.chatBox || !this.messagesContainer) return 5; // Valeur par défaut
+
+		// Obtenir les dimensions réelles du conteneur de messages
+		const rect = this.messagesContainer.getBoundingClientRect();
+		const container_height = rect.height;
+		console.log('Container height (getBoundingClientRect):', container_height);
+		
+		// Si la hauteur est toujours trop petite, utiliser une valeur par défaut
+		if (container_height < 50) {
+			console.log('Using default height calculation');
+			// Utiliser la hauteur du chatBox comme base et soustraire l'espace pour l'input
+			const chat_box_height = this.chatBox.clientHeight;
+			const input_height = this.chatInput ? this.chatInput.clientHeight : 40; // Valeur par défaut si input n'est pas disponible
+			const padding = 20; // Estimation du padding total
+			const estimated_container_height = chat_box_height - input_height - padding;
+			console.log('Estimated container height:', estimated_container_height);
+			
+			// Estimation de la hauteur moyenne d'un message (en pixels)
+			const average_message_height = 22; // ~22px par message avec la taille de police actuelle
+			
+			// Calcul du nombre de messages qui peuvent s'afficher
+			const visible_count = Math.max(1, Math.floor(estimated_container_height / average_message_height));
+			console.log('Estimated visible message count:', visible_count);
+			return visible_count;
+		}
+
+		// Estimation de la hauteur moyenne d'un message (en pixels)
+		const average_message_height = 22; // ~22px par message avec la taille de police actuelle
+
+		// Calcul du nombre de messages qui peuvent s'afficher
+		const visible_count = Math.max(1, Math.floor(container_height / average_message_height));
+		console.log('Visible message count:', visible_count);
+
+		return visible_count;
 	}
 
 	/**
@@ -221,13 +280,23 @@ class KxsChat {
 	private renderMessages() {
 		if (!this.messagesContainer) return;
 
-		this.messagesContainer.innerHTML = this.chatMessages.map(m => {
+		// Calcule combien de messages peuvent s'afficher
+		const visible_count = this.calculateVisibleMessageCount();
+
+		// Sélectionne les messages les plus récents qui peuvent s'afficher
+		const visible_messages = this.chatMessages.slice(-visible_count);
+
+		// Rend les messages visibles
+		this.messagesContainer.innerHTML = visible_messages.map(m => {
 			if (m.isSystem) {
-				return `<span style='color:#3B82F6; font-style:italic;'>${m.text}</span>`;
+				return `<div style='color:#3B82F6; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
 			} else {
-				return `<span><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</span>`;
+				return `<div style='margin-bottom:4px;'><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</div>`;
 			}
 		}).join('');
+		
+		// Faire défiler vers le bas pour voir les messages les plus récents
+		this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
 	}
 
 	public toggleChat() {
