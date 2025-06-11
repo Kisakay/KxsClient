@@ -19,6 +19,9 @@ class KxsChat {
 			this.chatBox.style.display = 'none';
 			window.removeEventListener('keydown', this.handleKeyDown);
 		}
+		
+		// Ajouter un gestionnaire de clic global pour fermer le chat lorsqu'on clique ailleurs
+		document.addEventListener('mousedown', this.handleDocumentClick);
 	}
 
 	private handleKeyDown = (e: KeyboardEvent) => {
@@ -27,6 +30,19 @@ class KxsChat {
 			this.openChatInput();
 		} else if (e.key === 'Escape' && this.chatOpen) {
 			this.closeChatInput();
+		}
+	};
+	
+	// Gestionnaire de clic sur le document pour fermer le chat quand on clique ailleurs
+	private handleDocumentClick = (e: MouseEvent) => {
+		// Si le chat est ouvert et qu'on clique en dehors du chat
+		if (this.chatOpen && this.chatBox && this.chatInput) {
+			// Vérifie si le clic est en dehors du chatBox
+			const target = e.target as Node;
+			if (!this.chatBox.contains(target) && target !== this.chatInput) {
+				// Ferme le chat si on clique ailleurs
+				this.closeChatInput();
+			}
 		}
 	};
 
@@ -297,9 +313,13 @@ class KxsChat {
 
 		if (this.kxsClient.isKxsChatEnabled) {
 			window.addEventListener('keydown', this.handleKeyDown);
+			// S'assurer que le gestionnaire de clic est actif
+			document.addEventListener('mousedown', this.handleDocumentClick);
 		} else {
 			this.closeChatInput();
 			window.removeEventListener('keydown', this.handleKeyDown);
+			// Retirer le gestionnaire de clic si le chat est désactivé
+			document.removeEventListener('mousedown', this.handleDocumentClick);
 		}
 
 		const message = this.kxsClient.isKxsChatEnabled ? 'Chat enabled' : 'Chat disabled';
