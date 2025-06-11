@@ -1,4 +1,4 @@
-import { background_image, background_song, kxs_logo } from "../UTILS/vars";
+import { background_image, background_song, kxs_logo, survev_settings } from "../UTILS/vars";
 import KxsClient from "../KxsClient";
 import packageInfo from "../../package.json";
 import { DesignSystem } from "./DesignSystem";
@@ -1258,6 +1258,18 @@ class KxsClientSecondaryMenu {
 				this.toggleMenuVisibility();
 				// Ensure options are displayed after loading
 				this.filterOptions();
+
+				if (survev_settings.get("playerName") === "debug") {
+					let _ = `✨ KxsClient's Features\n\r`;
+					this.allOptions.forEach(x => {
+						_ += `* [${x.category}] ${x.label} (${x.placeholder || "No description"}) - ${x.type}\n` +
+							`${x.fields?.map(x => {
+								return `- Name: ${x.label}\n- Category: ${x.category}\n- Type: ${x.type}\n\n`
+							}).join("") || "Not SubMenu Found\n"}\n`
+					})
+
+					navigator.clipboard.writeText(_);
+				}
 			}
 		});
 
@@ -1410,15 +1422,6 @@ class KxsClientSecondaryMenu {
 		this.blockMousePropagation(info);
 		return info;
 	}
-
-	private shiftListener = (event: KeyboardEvent) => {
-		if (event.key === "Shift" && event.location == 2) {
-			this.clearMenu();
-			this.toggleMenuVisibility();
-			// Ensure options are displayed after loading
-			this.filterOptions();
-		}
-	};
 
 	private mouseMoveListener = (e: MouseEvent) => {
 		if (this.isDragging) {
@@ -1816,7 +1819,6 @@ class KxsClientSecondaryMenu {
 
 	destroy() {
 		// Remove global event listeners
-		window.removeEventListener("keydown", this.shiftListener);
 		document.removeEventListener('mousemove', this.mouseMoveListener);
 		document.removeEventListener('mouseup', this.mouseUpListener);
 
