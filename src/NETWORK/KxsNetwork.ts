@@ -7,18 +7,6 @@ interface KxsNetworkSettings {
 
 class KxsNetwork {
 	private currentGamePlayers: string[] = [];
-	public sendGlobalChatMessage(text: string) {
-		if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
-		const payload = {
-			op: 7,
-			d: {
-				user: this.getUsername(),
-				text
-			}
-		};
-		this.send(payload);
-	}
-
 	public ws: WebSocket | null = null;
 	private heartbeatInterval: number = 0;
 	private isAuthenticated: boolean = false;
@@ -94,6 +82,18 @@ class KxsNetwork {
 		}
 	}
 
+	public sendGlobalChatMessage(text: string) {
+		if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+		const payload = {
+			op: 7,
+			d: {
+				user: this.getUsername(),
+				text
+			}
+		};
+		this.send(payload);
+	}
+
 	private generateRandomUsername() {
 		let char = 'abcdefghijklmnopqrstuvwxyz0123456789';
 		let username = '';
@@ -112,7 +112,8 @@ class KxsNetwork {
 			op: 2,
 			d: {
 				username: this.getUsername(),
-				isVoiceChat: this.kxsClient.isVoiceChatEnabled
+				isVoiceChat: this.kxsClient.isVoiceChatEnabled,
+				v: this.kxsClient.pkg.version
 			}
 		};
 		this.send(payload);

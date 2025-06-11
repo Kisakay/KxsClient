@@ -7,7 +7,6 @@ import { intercept } from "./MECHANIC/intercept";
 import KxsClient from "./KxsClient";
 import { LoadingScreen } from "./HUD/MOD/LoadingScreen";
 
-import packageInfo from "../package.json";
 import config from "../config.json";
 import { EasterEgg } from "./HUD/EasterEgg";
 
@@ -54,7 +53,7 @@ if (window.location.href === "https://kxs.rip/") {
 		if (links.length > 0) {
 			const firstLink = links[0];
 			firstLink.href = newChangelogUrl;
-			firstLink.textContent = packageInfo.version;
+			firstLink.textContent = kxsClient.pkg.version;
 
 			while (links.length > 1) {
 				links[1].remove();

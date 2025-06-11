@@ -1,5 +1,4 @@
 import KxsClient from "../KxsClient";
-import packageInfo from "../../package.json";
 
 class DiscordWebSocket {
 	private ws: WebSocket | null = null;
@@ -54,7 +53,7 @@ class DiscordWebSocket {
 						application_id: "1321193265533550602",
 						assets: {
 							large_image: "mp:app-icons/1321193265533550602/bccd2479ec56ed7d4e69fa2fdfb47197.png?size=512",
-							large_text: "KxsClient v" + packageInfo.version,
+							large_text: "KxsClient v" + this.kxsClient.pkg.version,
 						}
 					}],
 					status: 'online',

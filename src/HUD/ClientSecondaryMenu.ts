@@ -1,6 +1,5 @@
 import { background_image, background_song, kxs_logo, survev_settings } from "../UTILS/vars";
 import KxsClient from "../KxsClient";
-import packageInfo from "../../package.json";
 import { DesignSystem } from "./DesignSystem";
 
 export const category = ["ALL", "HUD", "SERVER", "MECHANIC", "MISC"] as const;
@@ -193,7 +192,7 @@ class KxsClientSecondaryMenu {
                  top: ${isMobile ? -1 : -2}px;
                  margin-left: ${isMobile ? 2 : 3}px;
                  letter-spacing: 0.5px;
-               ">v${packageInfo.version}</span></span>
+               ">v${this.kxsClient.pkg.version}</span></span>
             </div>
             <div style="display: flex; gap: ${headerGap}px;">
               <button style="

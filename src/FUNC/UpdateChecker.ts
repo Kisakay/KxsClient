@@ -1,7 +1,6 @@
 import KxsClient from "../KxsClient";
 import gt from 'semver/functions/gt';
 
-import packageInfo from "../../package.json";
 import config from "../../config.json";
 
 class UpdateChecker {
@@ -170,7 +169,7 @@ class UpdateChecker {
 	}
 
 	private getCurrentScriptVersion() {
-		return packageInfo.version;
+		return this.kxsClient.pkg.version;
 	}
 }
 

@@ -19,10 +19,12 @@ import { GameHistoryMenu } from "./HUD/HistoryManager";
 import { KxsNetwork, KxsNetworkSettings } from "./NETWORK/KxsNetwork";
 import { KxsChat } from "./UTILS/KxsChat";
 import { KxsVoiceChat } from "./UTILS/KxsVoiceChat";
+import pkg from "../package.json";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
 	private onlineMenuInterval: number | null = null;
+	private deathObserver: MutationObserver | null = null;
 	lastFrameTime: DOMHighResTimeStamp;
 
 	// configuration
@@ -68,7 +70,6 @@ export default class KxsClient {
 	discordToken: string | null;
 	secondaryMenu: KxsClientSecondaryMenu;
 	nm: NotificationManager;
-	private deathObserver: MutationObserver | null = null;
 	soundLibrary: SoundLibrary;
 	hud: KxsClientHUD;
 	logger: Logger;
@@ -78,6 +79,7 @@ export default class KxsClient {
 	chat: KxsChat;
 	voiceChat: KxsVoiceChat;
 	kxsNetworkSettings: KxsNetworkSettings;
+	pkg: typeof pkg;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -86,6 +88,7 @@ export default class KxsClient {
 
 	constructor() {
 		globalThis.kxsClient = this;
+		this.pkg = pkg;
 
 		this.logger = new Logger();
 		this.config = config;
