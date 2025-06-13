@@ -7,23 +7,10 @@ export class ExchangeManager {
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
-		this.sendCode(this.kxsClient.kxsDeveloperOptions.exchange.password);
-	}
-
-	public sendCode(code: string) {
-		fetch(this.HOST_URL + "/exchange/code", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({ code })
-		})
-			.catch(error => {
-				console.error(error);
-			});
 	}
 
 	public sendGameInfo(gameId: string) {
+		if (!this.kxsClient.kxsDeveloperOptions.enableGameIDExchange) return;
 		fetch(this.HOST_URL + "/exchange/joined/" + gameId + "/" + this.kxsClient.kxsDeveloperOptions.exchange.password, {
 			method: "GET",
 		})

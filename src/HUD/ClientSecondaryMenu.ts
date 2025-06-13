@@ -881,7 +881,6 @@ class KxsClientSecondaryMenu {
 						this.kxsClient.updateLocalStorage();
 						this.kxsClient.nm.showNotification("New Exchange Key Generated (pasted to clipboard)", "success", 2100);
 						await navigator.clipboard.writeText(new_password);
-						this.kxsClient.exchangeManager.sendCode(new_password);
 					}
 				},
 				{
