@@ -1,0 +1,7 @@
+{
+	"KXS_NETWORK_URL": "network.kxs.rip",
+	"KXS_NETWORK_EXCHANGE_KEY": "<Your secret key here>",
+	"BOT_NAME": "<Your bot name here>",
+	"BOT_PREFIX": "<Your bot prefix here> (ie: !)",
+	"BOT_VOICE_ENABLED": true
+}
