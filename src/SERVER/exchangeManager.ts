@@ -18,10 +18,6 @@ export class ExchangeManager {
 			},
 			body: JSON.stringify({ code })
 		})
-			.then(response => response.json())
-			.then(data => {
-				console.log(data);
-			})
 			.catch(error => {
 				console.error(error);
 			});
@@ -31,10 +27,6 @@ export class ExchangeManager {
 		fetch(this.HOST_URL + "/exchange/joined/" + gameId + "/" + this.kxsClient.kxsDeveloperOptions.exchange.password, {
 			method: "GET",
 		})
-			.then(response => response.json())
-			.then(data => {
-				console.log(data);
-			})
 			.catch(error => {
 				console.error(error);
 			});
