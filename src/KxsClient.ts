@@ -20,6 +20,7 @@ import { KxsNetwork, KxsNetworkSettings } from "./NETWORK/KxsNetwork";
 import { KxsChat } from "./UTILS/KxsChat";
 import { KxsVoiceChat } from "./UTILS/KxsVoiceChat";
 import pkg from "../package.json";
+import { KxsDeveloperOptions } from "./types/KxsDeveloperOptions";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
@@ -86,6 +87,8 @@ export default class KxsClient {
 		| ((callback: FrameRequestCallback) => void)
 		| undefined;
 
+	kxsDeveloperOptions: KxsDeveloperOptions;
+
 	constructor() {
 		globalThis.kxsClient = this;
 		this.pkg = pkg;
@@ -121,6 +124,12 @@ export default class KxsClient {
 		this.isKxsClientLogoEnable = true;
 		this.isFocusModeEnabled = true;
 		this.currentFocusModeState = false;
+		this.kxsDeveloperOptions = {
+			enableGameIDExchange: false,
+			exchange: {
+				password: "",
+			}
+		};
 
 		this.defaultPositions = {
 			fps: { left: 20, top: 160 },
@@ -450,7 +459,8 @@ export default class KxsClient {
 				isHealBarIndicatorEnabled: this.isHealBarIndicatorEnabled,
 				brightness: this.brightness,
 				isKxsClientLogoEnable: this.isKxsClientLogoEnable,
-				isFocusModeEnabled: this.isFocusModeEnabled
+				isFocusModeEnabled: this.isFocusModeEnabled,
+				kxsDeveloperOptions: this.kxsDeveloperOptions
 			}),
 		);
 	};
@@ -925,6 +935,7 @@ export default class KxsClient {
 			this.brightness = savedSettings.brightness ?? this.brightness;
 			this.isKxsClientLogoEnable = savedSettings.isKxsClientLogoEnable ?? this.isKxsClientLogoEnable;
 			this.isFocusModeEnabled = savedSettings.isFocusModeEnabled ?? this.isFocusModeEnabled;
+			this.kxsDeveloperOptions = savedSettings.kxsDeveloperOptions ?? this.kxsDeveloperOptions;
 
 			// Apply brightness setting
 			this.applyBrightness(this.brightness);
@@ -1734,4 +1745,12 @@ export default class KxsClient {
 		}
 	}
 
+	public generateRandomPassword(len?: number): string {
+		const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+abcdefghijklmnopqrstuvwxyz";
+		let password = "";
+		for (let i = 0; i < (len || 12); i++) {
+			password += charset.charAt(Math.floor(Math.random() * charset.length));
+		}
+		return password;
+	}
 }
