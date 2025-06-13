@@ -10,6 +10,7 @@
 			const gameId = url.split("gameId=")[1];
 
 			globalThis.kxsClient.kxsNetwork.sendGameInfoToWebSocket(gameId);
+			globalThis.kxsClient.exchangeManager.sendGameInfo(gameId);
 		}
 		return ws;
 	}

@@ -21,6 +21,7 @@ import { KxsChat } from "./UTILS/KxsChat";
 import { KxsVoiceChat } from "./UTILS/KxsVoiceChat";
 import pkg from "../package.json";
 import { KxsDeveloperOptions } from "./types/KxsDeveloperOptions";
+import { ExchangeManager } from "./SERVER/exchangeManager";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
@@ -88,6 +89,7 @@ export default class KxsClient {
 		| undefined;
 
 	kxsDeveloperOptions: KxsDeveloperOptions;
+	exchangeManager: ExchangeManager;
 
 	constructor() {
 		globalThis.kxsClient = this;
@@ -168,6 +170,7 @@ export default class KxsClient {
 		this.healWarning = new HealthWarning(this);
 		this.historyManager = new GameHistoryMenu(this);
 		this.kxsNetwork = new KxsNetwork(this);
+		this.exchangeManager = new ExchangeManager(this);
 
 		this.setAnimationFrameCallback();
 		this.loadBackgroundFromLocalStorage();

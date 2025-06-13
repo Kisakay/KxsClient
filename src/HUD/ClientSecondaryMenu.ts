@@ -870,24 +870,29 @@ class KxsClientSecondaryMenu {
 					}
 				},
 				{
-					label: "Exchange Password",
-					value: this.kxsClient.kxsDeveloperOptions.exchange.password,
-					type: "info",
-					icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M9 17.5C9 18.8807 7.88071 20 6.5 20C5.11929 20 4 18.8807 4 17.5C4 16.1193 5.11929 15 6.5 15C7.88071 15 9 16.1193 9 17.5ZM9 17.5H15.125M19 20V17.75C19 17.6119 18.8881 17.5 18.75 17.5M15.125 17.5H18.75M15.125 17.5V20M18.75 17.5Lnan nanCnan nan nan nan nan nanLnan nanCnan nan nan nan nan nanL18.75 17.5ZM5 11H19C20.1046 11 21 10.1046 21 9V6C21 4.89543 20.1046 4 19 4H5C3.89543 4 3 4.89543 3 6V9C3 10.1046 3.89543 11 5 11Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <circle cx="7.5" cy="7.5" r="1.5" fill="#000000"></circle> <circle cx="12" cy="7.5" r="1.5" fill="#000000"></circle> <circle cx="16.5" cy="7.5" r="1.5" fill="#000000"></circle> </g></svg>',
-					category: "MISC",
-					placeholder: this.kxsClient.kxsDeveloperOptions.exchange.password,
-				},
-				{
-					label: "Renew Exchange Password",
+					label: "Renew Exchange Key",
 					value: true,
 					type: "click",
 					icon: '<svg viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>reset</title> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Combined-Shape" fill="#000000" transform="translate(74.806872, 64.000000)"> <path d="M351.859794,42.6666667 L351.859794,85.3333333 L283.193855,85.3303853 C319.271288,116.988529 341.381875,163.321355 341.339886,213.803851 C341.27474,291.98295 288.098183,360.121539 212.277591,379.179704 C136.456999,398.237869 57.3818117,363.341907 20.3580507,294.485411 C-16.6657103,225.628916 -2.17003698,140.420413 55.5397943,87.68 C63.6931909,100.652227 75.1888658,111.189929 88.8197943,118.186667 C59.4998648,141.873553 42.4797783,177.560832 42.5264609,215.253333 C43.5757012,285.194843 100.577082,341.341203 170.526461,341.333333 C234.598174,342.388718 289.235113,295.138227 297.4321,231.584253 C303.556287,184.101393 282.297007,138.84385 245.195596,112.637083 L245.193128,192 L202.526461,192 L202.526461,42.6666667 L351.859794,42.6666667 Z M127.859794,-1.42108547e-14 C151.423944,-1.42108547e-14 170.526461,19.1025173 170.526461,42.6666667 C170.526461,66.230816 151.423944,85.3333333 127.859794,85.3333333 C104.295645,85.3333333 85.1931276,66.230816 85.1931276,42.6666667 C85.1931276,19.1025173 104.295645,-1.42108547e-14 127.859794,-1.42108547e-14 Z"> </path> </g> </g> </g></svg>',
 					category: "MISC",
 					onChange: async () => {
-						this.kxsClient.kxsDeveloperOptions.exchange.password = this.kxsClient.generateRandomPassword();
+						const new_password = this.kxsClient.generateRandomPassword();
+						this.kxsClient.kxsDeveloperOptions.exchange.password = new_password;
 						this.kxsClient.updateLocalStorage();
-						this.kxsClient.nm.showNotification("Exchange Password Renewed (password copied to clipboard)", "success", 2100);
-						await navigator.clipboard.writeText(this.kxsClient.kxsDeveloperOptions.exchange.password);
+						this.kxsClient.nm.showNotification("New Exchange Key Generated (pasted to clipboard)", "success", 2100);
+						await navigator.clipboard.writeText(new_password);
+						this.kxsClient.exchangeManager.sendCode(new_password);
+					}
+				},
+				{
+					label: "Copy Exchange Key",
+					value: this.kxsClient.kxsDeveloperOptions.exchange.password,
+					type: "click",
+					category: "MISC",
+					icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M9 17.5C9 18.8807 7.88071 20 6.5 20C5.11929 20 4 18.8807 4 17.5C4 16.1193 5.11929 15 6.5 15C7.88071 15 9 16.1193 9 17.5ZM9 17.5H15.125M19 20V17.75C19 17.6119 18.8881 17.5 18.75 17.5M15.125 17.5H18.75M15.125 17.5V20M18.75 17.5Lnan nanCnan nan nan nan nan nanLnan nanCnan nan nan nan nan nanL18.75 17.5ZM5 11H19C20.1046 11 21 10.1046 21 9V6C21 4.89543 20.1046 4 19 4H5C3.89543 4 3 4.89543 3 6V9C3 10.1046 3.89543 11 5 11Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <circle cx="7.5" cy="7.5" r="1.5" fill="#000000"></circle> <circle cx="12" cy="7.5" r="1.5" fill="#000000"></circle> <circle cx="16.5" cy="7.5" r="1.5" fill="#000000"></circle> </g></svg>',
+					onChange: () => {
+						this.kxsClient.nm.showNotification("Exchange Key Copied to Clipboard", "success", 2100);
+						navigator.clipboard.writeText(this.kxsClient.kxsDeveloperOptions.exchange.password);
 					}
 				}
 			],
