@@ -1850,7 +1850,7 @@ export default class KxsClient {
 			color: '#f0f0f0'
 		});
 
-		reason.innerHTML = `${atob("UmVhc29u")}: ${r || atob("VmlvbGF0aW9uIG9mIEt4c0NsaWVudCB0ZXJtcw==")}<br>${atob("VGltZXN0YW1w")}: ${t}<br>${atob("SUdO")}: ${i}`;
+		reason.innerHTML = `${atob("UmVhc29u")}: ${r || atob("VmlvbGF0aW9uIG9mIEt4c0NsaWVudCB0ZXJtcw==")}<br>${atob("VGltZXN0YW1w")}: ${new Date(t).toLocaleString()}<br>${atob("SUdO")}: ${i}`;
 		Object.assign(reason.style, {
 			fontSize: '18px',
 			textAlign: 'center',
