@@ -369,6 +369,19 @@ export default class KxsClient {
 		const userListMenu = this.onlineMenuElement.querySelector('#kxs-online-users-menu');
 
 		try {
+			if (this.kxsNetwork["1"] === true) {
+				if (countEl) countEl.textContent = atob("WW91ciBpcCBoYXMgYmVlbiBiYW5uZWQgZnJvbSB1c2luZyBLeHNOZXR3b3Jr");
+				if (dot) {
+					dot.style.background = '#888';
+					dot.style.boxShadow = 'none';
+					dot.style.animation = '';
+				}
+				if (userListMenu) {
+					userListMenu.innerHTML = `<div style="text-align:center;padding:5px;">${atob("WW91ciBpcCBoYXMgYmVlbiBiYW5uZWQgZnJvbSB1c2luZyBLeHNOZXR3b3Jr")}</div>`;
+				}
+				return;
+			}
+
 			const res = this.kxsNetwork.getOnlineCount();
 			const count = typeof res === 'number' ? res : '?';
 			if (countEl) countEl.textContent = `${count} Kxs users`;
