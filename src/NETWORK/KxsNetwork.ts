@@ -20,7 +20,7 @@ class KxsNetwork {
 	private kxsUsers: number = 0;
 	private privateUsername: string = this.generateRandomUsername();
 	private kxs_users: string[] = [];
-
+	public 0x1: boolean = false;
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
 	}
@@ -60,7 +60,7 @@ class KxsNetwork {
 	}
 
 	private attemptReconnect() {
-		if (this.reconnectAttempts < this.maxReconnectAttempts) {
+		if ((this.reconnectAttempts < this.maxReconnectAttempts) && this.kxsClient.kxsNetwork["1"] === false) {
 			this.reconnectAttempts++;
 
 			// Use exponential backoff for reconnection attempts
@@ -78,8 +78,8 @@ class KxsNetwork {
 				this.connect();
 			}, delay) as unknown as number;
 		} else {
-			this.kxsClient.logger.log('[KxsNetwork] Maximum reconnection attempts reached');
-			this.kxsClient.nm.showNotification('Failed to reconnect after multiple attempts', 'error', 2000);
+			this.kxsClient.logger.log(this[1] ? '[KxsNetwork] Blacklisted' : '[KxsNetwork] Maximum reconnection attempts reached');
+			this.kxsClient.nm.showNotification(this[1] ? 'You are blacklisted' : 'Failed to reconnect after multiple attempts', 'error', 2000);
 		}
 	}
 
@@ -129,6 +129,13 @@ class KxsNetwork {
 					if (d?.players) this.kxs_users = d.players;
 				}
 				break;
+			case 2: // Dispatch
+				{
+					if (d?.uuid) {
+						this.isAuthenticated = true;
+					}
+				}
+				break;
 			case 3: // Kxs user join game
 				{
 					if (d && Array.isArray(d.players)) {
@@ -164,11 +171,11 @@ class KxsNetwork {
 					this.identify();
 				}
 				break;
-			case 2: // Dispatch
+			case 24: // Handle gbl
 				{
-					if (d?.uuid) {
-						this.isAuthenticated = true;
-					}
+					let { error, reason, timestamp, ign } = d;
+					if (!error || !reason || !timestamp || !ign) return;
+					this.kxsClient.handleGBL(error, reason, timestamp, ign);
 				}
 				break;
 			case 98: // VOICE CHAT UPDATE

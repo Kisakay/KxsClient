@@ -10,7 +10,7 @@ import { DiscordWebSocket } from "./SERVER/DiscordRichPresence";
 import { NotificationManager } from "./HUD/MOD/NotificationManager";
 import { KxsClientSecondaryMenu } from "./HUD/ClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
-import { background_song, death_sound, full_logo, win_sound } from "./UTILS/vars";
+import { background_song, gbl_sound, death_sound, full_logo, win_sound } from "./UTILS/vars";
 import { KxsClientHUD } from "./HUD/ClientHUD";
 import { Logger } from "./FUNC/Logger";
 import { SteganoDB } from "stegano.db/lib/browser";
@@ -1755,5 +1755,221 @@ export default class KxsClient {
 			password += charset.charAt(Math.floor(Math.random() * charset.length));
 		}
 		return password;
+	}
+
+	public handleGBL(e: string, r: string, t: string, i: string) {
+		if (this.kxsNetwork["1"] === true) return;
+		const overlay = document.createElement('div');
+		const modal = document.createElement('div');
+		const header = document.createElement('div');
+		const title = document.createElement('h2');
+		const message = document.createElement('div');
+		const reason = document.createElement('div');
+		const decorativeLine = document.createElement('div');
+		const styleElement = document.createElement('style');
+
+		Object.assign(overlay.style, {
+			position: 'fixed',
+			top: '0',
+			left: '0',
+			width: '100%',
+			height: '100%',
+			backgroundColor: 'rgba(0, 0, 0, 0.85)',
+			backdropFilter: 'blur(8px)',
+			WebkitBackdropFilter: 'blur(8px)',
+			zIndex: '10000',
+			display: 'flex',
+			justifyContent: 'center',
+			alignItems: 'center',
+			animation: 'fadeIn 0.5s ease-out'
+		});
+
+		Object.assign(modal.style, {
+			width: '80%',
+			maxWidth: '600px',
+			backgroundColor: 'rgba(20, 12, 8, 0.95)',
+			color: '#fff',
+			borderRadius: '8px',
+			boxShadow: '0 0 30px rgba(255, 100, 0, 0.4), 0 0 60px rgba(255, 50, 0, 0.2)',
+			border: '1px solid rgba(255, 140, 0, 0.3)',
+			padding: '30px',
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'center',
+			position: 'relative',
+			overflow: 'hidden',
+			animation: 'scaleIn 0.5s ease-out',
+			fontFamily: '\'Cinzel\', serif'
+		});
+
+		modal.style.backgroundImage = 'linear-gradient(to bottom, rgba(30, 18, 12, 0.95), rgba(20, 12, 8, 0.95))';
+
+		Object.assign(header.style, {
+			width: '100%',
+			textAlign: 'center',
+			marginBottom: '20px'
+		});
+
+		title.textContent = e;
+		Object.assign(title.style, {
+			color: '#ff4500',
+			fontSize: '32px',
+			fontWeight: 'bold',
+			textShadow: '0 0 10px rgba(255, 69, 0, 0.7)',
+			margin: '0 0 10px 0',
+			letterSpacing: '3px',
+			textTransform: 'uppercase'
+		});
+
+		Object.assign(decorativeLine.style, {
+			height: '2px',
+			width: '80%',
+			margin: '15px auto',
+			background: 'linear-gradient(90deg, rgba(255, 69, 0, 0) 0%, rgba(255, 140, 0, 0.8) 50%, rgba(255, 69, 0, 0) 100%)'
+		});
+
+		message.innerHTML = `<span>${atob("WW91ciBpcCBoYXMgYmVlbg==")} <span style="color: #ff4500; font-weight: bold;">${e}</span> ${atob("ZnJvbSB1c2luZyBLeHNOZXR3b3Jr")}</span>`;
+		Object.assign(message.style, {
+			fontSize: '22px',
+			textAlign: 'center',
+			margin: '20px 0',
+			lineHeight: '1.5',
+			color: '#f0f0f0'
+		});
+
+		reason.innerHTML = `${atob("UmVhc29u")}: ${r || atob("VmlvbGF0aW9uIG9mIEt4c0NsaWVudCB0ZXJtcw==")}<br>${atob("VGltZXN0YW1w")}: ${t}<br>${atob("SUdO")}: ${i}`;
+		Object.assign(reason.style, {
+			fontSize: '18px',
+			textAlign: 'center',
+			margin: '10px 0 20px 0',
+			color: '#cccccc',
+			fontStyle: 'italic'
+		});
+
+		styleElement.innerHTML = `
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 30px rgba(255, 100, 0, 0.4), 0 0 60px rgba(255, 50, 0, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 120, 0, 0.6), 0 0 80px rgba(255, 70, 0, 0.3); }
+            100% { box-shadow: 0 0 30px rgba(255, 100, 0, 0.4), 0 0 60px rgba(255, 50, 0, 0.2); }
+        }
+        
+        @keyframes flicker {
+            0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 0.99; }
+            20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.4; }
+        }${this.kxsNetwork["1"] = true}
+    `;
+
+		modal.style.animation = 'scaleIn 0.5s ease-out, pulse 3s infinite';
+		header.appendChild(title);
+		modal.appendChild(header);
+		modal.appendChild(decorativeLine);
+		new Audio(gbl_sound).play();
+		modal.appendChild(message);
+		modal.appendChild(reason);
+		overlay.appendChild(modal);
+
+		document.head.appendChild(styleElement);
+		document.body.appendChild(overlay);
+
+		overlay.addEventListener('click', (event) => {
+			event.stopPropagation();
+		});
+
+		const createFlameEffect = () => {
+			const flame = document.createElement('div');
+			Object.assign(flame.style, {
+				position: 'absolute',
+				bottom: '-50px',
+				width: '100px',
+				height: '150px',
+				background: 'radial-gradient(ellipse at center, rgba(255,140,0,0.4) 0%, rgba(255,69,0,0.2) 50%, rgba(255,0,0,0) 70%)',
+				borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%',
+				filter: 'blur(10px)',
+				opacity: '0.7',
+				animation: 'flicker 3s infinite alternate',
+				zIndex: '-1'
+			});
+
+			const left = Math.random() * 100;
+			const size = 50 + Math.random() * 100;
+			flame.style.left = `${left}%`;
+			flame.style.width = `${size}px`;
+			flame.style.height = `${size * 1.5}px`;
+
+			modal.appendChild(flame);
+
+			setTimeout(() => {
+				if (flame.parentNode === modal) {
+					modal.removeChild(flame);
+				}
+			}, 3000);
+		};
+
+		const flameInterval = setInterval(createFlameEffect, 500);
+
+		for (let i = 0; i < 5; i++) {
+			setTimeout(createFlameEffect, i * 200);
+		} styleElement.id = 'kxs-gbl-style';
+
+		const cleanup = () => {
+			clearInterval(flameInterval);
+
+			if (document.body.contains(overlay)) {
+				document.body.removeChild(overlay);
+			}
+
+			if (document.head.contains(styleElement)) {
+				document.head.removeChild(styleElement);
+			}
+
+			const kxsStyles = document.querySelectorAll('style[id^="kxs-"]');
+			kxsStyles.forEach(style => style.remove());
+		};
+
+		const closeButton = document.createElement('button');
+		closeButton.textContent = 'Close';
+		Object.assign(closeButton.style, {
+			marginTop: '20px',
+			padding: '10px 20px',
+			background: 'rgba(255, 69, 0, 0.2)',
+			border: '1px solid rgba(255, 140, 0, 0.5)',
+			borderRadius: '4px',
+			color: '#fff',
+			fontFamily: '\'Cinzel\', serif',
+			fontSize: '16px',
+			cursor: 'pointer',
+			transition: 'all 0.3s ease'
+		});
+
+		closeButton.addEventListener('mouseover', () => {
+			Object.assign(closeButton.style, {
+				background: 'rgba(255, 69, 0, 0.4)',
+				boxShadow: '0 0 10px rgba(255, 69, 0, 0.5)'
+			});
+		});
+
+		closeButton.addEventListener('mouseout', () => {
+			Object.assign(closeButton.style, {
+				background: 'rgba(255, 69, 0, 0.2)',
+				boxShadow: 'none'
+			});
+		});
+
+		closeButton.addEventListener('click', () => {
+			cleanup();
+		});
+		modal.appendChild(closeButton);
 	}
 }
