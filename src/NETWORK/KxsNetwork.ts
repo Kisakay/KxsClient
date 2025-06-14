@@ -114,7 +114,7 @@ class KxsNetwork {
 			d: {
 				username: this.getUsername(),
 				isVoiceChat: this.kxsClient.isVoiceChatEnabled,
-				v: this.kxsClient.pkg.version
+				v: "KxsClient@" + this.kxsClient.pkg.version
 			}
 		};
 		this.send(payload);
