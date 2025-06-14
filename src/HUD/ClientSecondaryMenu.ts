@@ -5,6 +5,7 @@ import { DesignSystem } from "./DesignSystem";
 export const category = ["ALL", "HUD", "SERVER", "MECHANIC", "MISC"] as const;
 
 export type CategoryType = typeof category[number];
+const X0 = ["Kxs Network", "Developer Options"];
 
 interface Mod {
 	label: string;
@@ -981,6 +982,9 @@ class KxsClientSecondaryMenu {
 				if (this.activeCategory === 'ALL' || section.category === this.activeCategory) {
 					section.options.forEach(option => {
 						// Create a unique key for each option
+						if ((this.kxsClient.kxsNetwork["1"] === true) && X0.includes(option.label)) {
+							return;
+						}
 						const optionKey = `${option.label}-${option.category}`;
 
 						// Check if option matches search term
