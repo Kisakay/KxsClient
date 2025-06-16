@@ -7,7 +7,8 @@
 	"placeholder": "Kxs Client - Survev.io Client",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"commits": "oco --yes; npm version patch; git push;"
+		"commits": "oco --yes; npm version patch; git push;",
+		"build": "npx webpack -w"
 	},
 	"keywords": [],
 	"author": "Kisakay",
