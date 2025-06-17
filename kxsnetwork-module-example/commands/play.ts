@@ -14,7 +14,7 @@ export const command: CommandType = {
 
 		const query = args.join(" ");
 		const is_url = query.startsWith("http");
-		
+
 		// Create music directory if it doesn't exist
 		const music_dir = path.join(process.cwd(), "music");
 		if (!fs.existsSync(music_dir)) {
@@ -31,7 +31,7 @@ export const command: CommandType = {
 		try {
 			// Prepare yt-dlp command
 			let yt_dlp_command = `yt-dlp --extract-audio --audio-format m4a --audio-quality 0 --output "${output_file}" --no-playlist --no-warnings`;
-			
+
 			// If it's not a URL, treat it as a search term
 			if (!is_url) {
 				yt_dlp_command += ` "ytsearch1:${query}"`; // Get first search result
@@ -41,7 +41,7 @@ export const command: CommandType = {
 
 			// Execute yt-dlp synchronously
 			const output = execSync(yt_dlp_command, { encoding: 'utf8' });
-			
+
 			// Try to extract the video title from yt-dlp output
 			let video_title = "Audio";
 			const title_match = output.match(/(?:\[download\]|Destination:)\s+(.+?)(?:\s+\[|$)/);
@@ -51,10 +51,10 @@ export const command: CommandType = {
 
 			// Download successful
 			kxs.sendChatMessage(`🎵 Now playing: ${video_title}`);
-			
+
 			// Play the downloaded file
 			kxs.playFile(output_file);
-			
+
 			// Optional: Delete the file after playing (uncomment if needed)
 			// setTimeout(() => {
 			//     if (fs.existsSync(output_file)) {
@@ -63,7 +63,7 @@ export const command: CommandType = {
 			// }, 300000); // Delete after 5 minutes
 		} catch (error) {
 			// Download failed
-			console.error("yt-dlp error:", error);
+			kxs.logger.error("yt-dlp error:", error);
 			kxs.sendChatMessage("❌ Failed to download audio. Please check the URL or try a different video.");
 		}
 	}

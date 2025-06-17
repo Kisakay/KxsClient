@@ -382,9 +382,7 @@ export class EasterEgg {
 		// Play ambient sound
 		if (this.ambientSound) {
 			this.ambientSound.volume = 0.3;
-			this.ambientSound.play().catch(err => {
-				console.error('Failed to play ambient sound:', err);
-			});
+			this.ambientSound.play().catch(err => { });
 		}
 	}
 
@@ -418,9 +416,7 @@ export class EasterEgg {
 
 			this.buttonClickSound.currentTime = 0;
 			this.buttonClickSound.volume = 0.3;
-			this.buttonClickSound.play().catch(err => {
-				console.error('Failed to play button sound:', err);
-			});
+			this.buttonClickSound.play().catch(err => { });
 		}
 	}
 
@@ -434,9 +430,7 @@ export class EasterEgg {
 
 			this.arrowKeySound.currentTime = 0;
 			this.arrowKeySound.volume = 0.3;
-			this.arrowKeySound.play().catch(err => {
-				console.error('Failed to play arrow key sound:', err);
-			});
+			this.arrowKeySound.play().catch(err => { });
 		}
 	}
 
@@ -450,9 +444,7 @@ export class EasterEgg {
 
 			this.enterKeySound.currentTime = 0;
 			this.enterKeySound.volume = 0.3;
-			this.enterKeySound.play().catch(err => {
-				console.error('Failed to play enter key sound:', err);
-			});
+			this.enterKeySound.play().catch(err => { });
 		}
 	}
 
@@ -498,16 +490,12 @@ export class EasterEgg {
 					// Play special sound for the last character
 					this.periodSound.currentTime = 0;
 					this.periodSound.volume = 0.3;
-					this.periodSound.play().catch(err => {
-						console.error('Failed to play period sound:', err);
-					});
+					this.periodSound.play().catch(err => { });
 				} else if (this.zelda3Sound) {
 					// Play regular typing sound
 					this.zelda3Sound.currentTime = 0;
 					this.zelda3Sound.volume = 0.2;
-					this.zelda3Sound.play().catch(err => {
-						console.error('Failed to play Zelda sound:', err);
-					});
+					this.zelda3Sound.play().catch(err => { });
 				}
 
 				// Add character to text element
@@ -522,9 +510,7 @@ export class EasterEgg {
 						if (this.textElement && this.periodSound) {
 							this.periodSound.currentTime = 0;
 							this.periodSound.volume = 0.4;
-							this.periodSound.play().catch(err => {
-								console.error('Failed to play period sound:', err);
-							});
+							this.periodSound.play().catch(err => { });
 							this.textElement.textContent += '.';
 
 							// Update title with the final period
@@ -697,9 +683,7 @@ export class EasterEgg {
 
 			this.enterKeySound.currentTime = 0;
 			this.enterKeySound.volume = 0.3;
-			this.enterKeySound.play().catch(err => {
-				console.error('Failed to play enter sound:', err);
-			});
+			this.enterKeySound.play().catch(err => { });
 		}
 
 		// Function to redirect to a selected server
@@ -716,9 +700,7 @@ export class EasterEgg {
 					// Lower ambient volume
 					this.lowerAmbientVolume();
 
-					this.closeMenuSound.play().catch(err => {
-						console.error('Failed to play close sound:', err);
-					});
+					this.closeMenuSound.play().catch(err => { });
 
 					// Redirect after a short delay to allow the sound to play
 					setTimeout(() => {
@@ -744,9 +726,7 @@ export class EasterEgg {
 
 						this.closeMenuSound.currentTime = 0;
 						this.closeMenuSound.volume = 0.3;
-						this.closeMenuSound.play().catch(err => {
-							console.error('Failed to play close sound:', err);
-						});
+						this.closeMenuSound.play().catch(err => { });
 					}
 					// Call original close method
 					originalClose();

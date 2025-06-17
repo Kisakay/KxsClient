@@ -140,7 +140,7 @@ class KxsVoiceChat {
 			this.playAudio(floatData);
 
 		} catch (error) {
-			console.error("Audio processing error:", error);
+			this.kxsClient.logger.error("Audio processing error:", error);
 		}
 	}
 

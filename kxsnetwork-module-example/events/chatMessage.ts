@@ -20,13 +20,13 @@ export const event: EventType = {
 				try {
 					command?.execute(kxs, data, args);
 				} catch (error) {
-					console.error(`Error executing command ${command_name}:`, error);
+					kxs.logger.error(`Error executing command ${command_name}:`, error);
 					kxs.sendChatMessage(`Error executing command ${command_name}`);
 				}
 			}
 		}
 
-		// console.log("Chat message:", data);
+		// kxs.logger.log("Chat message:", data);
 		/*
 Chat message: {
   user: "kxs.rip",

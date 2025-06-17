@@ -1860,7 +1860,7 @@ class KxsClientSecondaryMenu {
 			try {
 				callback();
 			} catch (error) {
-				console.error('Erreur lors de l\'exécution du callback onMenuToggle:', error);
+				return;
 			}
 		});
 	}

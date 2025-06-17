@@ -15,7 +15,7 @@ export class ExchangeManager {
 			method: "GET",
 		})
 			.catch(error => {
-				console.error(error);
+				this.kxsClient.logger.error(error);
 			});
 	}
 }

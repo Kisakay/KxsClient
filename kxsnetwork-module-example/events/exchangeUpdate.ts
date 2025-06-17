@@ -4,7 +4,7 @@ import config from "../config.json";
 export const event: EventType = {
 	name: "exchangeUpdate",
 	handler: (kxs, data) => {
-		console.log("EXCHANGE", data)
+		kxs.logger.log("EXCHANGE", data)
 		/*
 EXCHANGE {
   gameId: "9fd628f7-7b61-4dcc-ad45-47f792776284",

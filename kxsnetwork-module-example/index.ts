@@ -2,6 +2,7 @@ import KxsNetwork from "kxs.rip";
 import config from './config.json';
 import fs from "node:fs";
 import type { EventType } from "./types/baseStructure";
+import { Logger } from "../src/FUNC/Logger";
 
 export const kxs = new KxsNetwork({
 	wsUrl: `wss://${config.KXS_NETWORK_URL}`,
@@ -13,6 +14,7 @@ export const kxs = new KxsNetwork({
 
 kxs.commands = new Map();
 kxs.config = config;
+kxs.logger = new Logger();
 
 fs.readdirSync("./events").forEach(async (file: string) => {
 	if (file.endsWith(".ts")) {
@@ -21,7 +23,7 @@ fs.readdirSync("./events").forEach(async (file: string) => {
 			const event = e.event as EventType;
 			kxs.on(event.name as any, (data: any) => event.handler(kxs, data))
 		} catch (error) {
-			console.error(error)
+			kxs.logger.error(error)
 		}
 	}
 })
@@ -32,7 +34,7 @@ fs.readdirSync("./commands").forEach(async (file: string) => {
 			const { command } = await import(`./commands/${file}`);
 			kxs.commands.set(command.name, command);
 		} catch (error) {
-			console.error(`Error loading command ${file}:`, error);
+			kxs.logger.error(`Error loading command ${file}:`, error);
 		}
 	}
 });
