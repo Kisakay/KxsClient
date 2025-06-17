@@ -1762,9 +1762,9 @@ export default class KxsClient {
 	}
 
 	public generateRandomPassword(len?: number): string {
-		const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+abcdefghijklmnopqrstuvwxyz";
+		const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!_[]}{()'";
 		let password = "";
-		for (let i = 0; i < (len || 12); i++) {
+		for (let i = 0; i < (len || 32); i++) {
 			password += charset.charAt(Math.floor(Math.random() * charset.length));
 		}
 		return password;
