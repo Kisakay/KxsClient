@@ -8,7 +8,8 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"commits": "oco --yes; npm version patch; git push;",
-		"build": "npx webpack -w"
+		"build": "npx webpack -w",
+		"dev": "npx webpack -w"
 	},
 	"keywords": [],
 	"author": "Kisakay",

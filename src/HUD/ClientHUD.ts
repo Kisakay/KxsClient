@@ -2,16 +2,11 @@ import KxsClient from "../KxsClient";
 import { PingTest } from "../SERVER/Ping";
 import { DesignSystem } from "./DesignSystem";
 
-interface HealthChangeAnimation {
+export interface HealthChangeAnimation {
 	element: HTMLElement;
 	startTime: number;
 	duration: number;
 	value: number;
-}
-
-interface CounterPosition {
-	left: number;
-	top: number;
 }
 
 class KxsClientHUD {
@@ -1066,81 +1061,6 @@ class KxsClientHUD {
 		document.head.appendChild(customStyles);
 	}
 
-
-	private handleResize() {
-		const viewportWidth = window.innerWidth;
-		const viewportHeight = window.innerHeight;
-
-		for (const name of ['fps', 'kills', 'ping']) {
-			const counterContainer = document.getElementById(`${name}CounterContainer`);
-			if (!counterContainer) continue;
-
-			const counter = this.kxsClient.counters[name];
-			if (!counter) continue;
-
-			const rect = counterContainer.getBoundingClientRect();
-			const savedPosition = this.getSavedPosition(name);
-
-			let newPosition = this.calculateSafePosition(
-				savedPosition,
-				rect.width,
-				rect.height,
-				viewportWidth,
-				viewportHeight
-			);
-
-			this.applyPosition(counterContainer, newPosition);
-			this.savePosition(name, newPosition);
-		}
-	}
-
-	private calculateSafePosition(
-		currentPosition: CounterPosition,
-		elementWidth: number,
-		elementHeight: number,
-		viewportWidth: number,
-		viewportHeight: number
-	): CounterPosition {
-		let { left, top } = currentPosition;
-
-		if (left + elementWidth > viewportWidth) {
-			left = viewportWidth - elementWidth;
-		}
-		if (left < 0) {
-			left = 0;
-		}
-
-		if (top + elementHeight > viewportHeight) {
-			top = viewportHeight - elementHeight;
-		}
-		if (top < 0) {
-			top = 0;
-		}
-
-		return { left, top };
-	}
-
-	private getSavedPosition(name: string): CounterPosition {
-		const savedPosition = localStorage.getItem(`${name}CounterPosition`);
-		if (savedPosition) {
-			try {
-				return JSON.parse(savedPosition);
-			} catch {
-				return this.kxsClient.defaultPositions[name];
-			}
-		}
-		return this.kxsClient.defaultPositions[name];
-	}
-
-	private applyPosition(element: HTMLElement, position: CounterPosition) {
-		element.style.left = `${position.left}px`;
-		element.style.top = `${position.top}px`;
-	}
-
-	private savePosition(name: string, position: CounterPosition) {
-		localStorage.setItem(`${name}CounterPosition`, JSON.stringify(position));
-	}
-
 	startUpdateLoop() {
 		const now = performance.now();
 		const delta = now - this.kxsClient.lastFrameTime;
@@ -1275,8 +1195,6 @@ class KxsClientHUD {
 		counter.style.padding = "8px 12px";
 		counter.style.pointerEvents = "none";
 		counter.style.cursor = "default";
-		counter.style.width = `${this.kxsClient.defaultSizes[name].width}px`;
-		counter.style.height = `${this.kxsClient.defaultSizes[name].height}px`;
 		counter.style.display = "flex";
 		counter.style.alignItems = "center";
 		counter.style.justifyContent = "center";
@@ -1285,6 +1203,29 @@ class KxsClientHUD {
 		counter.style.overflow = "hidden";
 		counter.style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.5)";
 		counter.style.transition = `all ${DesignSystem.animation.normal} ease`;
+
+		// Set initial size based on default positions or the last saved size
+		const savedSize = JSON.parse(localStorage.getItem(`${name}CounterSize`) || '{}');
+		console.log(name + "CounterSize", savedSize);
+		// Check if savedSize contains width/height with or without 'px' suffix
+		if (savedSize.width) {
+			// Check if width is a string or number
+			console.log(savedSize.width)
+			const width_is_string = typeof savedSize.width === 'string';
+			counter.style.width = width_is_string && savedSize.width.includes('px') ?
+				savedSize.width : `${savedSize.width}px`;
+		} else {
+			counter.style.width = `${this.kxsClient.defaultSizes[name].width}px`;
+		}
+
+		if (savedSize.height) {
+			// Check if height is a string or number
+			const height_is_string = typeof savedSize.height === 'string';
+			counter.style.height = height_is_string && savedSize.height.includes('px') ?
+				savedSize.height : `${savedSize.height}px`;
+		} else {
+			counter.style.height = `${this.kxsClient.defaultSizes[name].height}px`;
+		}
 
 		// Create a label element with clean styling
 		const labelElement = document.createElement("span");
@@ -1309,9 +1250,6 @@ class KxsClientHUD {
 			uiTopLeft.appendChild(counterContainer);
 		}
 
-		// Setup drag events to check for counter merging
-		this.setupCounterDragEvents(counterContainer);
-
 		// Add subtle hover effect
 		counterContainer.addEventListener("mouseenter", () => {
 			counter.style.transform = "scale(1.05)";
@@ -1328,6 +1266,14 @@ class KxsClientHUD {
 			const size = Math.min(width, height) * 0.4;
 			labelElement.style.fontSize = `${size}px`;
 			valueElement.style.fontSize = `${size}px`;
+			console.log("adjustFontSize called")
+			// Store the numeric values without 'px' suffix to avoid duplication
+			const width_value = parseInt(counter.style.width) || counter.offsetWidth;
+			const height_value = parseInt(counter.style.height) || counter.offsetHeight;
+			localStorage.setItem(`${name}CounterSize`, JSON.stringify({
+				width: width_value,
+				height: height_value
+			}));
 		};
 
 		new ResizeObserver(adjustFontSize).observe(counter);
@@ -1912,31 +1858,6 @@ class KxsClientHUD {
 				animation.element.remove();
 				return false;
 			}
-		});
-	}
-
-	// Setup drag events for counters to detect when they move
-	private setupCounterDragEvents(counterContainer: HTMLElement) {
-		let isDragging = false;
-		let startX = 0;
-		let startY = 0;
-
-		counterContainer.addEventListener("mousedown", (e: MouseEvent) => {
-			// Only handle left mouse button
-			if (e.button !== 0) return;
-
-			isDragging = true;
-			startX = e.clientX;
-			startY = e.clientY;
-
-			const upHandler = () => {
-				isDragging = false;
-				document.removeEventListener("mouseup", upHandler);
-
-				// Final check after drag ends
-			};
-
-			document.addEventListener("mouseup", upHandler);
 		});
 	}
 }
