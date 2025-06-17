@@ -1206,11 +1206,9 @@ class KxsClientHUD {
 
 		// Set initial size based on default positions or the last saved size
 		const savedSize = JSON.parse(localStorage.getItem(`${name}CounterSize`) || '{}');
-		console.log(name + "CounterSize", savedSize);
 		// Check if savedSize contains width/height with or without 'px' suffix
 		if (savedSize.width) {
 			// Check if width is a string or number
-			console.log(savedSize.width)
 			const width_is_string = typeof savedSize.width === 'string';
 			counter.style.width = width_is_string && savedSize.width.includes('px') ?
 				savedSize.width : `${savedSize.width}px`;
@@ -1266,7 +1264,6 @@ class KxsClientHUD {
 			const size = Math.min(width, height) * 0.4;
 			labelElement.style.fontSize = `${size}px`;
 			valueElement.style.fontSize = `${size}px`;
-			console.log("adjustFontSize called")
 			// Store the numeric values without 'px' suffix to avoid duplication
 			const width_value = parseInt(counter.style.width) || counter.offsetWidth;
 			const height_value = parseInt(counter.style.height) || counter.offsetHeight;
