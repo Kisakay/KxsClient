@@ -205,30 +205,48 @@ class KxsVoiceChat {
 	}
 
 	private createOverlayContainer(): void {
-		if (this.overlayContainer) return;
-
 		this.overlayContainer = document.createElement('div');
 		this.overlayContainer.id = 'kxs-voice-chat-overlay';
-
-		Object.assign(this.overlayContainer.style, {
+		
+		// Get glassmorphism setting from KxsClient
+		const isGlassmorphismEnabled = globalThis.kxsClient?.isGlassmorphismEnabled ?? true;
+		
+		// Common styles for both modes
+		const commonStyles = {
 			position: 'absolute',
 			top: '10px',
 			right: '10px',
 			width: '200px',
-			backgroundColor: 'rgba(255, 255, 255, 0.1)',
-			backdropFilter: 'blur(10px)',
-			webkitBackdropFilter: 'blur(10px)',
-			border: '1px solid rgba(255, 255, 255, 0.2)',
-			boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
 			color: 'white',
 			padding: '10px',
-			borderRadius: '15px',
 			zIndex: '1000',
 			fontFamily: 'Arial, sans-serif',
 			fontSize: '14px',
 			display: 'none',
 			cursor: 'move'
-		});
+		};
+		
+		if (isGlassmorphismEnabled) {
+			// Apply glassmorphism styles
+			Object.assign(this.overlayContainer.style, {
+				...commonStyles,
+				backgroundColor: 'rgba(255, 255, 255, 0.1)',
+				backdropFilter: 'blur(10px)',
+				webkitBackdropFilter: 'blur(10px)',
+				border: '1px solid rgba(255, 255, 255, 0.2)',
+				boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+				borderRadius: '15px',
+			});
+		} else {
+			// Apply classic styles
+			Object.assign(this.overlayContainer.style, {
+				...commonStyles,
+				backgroundColor: 'rgba(70, 70, 70, 0.95)',
+				border: '1px solid #555',
+				boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+				borderRadius: '8px',
+			});
+		}
 
 		// Charger la position sauvegardée si elle existe
 		const savedPosition = localStorage.getItem('kxs-voice-chat-position');

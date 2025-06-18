@@ -104,8 +104,8 @@ class KxsClientSecondaryMenu {
 		// Injecter les polices et animations du DesignSystem
 		DesignSystem.injectFonts();
 
-		// Appliquer le style glassmorphism du DesignSystem avec dimensions réduites
-		DesignSystem.applyGlassEffect(this.menu, 'dark', {
+		// Apply appropriate styling based on the glassmorphism toggle
+		DesignSystem.applyStyle(this.menu, 'dark', {
 			position: "fixed",
 			left: "50%",
 			top: "50%",
@@ -124,33 +124,38 @@ class KxsClientSecondaryMenu {
 			overflow: "hidden",
 			boxSizing: "border-box",
 			transition: `all ${DesignSystem.animation.normal} ease`,
-			// Effet glassmorphism optimisé pour les performances
-			backgroundColor: "rgba(15, 23, 42, 0.85)",
-			backdropFilter: "blur(12px) saturate(150%)",
-			WebkitBackdropFilter: "blur(12px) saturate(150%)",
-			willChange: "transform, opacity",
-			border: "1px solid rgba(255, 255, 255, 0.12)",
-			borderRadius: "14px",
-			boxShadow: "0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+			borderRadius: this.kxsClient.isGlassmorphismEnabled ? "14px" : "10px"
 		});
 
-		// Styles réduits pour mobile avec glassmorphism optimisé
+		// Styles réduits pour mobile
 		if (isMobile) {
 			Object.assign(this.menu.style, {
 				padding: "8px",
-				borderRadius: "12px",
+				borderRadius: this.kxsClient.isGlassmorphismEnabled ? "12px" : "8px",
 				width: "75vw",
 				maxWidth: "80vw",
 				fontSize: "11px",
 				maxHeight: "65vh",
-				top: "5%",
-				// Glassmorphism mobile optimisé pour les performances
-				backdropFilter: "blur(10px) saturate(140%)",
-				WebkitBackdropFilter: "blur(10px) saturate(140%)",
-				willChange: "transform, opacity",
-				backgroundColor: "rgba(15, 23, 42, 0.9)",
-				boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
+				top: "5%"
 			});
+		
+			// Add specific mobile styles based on glassmorphism toggle
+			if (this.kxsClient.isGlassmorphismEnabled) {
+				// Glassmorphism mobile optimisé pour les performances
+				Object.assign(this.menu.style, {
+					backdropFilter: "blur(10px) saturate(140%)",
+					WebkitBackdropFilter: "blur(10px) saturate(140%)",
+					willChange: "transform, opacity",
+					backgroundColor: "rgba(15, 23, 42, 0.9)",
+					boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
+				});
+			} else {
+				// Classic style mobile
+				Object.assign(this.menu.style, {
+					backgroundColor: "rgba(40, 40, 40, 0.97)",
+					boxShadow: "0 6px 16px rgba(0, 0, 0, 0.4)"
+				});
+			}
 		}
 	}
 

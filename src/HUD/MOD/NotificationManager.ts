@@ -4,7 +4,6 @@ class NotificationManager {
 	private static instance: NotificationManager;
 	private notifications: HTMLElement[] = [];
 	private readonly NOTIFICATION_HEIGHT = 65; // Height + margin
-	private readonly NOTIFICATION_MARGIN = 10;
 
 	private constructor() {
 		this.addGlobalStyles();
@@ -84,11 +83,16 @@ class NotificationManager {
 		return configs[type];
 	}
 
+	// Helper method to check if glassmorphism is enabled
+	private isGlassmorphismEnabled(): boolean {
+		return globalThis.kxsClient?.isGlassmorphismEnabled ?? true;
+	}
+
 	public showNotification(message: string, type: "success" | "info" | "error", duration: number = 5000): void {
 		const notification = document.createElement("div");
 
-		// Apply glassmorphism effect using DesignSystem
-		DesignSystem.applyGlassEffect(notification, 'light', {
+		// Apply styles using DesignSystem with dark theme to match the rest of the interface
+		DesignSystem.applyStyle(notification, 'dark', {
 			position: "fixed",
 			top: "20px",
 			left: "20px",
@@ -124,20 +128,37 @@ class NotificationManager {
 		messageDiv.textContent = message;
 		messageDiv.style.flex = "1";
 
-		// Create progress bar with glass morphism style
+		// Create progress bar with appropriate style based on glassmorphism setting
 		const progressBar = document.createElement("div");
-		Object.assign(progressBar.style, {
-			height: "4px",
-			background: "rgba(255, 255, 255, 0.3)",
-			backdropFilter: "blur(5px)",
-			webkitBackdropFilter: "blur(5px)",
-			borderRadius: `0 0 ${DesignSystem.radius.lg} ${DesignSystem.radius.lg}`,
-			width: "100%",
-			position: "absolute",
-			bottom: "0",
-			left: "0",
-			animation: `slideLeft ${duration}ms linear forwards`
-		});
+
+		if (this.isGlassmorphismEnabled()) {
+			// Glassmorphism progress bar style
+			Object.assign(progressBar.style, {
+				height: "4px",
+				background: "rgba(255, 255, 255, 0.3)",
+				backdropFilter: "blur(5px)",
+				webkitBackdropFilter: "blur(5px)",
+				borderRadius: `0 0 ${DesignSystem.radius.lg} ${DesignSystem.radius.lg}`,
+				width: "100%",
+				position: "absolute",
+				bottom: "0",
+				left: "0",
+				animation: `slideLeft ${duration}ms linear forwards`
+			});
+		} else {
+			// Classic progress bar style
+			Object.assign(progressBar.style, {
+				height: "3px",
+				background: type === "success" ? "#4CAF50" : type === "error" ? "#F44336" : "#2196F3",
+				opacity: "0.7",
+				borderRadius: `0 0 ${DesignSystem.radius.md} ${DesignSystem.radius.md}`,
+				width: "100%",
+				position: "absolute",
+				bottom: "0",
+				left: "0",
+				animation: `slideLeft ${duration}ms linear forwards`
+			});
+		}
 
 		// Assemble notification
 		notification.appendChild(icon);

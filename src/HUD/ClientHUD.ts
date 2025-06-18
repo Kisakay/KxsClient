@@ -522,15 +522,25 @@ class KxsClientHUD {
 	}
 
 	private escapeMenu() {
+		// Détermine si le mode glassmorphism est activé
+		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
+
+		// Style pour mobile avec prise en charge du toggle glassmorphism
 		const customStylesMobile = `
     .ui-game-menu-desktop {
+        ${is_glassmorphism_enabled ? `
         background: rgba(30, 35, 50, 0.15) !important;
         backdrop-filter: blur(10px) !important;
         -webkit-backdrop-filter: blur(10px) !important;
-        will-change: transform, opacity !important;
         border: 1px solid rgba(60, 70, 90, 0.3) !important;
-        border-radius: 16px !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(80, 90, 110, 0.2) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(80, 90, 110, 0.2) !important;` : `
+        background: rgba(50, 50, 50, 0.95) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: 1px solid #555 !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;`}
+        will-change: transform, opacity !important;
+        border-radius: ${is_glassmorphism_enabled ? '16px' : '8px'} !important;
         padding: 2px 2px !important;
         max-width: 45vw !important;
         width: 45vw !important;
@@ -579,13 +589,20 @@ class KxsClientHUD {
 
 		const customStylesDesktop = `
 .ui-game-menu-desktop {
+	${is_glassmorphism_enabled ? `
 	background: rgba(25, 30, 45, 0.12) !important;
 	backdrop-filter: blur(12px) !important;
 	-webkit-backdrop-filter: blur(12px) !important;
-	will-change: transform, opacity !important;
 	border: 1px solid rgba(55, 65, 85, 0.25) !important;
 	border-radius: 20px !important;
-	box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(75, 85, 105, 0.2), 0 0 0 1px rgba(45, 55, 75, 0.1) !important;
+	box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(75, 85, 105, 0.2), 0 0 0 1px rgba(45, 55, 75, 0.1) !important;` : `
+	background: rgba(45, 45, 45, 0.95) !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	border: 1px solid #555 !important;
+	border-radius: 12px !important;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;`}
+	will-change: transform, opacity !important;
 	padding: 20px !important;
 	max-width: 350px !important;
 	/* max-height: 80vh !important; */ /* Optional: Limit the maximum height */
@@ -616,21 +633,21 @@ class KxsClientHUD {
 	width: 8px !important;
 }
 .ui-game-menu-desktop::-webkit-scrollbar-track {
-	background: rgba(25, 25, 35, 0.5) !important;
-	border-radius: 10px !important;
+	background: ${is_glassmorphism_enabled ? 'rgba(25, 25, 35, 0.5)' : 'rgba(40, 40, 40, 0.9)'} !important;
+	border-radius: ${is_glassmorphism_enabled ? '10px' : '6px'} !important;
 }
 .ui-game-menu-desktop::-webkit-scrollbar-thumb {
-	background-color: #7f8c8d !important;
-	border-radius: 10px !important;
-	border: 2px solid rgba(25, 25, 35, 0.5) !important;
+	background-color: ${is_glassmorphism_enabled ? '#7f8c8d' : '#555'} !important;
+	border-radius: ${is_glassmorphism_enabled ? '10px' : '6px'} !important;
+	border: ${is_glassmorphism_enabled ? '2px solid rgba(25, 25, 35, 0.5)' : '1px solid #444'} !important;
 }
 .ui-game-menu-desktop::-webkit-scrollbar-thumb:hover {
-	background-color: #95a5a6 !important;
+	background-color: ${is_glassmorphism_enabled ? '#95a5a6' : '#666'} !important;
 }
 
 .ui-game-menu-desktop {
 	scrollbar-width: thin !important;
-	scrollbar-color: #7f8c8d rgba(25, 25, 35, 0.5) !important;
+	scrollbar-color: ${is_glassmorphism_enabled ? '#7f8c8d rgba(25, 25, 35, 0.5)' : '#555 rgba(40, 40, 40, 0.9)'} !important;
 }
 
 .kxs-header {
@@ -639,12 +656,11 @@ class KxsClientHUD {
 	justify-content: flex-start;
 	margin-bottom: 20px;
 	padding: 15px;
-	border-bottom: 1px solid rgba(55, 65, 85, 0.2);
-	background: rgba(20, 25, 40, 0.08);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	border-radius: 12px;
-	box-shadow: inset 0 1px 0 rgba(70, 80, 100, 0.15);
+	border-bottom: 1px solid ${is_glassmorphism_enabled ? 'rgba(55, 65, 85, 0.2)' : '#444'};
+	background: ${is_glassmorphism_enabled ? 'rgba(20, 25, 40, 0.08)' : 'rgba(40, 40, 40, 0.95)'};
+	${is_glassmorphism_enabled ? 'backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);' : ''}
+	border-radius: ${is_glassmorphism_enabled ? '12px' : '8px'};
+	box-shadow: ${is_glassmorphism_enabled ? 'inset 0 1px 0 rgba(70, 80, 100, 0.15)' : '0 2px 6px rgba(0, 0, 0, 0.3)'};
 }
 
 .kxs-logo {
@@ -671,11 +687,21 @@ class KxsClientHUD {
 	
 
 .btn-game-menu {
+	${is_glassmorphism_enabled ? `
 	background: linear-gradient(135deg, rgba(45, 55, 75, 0.15) 0%, rgba(35, 45, 65, 0.25) 100%) !important;
 	backdrop-filter: blur(16px) saturate(180%) !important;
 	-webkit-backdrop-filter: blur(16px) saturate(180%) !important;
 	border: 1px solid rgba(255, 255, 255, 0.18) !important;
 	border-radius: 14px !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+	` : `
+	background: linear-gradient(135deg, rgba(60, 60, 60, 0.9) 0%, rgba(45, 45, 45, 1) 100%) !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	border: 1px solid #555 !important;
+	border-radius: 8px !important;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+	`}
 	color: #ffffff !important;
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 	margin: 8px 0 !important;
@@ -691,7 +717,6 @@ class KxsClientHUD {
 	line-height: 1.4 !important;
 	position: relative !important;
 	overflow: hidden !important;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
@@ -712,27 +737,43 @@ class KxsClientHUD {
 }
 
 .btn-game-menu:hover {
+	${is_glassmorphism_enabled ? `
 	background: linear-gradient(135deg, rgba(55, 65, 85, 0.25) 0%, rgba(45, 55, 75, 0.35) 100%) !important;
 	transform: translateY(-3px) scale(1.02) !important;
 	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
 	border-color: rgba(255, 255, 255, 0.25) !important;
 	backdrop-filter: blur(10px) saturate(150%) !important;
 	-webkit-backdrop-filter: blur(10px) saturate(150%) !important;
+	` : `
+	background: linear-gradient(135deg, rgba(70, 70, 70, 0.9) 0%, rgba(50, 50, 50, 1) 100%) !important;
+	transform: translateY(-2px) !important;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+	border-color: #666 !important;
+	`}
 	will-change: transform !important;
 }
 
 .slider-container {
+	${is_glassmorphism_enabled ? `
 	background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
 	backdrop-filter: blur(10px) saturate(150%) !important;
 	-webkit-backdrop-filter: blur(10px) saturate(150%) !important;
-	will-change: transform, opacity !important;
 	border: 1px solid rgba(255, 255, 255, 0.15) !important;
 	border-radius: 16px !important;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+	` : `
+	background: linear-gradient(135deg, rgba(55, 55, 55, 0.95) 0%, rgba(45, 45, 45, 0.95) 100%) !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	border: 1px solid #555 !important;
+	border-radius: 8px !important;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+	`}
+	will-change: transform, opacity !important;
 	padding: 16px 20px !important;
 	margin: 12px 0 !important;
 	width: 100% !important;
 	box-sizing: border-box !important;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
 	position: relative !important;
 	overflow: hidden !important;
 }
@@ -772,14 +813,22 @@ class KxsClientHUD {
 	-webkit-appearance: none !important;
 	width: 100% !important;
 	height: 8px !important;
-	border-radius: 12px !important;
-	background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.8) 100%) !important;
+	border-radius: ${is_glassmorphism_enabled ? '12px' : '8px'} !important;
+	background: ${is_glassmorphism_enabled ?
+				'linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.8) 100%)' :
+				'linear-gradient(135deg, rgba(40, 40, 40, 0.8) 0%, rgba(50, 50, 50, 1) 100%)'} !important;
 	outline: none !important;
 	margin: 12px 0 !important;
+	${is_glassmorphism_enabled ? `
 	backdrop-filter: blur(8px) !important;
 	-webkit-backdrop-filter: blur(8px) !important;
-	border: 1px solid rgba(255, 255, 255, 0.08) !important;
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;` : `
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	border: 1px solid #444 !important;`}
+	box-shadow: ${is_glassmorphism_enabled ?
+				'inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(255, 255, 255, 0.1)' :
+				'inset 0 1px 3px rgba(0, 0, 0, 0.4)'} !important;
 	position: relative !important;
 	z-index: 1 !important;
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -795,9 +844,12 @@ class KxsClientHUD {
 	width: 24px !important;
 	height: 24px !important;
 	border-radius: 50% !important;
-	background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%) !important;
+	background: ${is_glassmorphism_enabled ?
+				'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%)' :
+				'linear-gradient(135deg, rgba(180, 180, 180, 0.95) 0%, rgba(140, 140, 140, 1) 100%)'} !important;
+	${is_glassmorphism_enabled ? `
 	backdrop-filter: blur(12px) saturate(180%) !important;
-	-webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+	-webkit-backdrop-filter: blur(12px) saturate(180%) !important;` : ``}
 	border: 2px solid rgba(59, 130, 246, 0.6) !important;
 	cursor: grab !important;
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -988,62 +1040,89 @@ class KxsClientHUD {
 
 	private applyCustomStyles() {
 		const customStyles = document.createElement('style');
+
+		// Get glassmorphism setting
+		const isGlassmorphismEnabled = this.kxsClient.isGlassmorphismEnabled;
+
 		if (this.kxsClient.isKillFeedBlint) {
+			// Rainbow text effect with either glassmorphism or classic background
 			customStyles.innerHTML = `
-        @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@600&display=swap');
-  
-        .killfeed-div {
-            position: absolute !important;
-            padding: 5px 10px !important;
-            background: rgba(0, 0, 0, 0.7) !important;
-            border-radius: 5px !important;
-            transition: opacity 0.5s ease-out !important;
-        }
-  
-        .killfeed-text {
-            font-family: 'Oxanium', sans-serif !important;
-            font-weight: bold !important;
-            font-size: 16px !important;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
-            background: linear-gradient(90deg, 
-                rgb(255, 0, 0), 
-                rgb(255, 127, 0), 
-                rgb(255, 255, 0), 
-                rgb(0, 255, 0), 
-                rgb(0, 0, 255), 
-                rgb(75, 0, 130), 
-                rgb(148, 0, 211), 
-                rgb(255, 0, 0));
-            background-size: 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: glint 6s linear infinite;
+           @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@600&display=swap');
+ 
+           .killfeed-div {
+               position: absolute !important;
+               padding: 5px 10px !important;
+               ${isGlassmorphismEnabled ? `
+               background: rgba(0, 0, 0, 0.5) !important;
+               backdrop-filter: blur(8px) !important;
+               -webkit-backdrop-filter: blur(8px) !important;
+               border: 1px solid rgba(255, 255, 255, 0.2) !important;
+               ` : `
+               background: rgba(50, 50, 50, 0.9) !important;
+               border: 1px solid #555 !important;
+               `}
+               border-radius: ${isGlassmorphismEnabled ? '8px' : '5px'} !important;
+               transition: all 0.3s ease !important;
+               box-shadow: ${isGlassmorphismEnabled ?
+					'0 4px 15px rgba(0, 0, 0, 0.2)' :
+					'0 2px 5px rgba(0, 0, 0, 0.3)'} !important;
+           }
+ 
+           .killfeed-text {
+               font-family: 'Oxanium', sans-serif !important;
+               font-weight: bold !important;
+               font-size: 16px !important;
+               text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+               background: linear-gradient(90deg, 
+                   rgb(255, 0, 0), 
+                   rgb(255, 127, 0), 
+                   rgb(255, 255, 0), 
+                   rgb(0, 255, 0), 
+                   rgb(0, 0, 255), 
+                   rgb(75, 0, 130), 
+                   rgb(148, 0, 211), 
+                   rgb(255, 0, 0));
+               background-size: 200%;
+               -webkit-background-clip: text;
+               -webkit-text-fill-color: transparent;
+               animation: glint 6s linear infinite;
 			will-change: background-position;
-        }
+           }
   
-        @keyframes glint {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
+           @keyframes glint {
+               0% {
+                   background-position: 200% 0;
+               }
+               100% {
+                   background-position: -200% 0;
+               }
+           }
   
-        .killfeed-div .killfeed-text:empty {
-            display: none !important;
-        }
+           .killfeed-div .killfeed-text:empty {
+               display: none !important;
+           }
       `;
 		} else {
 			customStyles.innerHTML = `
         .killfeed-div {
             position: absolute;
             padding: 5px 10px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 5px;
-            transition: opacity 0.5s ease-out;
+            ${isGlassmorphismEnabled ? `
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            ` : `
+            background: rgba(50, 50, 50, 0.95);
+            border: 1px solid #555;
+            `}
+            border-radius: ${isGlassmorphismEnabled ? '8px' : '5px'};
+            transition: all 0.3s ease;
+            box-shadow: ${isGlassmorphismEnabled ?
+					'0 4px 12px rgba(0, 0, 0, 0.2)' :
+					'0 2px 5px rgba(0, 0, 0, 0.3)'};
         }
-  
+ 
         .killfeed-text {
             font-family: inherit;
             font-weight: normal;
@@ -1052,7 +1131,7 @@ class KxsClientHUD {
             text-shadow: none;
             background: none;
         }
-  
+ 
         .killfeed-div .killfeed-text:empty {
             display: none;
         }
@@ -1181,14 +1260,28 @@ class KxsClientHUD {
 			transition: `all ${DesignSystem.animation.normal} ease`,
 		});
 
-		// Apply simple white glassmorphism effect to counter
-		counter.style.backgroundColor = "rgba(255, 255, 255, 0.15)";
-		counter.style.backdropFilter = "blur(8px)";
-		// Apply webkit prefix for Safari compatibility
-		(counter.style as any)['-webkit-backdrop-filter'] = "blur(8px)";
-		counter.style.border = "1px solid rgba(255, 255, 255, 0.2)";
-		counter.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
-		counter.style.borderRadius = "8px";
+		// Check if glassmorphism is enabled
+		const isGlassmorphismEnabled = this.kxsClient.isGlassmorphismEnabled;
+
+		// Apply appropriate styling based on the glassmorphism toggle
+		if (isGlassmorphismEnabled) {
+			// Glassmorphism style
+			counter.style.backgroundColor = "rgba(255, 255, 255, 0.15)";
+			counter.style.backdropFilter = "blur(8px)";
+			// Apply webkit prefix for Safari compatibility
+			(counter.style as any)['-webkit-backdrop-filter'] = "blur(8px)";
+			counter.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+			counter.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
+			counter.style.borderRadius = "8px";
+		} else {
+			// Classic style - solid gray background without blur
+			counter.style.backgroundColor = "rgba(75, 75, 75, 0.95)";
+			counter.style.backdropFilter = "none";
+			(counter.style as any)['-webkit-backdrop-filter'] = "none";
+			counter.style.border = "1px solid #555";
+			counter.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.2)";
+			counter.style.borderRadius = "6px";
+		}
 		counter.style.color = "#ffffff";
 		counter.style.fontFamily = DesignSystem.fonts.secondary;
 		counter.style.fontWeight = "500";
@@ -1248,15 +1341,23 @@ class KxsClientHUD {
 			uiTopLeft.appendChild(counterContainer);
 		}
 
-		// Add subtle hover effect
+		// Add subtle hover effect based on glassmorphism toggle
 		counterContainer.addEventListener("mouseenter", () => {
 			counter.style.transform = "scale(1.05)";
-			counter.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.3)";
+			if (this.kxsClient.isGlassmorphismEnabled) {
+				counter.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.3)";
+			} else {
+				counter.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.25)";
+			}
 		});
 
 		counterContainer.addEventListener("mouseleave", () => {
 			counter.style.transform = "scale(1)";
-			counter.style.boxShadow = DesignSystem.glass.dark.shadow;
+			if (this.kxsClient.isGlassmorphismEnabled) {
+				counter.style.boxShadow = DesignSystem.glass.dark.shadow;
+			} else {
+				counter.style.boxShadow = DesignSystem.classic.dark.shadow;
+			}
 		});
 
 		const adjustFontSize = () => {

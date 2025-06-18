@@ -73,11 +73,25 @@ class KxsChat {
 		chatBox.style.maxWidth = '480px';
 		chatBox.style.minHeight = '150px'; // Hauteur minimale pour le chat box
 		chatBox.style.height = '200px'; // Hauteur par défaut
-		chatBox.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';
-		chatBox.style.backdropFilter = 'blur(40px) saturate(180%)';
-		(chatBox.style as any)['-webkitBackdropFilter'] = 'blur(40px) saturate(180%)';
-		chatBox.style.border = '1px solid rgba(255, 255, 255, 0.3)';
-		chatBox.style.boxShadow = '0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)';
+		
+		// Apply styling based on glassmorphism toggle
+		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
+		
+		if (is_glassmorphism_enabled) {
+			// Glassmorphism style
+			chatBox.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';
+			chatBox.style.backdropFilter = 'blur(40px) saturate(180%)';
+			(chatBox.style as any)['-webkitBackdropFilter'] = 'blur(40px) saturate(180%)';
+			chatBox.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+			chatBox.style.boxShadow = '0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)';
+		} else {
+			// Classic style - solid gray background without blur
+			chatBox.style.background = 'rgba(50, 50, 50, 0.95)';
+			chatBox.style.backdropFilter = 'none';
+			(chatBox.style as any)['-webkitBackdropFilter'] = 'none';
+			chatBox.style.border = '1px solid #555';
+			chatBox.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+		}
 		chatBox.style.color = '#fff';
 		chatBox.style.borderRadius = '15px';
 		chatBox.style.padding = '7px 14px 4px 14px';
@@ -150,11 +164,22 @@ class KxsChat {
 		input.style.padding = '8px 12px';
 		input.style.borderRadius = '8px';
 		input.style.border = 'none';
-		input.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04))';
-		input.style.backdropFilter = 'blur(25px) saturate(150%)';
-		(input.style as any)['-webkit-backdrop-filter'] = 'blur(25px) saturate(150%)';
-		input.style.border = '1px solid rgba(255, 255, 255, 0.35)';
-		input.style.boxShadow = '0 4px 20px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1)';
+		// Apply styling based on glassmorphism toggle for input
+		if (this.kxsClient.isGlassmorphismEnabled) {
+			// Glassmorphism style
+			input.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04))';
+			input.style.backdropFilter = 'blur(25px) saturate(150%)';
+			(input.style as any)['-webkit-backdrop-filter'] = 'blur(25px) saturate(150%)';
+			input.style.border = '1px solid rgba(255, 255, 255, 0.35)';
+			input.style.boxShadow = '0 4px 20px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1)';
+		} else {
+			// Classic style - solid gray background without blur
+			input.style.background = 'rgba(60, 60, 60, 0.95)';
+			input.style.backdropFilter = 'none';
+			(input.style as any)['-webkit-backdrop-filter'] = 'none';
+			input.style.border = '1px solid #666';
+			input.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+		}
 		input.style.color = '#fff';
 		input.style.fontSize = '15px';
 		input.style.fontFamily = 'inherit';

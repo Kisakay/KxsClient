@@ -24,10 +24,15 @@ class HealthWarning {
 		const warning = document.createElement("div");
 		const uiTopLeft = document.getElementById("ui-top-left");
 
-		// Apply enhanced glassmorphism effect using DesignSystem
-		DesignSystem.applyGlassEffect(warning, 'medium', {
+		// Vérifier si le mode glassmorphism est activé
+		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
+		
+		// Appliquer le style approprié en fonction du toggle glassmorphism
+		DesignSystem.applyStyle(warning, 'dark', {
 			position: 'fixed',
-			border: '2px solid rgba(255, 0, 0, 0.8)',
+			border: is_glassmorphism_enabled ? 
+				'2px solid rgba(255, 0, 0, 0.8)' : 
+				'2px solid rgba(255, 50, 50, 0.9)',
 			padding: DesignSystem.spacing.md + ' ' + DesignSystem.spacing.lg,
 			color: '#ff4444',
 			fontFamily: DesignSystem.fonts.primary,
@@ -37,9 +42,22 @@ class HealthWarning {
 			display: 'none',
 			pointerEvents: 'none',
 			transition: `all ${DesignSystem.animation.normal} ease`,
-			boxShadow: '0 8px 32px rgba(255, 0, 0, 0.3), 0 0 20px rgba(255, 0, 0, 0.2)',
-			textShadow: '0 0 10px rgba(255, 0, 0, 0.5)'
+			boxShadow: is_glassmorphism_enabled ?
+				'0 8px 32px rgba(255, 0, 0, 0.3), 0 0 20px rgba(255, 0, 0, 0.2)' :
+				'0 4px 12px rgba(255, 0, 0, 0.25)',
+			textShadow: is_glassmorphism_enabled ?
+				'0 0 10px rgba(255, 0, 0, 0.5)' :
+				'0 0 5px rgba(255, 0, 0, 0.4)',
+			backdropFilter: is_glassmorphism_enabled ? 'blur(8px) saturate(180%)' : 'none',
+			borderRadius: is_glassmorphism_enabled ? '12px' : '8px'
 		});
+
+		// Appliquer le webkit backdrop filter manuellement
+		if (is_glassmorphism_enabled) {
+			(warning.style as any)['-webkit-backdrop-filter'] = 'blur(8px) saturate(180%)';
+		} else {
+			(warning.style as any)['-webkit-backdrop-filter'] = 'none';
+		}
 
 		const content = document.createElement("div");
 		Object.assign(content.style, {
@@ -161,10 +179,24 @@ class HealthWarning {
 	public enableDragging() {
 		if (!this.warningElement) return;
 
+		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
+
 		this.isDraggable = true;
 		this.warningElement.style.pointerEvents = 'auto';
 		this.warningElement.style.cursor = 'move';
+		
+		// Adaptation du style pour le mode placement, selon le toggle glassmorphism
 		this.warningElement.style.borderColor = '#00ff00'; // Feedback visuel quand déplaçable
+		
+		if (is_glassmorphism_enabled) {
+			this.warningElement.style.boxShadow = '0 8px 32px rgba(0, 255, 0, 0.2), 0 0 20px rgba(0, 255, 0, 0.15)';
+			this.warningElement.style.backdropFilter = 'blur(8px) saturate(180%)';
+			(this.warningElement.style as any)['-webkit-backdrop-filter'] = 'blur(8px) saturate(180%)';
+		} else {
+			this.warningElement.style.boxShadow = '0 4px 12px rgba(0, 255, 0, 0.2)';
+			this.warningElement.style.backdropFilter = 'none';
+			(this.warningElement.style as any)['-webkit-backdrop-filter'] = 'none';
+		}
 
 		// Force l'affichage de l'avertissement LOW HP, peu importe la santé actuelle
 		this.warningElement.style.display = 'block';
@@ -177,11 +209,24 @@ class HealthWarning {
 	private disableDragging() {
 		if (!this.warningElement) return;
 
+		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
+
 		this.isDraggable = false;
 		this.isDragging = false;
 		this.warningElement.style.pointerEvents = 'none';
 		this.warningElement.style.cursor = 'default';
 		this.warningElement.style.borderColor = '#ff0000'; // Retour à la couleur normale
+		
+		// Restauration du style original en fonction du mode glassmorphism
+		if (is_glassmorphism_enabled) {
+			this.warningElement.style.boxShadow = '0 8px 32px rgba(255, 0, 0, 0.3), 0 0 20px rgba(255, 0, 0, 0.2)';
+			this.warningElement.style.backdropFilter = 'blur(8px) saturate(180%)';
+			(this.warningElement.style as any)['-webkit-backdrop-filter'] = 'blur(8px) saturate(180%)';
+		} else {
+			this.warningElement.style.boxShadow = '0 4px 12px rgba(255, 0, 0, 0.25)';
+			this.warningElement.style.backdropFilter = 'none';
+			(this.warningElement.style as any)['-webkit-backdrop-filter'] = 'none';
+		}
 
 		// Remet le texte original si l'avertissement est visible
 		if (this.warningElement.style.display === 'block') {

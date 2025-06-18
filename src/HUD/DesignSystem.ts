@@ -1,9 +1,14 @@
 /**
  * KxsClient Modern Design System
  * Implements a modern glassmorphism UI design with blur effects
+ * Also supports classic UI styling when glassmorphism is disabled
  */
 
 export class DesignSystem {
+	// Flag to check if glassmorphism is enabled - retrieved from KxsClient instance
+	static isGlassmorphismEnabled(): boolean {
+		return globalThis.kxsClient?.isGlassmorphismEnabled ?? true;
+	}
 	/**
 	 * Injects required fonts and animations into the document
 	 */
@@ -72,6 +77,25 @@ export class DesignSystem {
 		},
 	};
 
+	// Classic styles (non-glassmorphism)
+	static classic = {
+		light: {
+			background: 'rgba(240, 240, 240, 0.9)',
+			border: '1px solid #ccc',
+			shadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+		},
+		medium: {
+			background: 'rgba(220, 220, 220, 0.95)',
+			border: '1px solid #bbb',
+			shadow: '0 3px 6px rgba(0, 0, 0, 0.25)',
+		},
+		dark: {
+			background: 'rgba(50, 50, 50, 0.9)',
+			border: '1px solid #555',
+			shadow: '0 3px 8px rgba(0, 0, 0, 0.3)',
+		},
+	};
+
 	// Font settings
 	static fonts = {
 		primary: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -125,37 +149,72 @@ export class DesignSystem {
 	};
 
 	/**
-	 * Creates a glassmorphism element
+	 * Creates a style object for UI elements based on whether glassmorphism is enabled
+	 * @param type Style effect type
+	 * @param additionalStyles Additional CSS styles
+	 * @returns CSS style object
+	 */
+	static createStyle(type: 'light' | 'medium' | 'dark', additionalStyles: Record<string, string> = {}) {
+		if (this.isGlassmorphismEnabled()) {
+			// Use glassmorphism styles
+			const glass = this.glass[type];
+			return {
+				backgroundColor: glass.background,
+				backdropFilter: `blur(${glass.blur})`,
+				WebkitBackdropFilter: `blur(${glass.blur})`,
+				border: glass.border,
+				boxShadow: glass.shadow,
+				borderRadius: this.radius.lg,
+				...additionalStyles,
+			};
+		} else {
+			// Use classic styles
+			const classic = this.classic[type];
+			return {
+				backgroundColor: classic.background,
+				border: classic.border,
+				boxShadow: classic.shadow,
+				backdropFilter: 'none',
+				WebkitBackdropFilter: 'none',
+				borderRadius: this.radius.md,
+				...additionalStyles,
+			};
+		}
+	}
+
+	/**
+	 * Legacy method for backward compatibility
 	 * @param type Glass effect type
 	 * @param additionalStyles Additional CSS styles
 	 * @returns CSS style object
 	 */
 	static createGlassStyle(type: 'light' | 'medium' | 'dark', additionalStyles: Record<string, string> = {}) {
-		const glass = this.glass[type];
-		return {
-			backgroundColor: glass.background,
-			backdropFilter: `blur(${glass.blur})`,
-			WebkitBackdropFilter: `blur(${glass.blur})`,
-			border: glass.border,
-			boxShadow: glass.shadow,
-			borderRadius: this.radius.lg,
-			...additionalStyles,
-		};
+		return this.createStyle(type, additionalStyles);
 	}
 
 	/**
-	 * Applies glassmorphism styles to an HTML element
+	 * Applies appropriate styles to an HTML element based on whether glassmorphism is enabled
+	 * @param element HTML element to style
+	 * @param type Style effect type
+	 * @param additionalStyles Additional CSS styles
+	 */
+	static applyStyle(element: HTMLElement, type: 'light' | 'medium' | 'dark', additionalStyles: Record<string, string> = {}) {
+		const styles = this.createStyle(type, additionalStyles);
+		Object.assign(element.style, styles);
+	}
+
+	/**
+	 * Legacy method for backward compatibility
 	 * @param element HTML element to style
 	 * @param type Glass effect type
 	 * @param additionalStyles Additional CSS styles
 	 */
 	static applyGlassEffect(element: HTMLElement, type: 'light' | 'medium' | 'dark', additionalStyles: Record<string, string> = {}) {
-		const styles = this.createGlassStyle(type, additionalStyles);
-		Object.assign(element.style, styles);
+		this.applyStyle(element, type, additionalStyles);
 	}
 
 	/**
-	 * Creates a modern button with glassmorphism effect
+	 * Creates a button with either glassmorphism or classic styling
 	 * @param text Button text
 	 * @param onClick Click handler
 	 * @param variant Button variant
@@ -167,51 +226,86 @@ export class DesignSystem {
 		button.addEventListener('click', onClick);
 
 		// Base styles
-		Object.assign(button.style, {
+		const baseStyles = {
 			padding: `${this.spacing.sm} ${this.spacing.md}`,
-			borderRadius: this.radius.md,
+			borderRadius: this.isGlassmorphismEnabled() ? this.radius.md : this.radius.sm,
 			fontFamily: this.fonts.primary,
 			fontSize: this.fonts.sizes.base,
 			fontWeight: '500',
 			color: this.colors.light,
-			backgroundColor: this.colors[variant],
 			border: 'none',
 			cursor: 'pointer',
 			transition: `all ${this.animation.normal} ease`,
-			outline: 'none',
-			boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-		});
+			outline: 'none'
+		};
 
-		// Hover effect
+		if (this.isGlassmorphismEnabled()) {
+			// Glassmorphism button style
+			Object.assign(button.style, {
+				...baseStyles,
+				backgroundColor: this.colors[variant],
+				backdropFilter: 'blur(5px)',
+				WebkitBackdropFilter: 'blur(5px)',
+				boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+			});
+		} else {
+			// Classic button style
+			Object.assign(button.style, {
+				...baseStyles,
+				backgroundColor: this.colors[variant].replace(/[^,]+(?=\))/, '1'), // Make fully opaque
+				boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+				border: '1px solid rgba(0, 0, 0, 0.1)'
+			});
+		}
+
+		// Hover effect based on style
 		button.addEventListener('mouseenter', () => {
-			button.style.transform = 'translateY(-2px)';
-			button.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+			if (this.isGlassmorphismEnabled()) {
+				button.style.transform = 'translateY(-2px)';
+				button.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+			} else {
+				button.style.transform = 'translateY(-1px)';
+				button.style.filter = 'brightness(1.1)';
+				button.style.boxShadow = '0 3px 5px rgba(0, 0, 0, 0.15)';
+			}
 		});
 
 		button.addEventListener('mouseleave', () => {
-			button.style.transform = 'translateY(0)';
-			button.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+			if (this.isGlassmorphismEnabled()) {
+				button.style.transform = 'translateY(0)';
+				button.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+			} else {
+				button.style.transform = 'translateY(0)';
+				button.style.filter = 'brightness(1)';
+				button.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+			}
 		});
 
 		// Active effect
 		button.addEventListener('mousedown', () => {
-			button.style.transform = 'translateY(1px)';
-			button.style.boxShadow = '0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06)';
+			if (this.isGlassmorphismEnabled()) {
+				button.style.transform = 'translateY(1px)';
+				button.style.boxShadow = '0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06)';
+			} else {
+				button.style.transform = 'translateY(1px)';
+				button.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.2)';
+				button.style.filter = 'brightness(0.95)';
+			}
 		});
 
 		return button;
 	}
 
 	/**
-	 * Creates a modern card with glassmorphism effect
+	 * Creates a card with either glassmorphism or classic styling
 	 * @param content HTML content for the card
-	 * @param type Glass effect type
+	 * @param type Style effect type
 	 * @returns HTMLDivElement
 	 */
 	static createCard(content: string, type: 'light' | 'medium' | 'dark' = 'medium'): HTMLDivElement {
 		const card = document.createElement('div');
 		card.innerHTML = content;
-		this.applyGlassEffect(card, type, {
+		this.applyStyle(card, type, {
 			padding: this.spacing.lg,
 			margin: this.spacing.md,
 		});

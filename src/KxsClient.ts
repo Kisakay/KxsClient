@@ -225,24 +225,53 @@ export default class KxsClient {
 
 		const menu = document.createElement('div');
 		menu.id = 'kxs-online-menu';
-		menu.style.position = 'absolute';
-		menu.style.top = '18px';
-		menu.style.left = '18px';
-		menu.style.background = 'rgba(255, 255, 255, 0.1)';
-		menu.style.backdropFilter = 'blur(20px) saturate(180%)';
-		menu.style.backdropFilter = 'blur(20px) saturate(180%)';
-		menu.style.border = '1px solid rgba(255, 255, 255, 0.2)';
-		menu.style.color = '#fff';
-		menu.style.padding = '8px 18px';
-		menu.style.borderRadius = '16px';
-		menu.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
-		menu.style.fontSize = '15px';
-		menu.style.zIndex = '999';
-		menu.style.userSelect = 'none';
-		menu.style.pointerEvents = 'auto';
-		menu.style.fontFamily = 'inherit';
-		menu.style.display = 'flex';
-		menu.style.alignItems = 'center';
+
+		// Appliquer les styles de base
+		const baseStyles = {
+			position: 'absolute',
+			top: '18px',
+			left: '18px',
+			color: '#fff',
+			padding: '8px 18px',
+			fontSize: '15px',
+			zIndex: '999',
+			userSelect: 'none',
+			pointerEvents: 'auto',
+			fontFamily: 'inherit',
+			display: 'flex',
+			alignItems: 'center'
+		};
+
+		// Appliquer les styles conditionnels selon le toggle glassmorphism
+		const is_glassmorphism_enabled = this.isGlassmorphismEnabled;
+
+		if (is_glassmorphism_enabled) {
+			// Style glassmorphism
+			Object.assign(baseStyles, {
+				background: 'rgba(255, 255, 255, 0.1)',
+				border: '1px solid rgba(255, 255, 255, 0.2)',
+				borderRadius: '16px',
+				boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+			});
+
+			// Appliquer les styles à l'élément
+			Object.assign(menu.style, baseStyles);
+
+			// Appliquer le backdropFilter séparément (car il y a une duplication dans l'original)
+			menu.style.backdropFilter = 'blur(20px) saturate(180%)';
+			(menu.style as any)['-webkit-backdrop-filter'] = 'blur(20px) saturate(180%)';
+		} else {
+			// Style classique
+			Object.assign(baseStyles, {
+				background: 'rgba(50, 50, 50, 0.95)',
+				border: '1px solid #555',
+				borderRadius: '10px',
+				boxShadow: '0 4px 15px rgba(0, 0, 0, 0.4)'
+			});
+
+			// Appliquer les styles à l'élément
+			Object.assign(menu.style, baseStyles);
+		}
 		menu.style.cursor = 'pointer';
 		menu.innerHTML = `
 		  <span id="kxs-online-dot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#3fae2a;margin-right:10px;box-shadow:0 0 8px #3fae2a;animation:kxs-pulse 1s infinite alternate;"></span>
@@ -251,28 +280,59 @@ export default class KxsClient {
 
 		const userListMenu = document.createElement('div');
 		userListMenu.id = 'kxs-online-users-menu';
-		userListMenu.style.position = 'absolute';
-		userListMenu.style.top = '100%';
-		userListMenu.style.left = '0';
-		userListMenu.style.marginTop = '8px';
-		userListMenu.style.background = 'rgba(255, 255, 255, 0.08)';
-		userListMenu.style.backdropFilter = 'blur(25px) saturate(180%)';
-		userListMenu.style.backdropFilter = 'blur(25px) saturate(180%)';
-		userListMenu.style.border = '1px solid rgba(255, 255, 255, 0.15)';
-		userListMenu.style.color = '#fff';
-		userListMenu.style.padding = '10px';
-		userListMenu.style.borderRadius = '12px';
-		userListMenu.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
-		userListMenu.style.fontSize = '14px';
-		userListMenu.style.zIndex = '1000';
-		userListMenu.style.minWidth = '180px';
-		userListMenu.style.maxHeight = '300px';
-		userListMenu.style.overflowY = 'auto';
-		userListMenu.style.display = 'none';
-		userListMenu.style.flexDirection = 'column';
-		userListMenu.style.gap = '6px';
+
+		// Styles communs pour le menu utilisateurs
+		const userListStyles = {
+			position: 'absolute',
+			top: '100%',
+			left: '0',
+			marginTop: '8px',
+			color: '#fff',
+			padding: '10px',
+			fontSize: '14px',
+			zIndex: '1000',
+			userSelect: 'none',
+			width: '260px',
+			maxHeight: '400px',
+			overflowY: 'auto',
+			display: 'none',
+			flexDirection: 'column',
+			gap: '6px'
+		};
+
+		// Appliquer les styles selon le toggle glassmorphism
+		if (is_glassmorphism_enabled) {
+			// Style glassmorphism
+			Object.assign(userListStyles, {
+				background: 'rgba(255, 255, 255, 0.08)',
+				border: '1px solid rgba(255, 255, 255, 0.15)',
+				borderRadius: '14px',
+				boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
+			});
+
+			// Appliquer les styles à l'élément
+			Object.assign(userListMenu.style, userListStyles);
+
+			// Appliquer le backdropFilter séparément
+			userListMenu.style.backdropFilter = 'blur(25px) saturate(180%)';
+			(userListMenu.style as any)['-webkit-backdrop-filter'] = 'blur(25px) saturate(180%)';
+		} else {
+			// Style classique
+			Object.assign(userListStyles, {
+				background: 'rgba(45, 45, 45, 0.95)',
+				border: '1px solid #444',
+				borderRadius: '8px',
+				boxShadow: '0 6px 20px rgba(0, 0, 0, 0.35)'
+			});
+
+			// Appliquer les styles à l'élément
+			Object.assign(userListMenu.style, userListStyles);
+		}
+
+		// Contenu du menu utilisateurs
 		userListMenu.innerHTML = '<div style="text-align:center;padding:5px;">Chargement...</div>';
 
+		// Ajouter le menu utilisateurs au menu principal
 		menu.appendChild(userListMenu);
 
 		if (!document.getElementById('kxs-online-style')) {
@@ -1488,6 +1548,9 @@ export default class KxsClient {
 	private adBlockObserver: MutationObserver | null = null;
 
 	applyCustomMainMenuStyle() {
+		// Détermine si le mode glassmorphism est activé
+		const is_glassmorphism_enabled = this.isGlassmorphismEnabled;
+
 		// Sélectionner le menu principal
 		const startMenu = document.getElementById('start-menu');
 		const playButtons = document.querySelectorAll('.btn-green, #btn-help, .btn-team-option');
@@ -1497,15 +1560,21 @@ export default class KxsClient {
 		const helpSection = document.getElementById('start-help');
 
 		if (startMenu) {
-			// Apply styles to the main container
+			// Apply styles to the main container based on glassmorphism toggle
 			Object.assign(startMenu.style, {
-				background: 'linear-gradient(135deg, rgba(45, 55, 70, 0.15) 0%, rgba(35, 45, 60, 0.25) 100%)',
-				border: '1px solid rgba(255, 255, 255, 0.18)',
-				borderRadius: '16px',
-				boxShadow: '0 8px 32px rgba(0, 0, 0, 0.37)',
+				background: is_glassmorphism_enabled
+					? 'linear-gradient(135deg, rgba(45, 55, 70, 0.15) 0%, rgba(35, 45, 60, 0.25) 100%)'
+					: 'rgba(45, 45, 45, 0.95)',
+				border: is_glassmorphism_enabled
+					? '1px solid rgba(255, 255, 255, 0.18)'
+					: '1px solid #555',
+				borderRadius: is_glassmorphism_enabled ? '16px' : '8px',
+				boxShadow: is_glassmorphism_enabled
+					? '0 8px 32px rgba(0, 0, 0, 0.37)'
+					: '0 4px 16px rgba(0, 0, 0, 0.35)',
 				padding: '15px',
-				backdropFilter: 'blur(16px) saturate(180%)',
-				webkitBackdropFilter: 'blur(16px) saturate(180%)',
+				backdropFilter: is_glassmorphism_enabled ? 'blur(16px) saturate(180%)' : 'none',
+				webkitBackdropFilter: is_glassmorphism_enabled ? 'blur(16px) saturate(180%)' : 'none',
 				margin: '0 auto'
 			});
 		}
@@ -1516,12 +1585,18 @@ export default class KxsClient {
 				if (button.classList.contains('btn-green')) {
 					// Boutons Play
 					Object.assign(button.style, {
-						background: 'linear-gradient(135deg, rgba(60, 75, 95, 0.2) 0%, rgba(50, 65, 85, 0.3) 100%)',
-						borderRadius: '12px',
-						border: '1px solid rgba(255, 255, 255, 0.18)',
-						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
-						backdropFilter: 'blur(12px) saturate(180%)',
-						webkitBackdropFilter: 'blur(12px) saturate(180%)',
+						background: is_glassmorphism_enabled
+							? 'linear-gradient(135deg, rgba(60, 75, 95, 0.2) 0%, rgba(50, 65, 85, 0.3) 100%)'
+							: 'linear-gradient(135deg, rgba(60, 60, 60, 0.9) 0%, rgba(50, 50, 50, 1) 100%)',
+						borderRadius: is_glassmorphism_enabled ? '12px' : '8px',
+						border: is_glassmorphism_enabled
+							? '1px solid rgba(255, 255, 255, 0.18)'
+							: '1px solid #555',
+						boxShadow: is_glassmorphism_enabled
+							? '0 4px 12px rgba(0, 0, 0, 0.25)'
+							: '0 2px 8px rgba(0, 0, 0, 0.25)',
+						backdropFilter: is_glassmorphism_enabled ? 'blur(12px) saturate(180%)' : 'none',
+						webkitBackdropFilter: is_glassmorphism_enabled ? 'blur(12px) saturate(180%)' : 'none',
 						transition: 'all 0.2s ease',
 						color: 'white',
 						fontWeight: 'bold'
@@ -1529,11 +1604,15 @@ export default class KxsClient {
 				} else {
 					// Autres boutons
 					Object.assign(button.style, {
-						background: 'rgba(55, 65, 80, 0.15)',
-						borderRadius: '12px',
-						border: '1px solid rgba(255, 255, 255, 0.15)',
-						backdropFilter: 'blur(10px) saturate(180%)',
-						webkitBackdropFilter: 'blur(10px) saturate(180%)',
+						background: is_glassmorphism_enabled
+							? 'rgba(55, 65, 80, 0.15)'
+							: 'rgba(55, 55, 55, 0.95)',
+						borderRadius: is_glassmorphism_enabled ? '12px' : '8px',
+						border: is_glassmorphism_enabled
+							? '1px solid rgba(255, 255, 255, 0.15)'
+							: '1px solid #444',
+						backdropFilter: is_glassmorphism_enabled ? 'blur(10px) saturate(180%)' : 'none',
+						webkitBackdropFilter: is_glassmorphism_enabled ? 'blur(10px) saturate(180%)' : 'none',
 						transition: 'all 0.2s ease',
 						color: 'white'
 					});
@@ -1541,27 +1620,43 @@ export default class KxsClient {
 
 				// Hover effect for all buttons
 				button.addEventListener('mouseover', () => {
-					button.style.transform = 'translateY(-2px)';
-					button.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.4)';
+					button.style.transform = is_glassmorphism_enabled ? 'translateY(-2px)' : 'translateY(-1px)';
+					button.style.boxShadow = is_glassmorphism_enabled
+						? '0 8px 25px rgba(0, 0, 0, 0.4)'
+						: '0 4px 12px rgba(0, 0, 0, 0.3)';
+
 					if (button.classList.contains('btn-green')) {
-						button.style.background = 'linear-gradient(135deg, rgba(60, 75, 95, 0.3) 0%, rgba(50, 65, 85, 0.4) 100%)';
+						button.style.background = is_glassmorphism_enabled
+							? 'linear-gradient(135deg, rgba(60, 75, 95, 0.3) 0%, rgba(50, 65, 85, 0.4) 100%)'
+							: 'linear-gradient(135deg, rgba(70, 70, 70, 0.95) 0%, rgba(60, 60, 60, 1) 100%)';
 					} else {
-						button.style.background = 'rgba(55, 65, 80, 0.25)';
+						button.style.background = is_glassmorphism_enabled
+							? 'rgba(55, 65, 80, 0.25)'
+							: 'rgba(65, 65, 65, 1)';
 					}
-					button.style.border = '1px solid rgba(255, 255, 255, 0.25)';
+					button.style.border = is_glassmorphism_enabled
+						? '1px solid rgba(255, 255, 255, 0.25)'
+						: '1px solid #666';
 				});
 
 				button.addEventListener('mouseout', () => {
 					button.style.transform = 'translateY(0)';
 					if (button.classList.contains('btn-green')) {
-						button.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25)';
-						button.style.background = 'linear-gradient(135deg, rgba(60, 75, 95, 0.2) 0%, rgba(50, 65, 85, 0.3) 100%)';
+						button.style.boxShadow = is_glassmorphism_enabled
+							? '0 4px 12px rgba(0, 0, 0, 0.25)'
+							: '0 2px 8px rgba(0, 0, 0, 0.25)';
+						button.style.background = is_glassmorphism_enabled
+							? 'linear-gradient(135deg, rgba(60, 75, 95, 0.2) 0%, rgba(50, 65, 85, 0.3) 100%)'
+							: 'linear-gradient(135deg, rgba(60, 60, 60, 0.9) 0%, rgba(50, 50, 50, 1) 100%)';
 					} else {
 						button.style.boxShadow = 'none';
-						button.style.background = 'rgba(55, 65, 80, 0.15)';
+						button.style.background = is_glassmorphism_enabled
+							? 'rgba(55, 65, 80, 0.15)'
+							: 'rgba(55, 55, 55, 0.95)';
 					}
-					button.style.border = button.classList.contains('btn-green') ?
-						'1px solid rgba(255, 255, 255, 0.18)' : '1px solid rgba(255, 255, 255, 0.15)';
+					button.style.border = button.classList.contains('btn-green')
+						? (is_glassmorphism_enabled ? '1px solid rgba(255, 255, 255, 0.18)' : '1px solid #555')
+						: (is_glassmorphism_enabled ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid #444');
 				});
 			}
 		});
@@ -1569,9 +1664,13 @@ export default class KxsClient {
 		// Styliser le sélecteur de serveur
 		if (serverSelect instanceof HTMLSelectElement) {
 			Object.assign(serverSelect.style, {
-				background: 'rgba(50, 60, 75, 0.8)',
-				borderRadius: '8px',
-				border: '1px solid rgba(75, 85, 100, 0.3)',
+				background: is_glassmorphism_enabled
+					? 'rgba(50, 60, 75, 0.8)'
+					: 'rgba(45, 45, 45, 0.95)',
+				borderRadius: is_glassmorphism_enabled ? '8px' : '6px',
+				border: is_glassmorphism_enabled
+					? '1px solid rgba(75, 85, 100, 0.3)'
+					: '1px solid #444',
 				color: 'white',
 				padding: '8px 12px',
 				outline: 'none'
@@ -1581,9 +1680,13 @@ export default class KxsClient {
 		// Styliser l'input du nom
 		if (nameInput instanceof HTMLInputElement) {
 			Object.assign(nameInput.style, {
-				background: 'rgba(50, 60, 75, 0.8)',
-				borderRadius: '8px',
-				border: '1px solid rgba(75, 85, 100, 0.3)',
+				background: is_glassmorphism_enabled
+					? 'rgba(50, 60, 75, 0.8)'
+					: 'rgba(45, 45, 45, 0.95)',
+				borderRadius: is_glassmorphism_enabled ? '8px' : '6px',
+				border: is_glassmorphism_enabled
+					? '1px solid rgba(75, 85, 100, 0.3)'
+					: '1px solid #444',
 				color: 'white',
 				padding: '8px 12px',
 				outline: 'none'
@@ -1591,12 +1694,18 @@ export default class KxsClient {
 
 			// Focus style
 			nameInput.addEventListener('focus', () => {
-				nameInput.style.border = '1px solid rgba(70, 85, 105, 0.8)';
-				nameInput.style.boxShadow = '0 0 8px rgba(60, 75, 95, 0.5)';
+				nameInput.style.border = is_glassmorphism_enabled
+					? '1px solid rgba(70, 85, 105, 0.8)'
+					: '1px solid #6f7e95';
+				nameInput.style.boxShadow = is_glassmorphism_enabled
+					? '0 0 8px rgba(60, 75, 95, 0.5)'
+					: '0 0 6px rgba(60, 60, 60, 0.5)';
 			});
 
 			nameInput.addEventListener('blur', () => {
-				nameInput.style.border = '1px solid rgba(75, 85, 100, 0.3)';
+				nameInput.style.border = is_glassmorphism_enabled
+					? '1px solid rgba(75, 85, 100, 0.3)'
+					: '1px solid #444';
 				nameInput.style.boxShadow = 'none';
 			});
 		}
@@ -1604,14 +1713,18 @@ export default class KxsClient {
 		// Styliser la section d'aide
 		if (helpSection) {
 			Object.assign(helpSection.style, {
-				background: 'rgba(40, 50, 65, 0.7)',
-				borderRadius: '8px',
+				background: is_glassmorphism_enabled
+					? 'rgba(40, 50, 65, 0.7)'
+					: 'rgba(40, 40, 40, 0.95)',
+				borderRadius: is_glassmorphism_enabled ? '8px' : '6px',
 				padding: '15px',
 				margin: '15px 0',
 				maxHeight: '300px',
 				overflowY: 'auto',
 				scrollbarWidth: 'thin',
-				scrollbarColor: '#7f8c8d rgba(25, 25, 35, 0.5)'
+				scrollbarColor: is_glassmorphism_enabled
+					? '#7f8c8d rgba(25, 25, 35, 0.5)'
+					: '#555 rgba(30, 30, 30, 0.8)'
 			});
 
 			// Style the help section titles
@@ -1619,7 +1732,9 @@ export default class KxsClient {
 			helpTitles.forEach(title => {
 				if (title instanceof HTMLElement) {
 					Object.assign(title.style, {
-						color: 'rgba(90, 105, 125, 1)',
+						color: is_glassmorphism_enabled
+							? 'rgba(90, 105, 125, 1)'
+							: 'rgba(200, 200, 200, 1)',
 						fontSize: '18px',
 						marginTop: '15px',
 						marginBottom: '8px'
@@ -1631,7 +1746,9 @@ export default class KxsClient {
 			const helpParagraphs = helpSection.querySelectorAll('p');
 			helpParagraphs.forEach(p => {
 				if (p instanceof HTMLElement) {
-					p.style.color = 'rgba(255, 255, 255, 0.8)';
+					p.style.color = is_glassmorphism_enabled
+						? 'rgba(255, 255, 255, 0.8)'
+						: 'rgba(220, 220, 220, 0.9)';
 					p.style.fontSize = '14px';
 					p.style.marginBottom = '8px';
 				}
@@ -1641,7 +1758,7 @@ export default class KxsClient {
 			const actionTerms = helpSection.querySelectorAll('.help-action');
 			actionTerms.forEach(term => {
 				if (term instanceof HTMLElement) {
-					term.style.color = '#ffc107'; // Yellow
+					term.style.color = is_glassmorphism_enabled ? '#ffc107' : '#ffdb69'; // Yellow/gold
 					term.style.fontWeight = 'bold';
 				}
 			});
@@ -1649,7 +1766,9 @@ export default class KxsClient {
 			const controlTerms = helpSection.querySelectorAll('.help-control');
 			controlTerms.forEach(term => {
 				if (term instanceof HTMLElement) {
-					term.style.color = 'rgba(80, 95, 115, 1)'; // Dark blue/grey
+					term.style.color = is_glassmorphism_enabled
+						? 'rgba(80, 95, 115, 1)' // Dark blue/grey for glassmorphism
+						: 'rgba(170, 180, 190, 1)'; // Lighter grey for classic mode
 					term.style.fontWeight = 'bold';
 				}
 			});
@@ -1658,9 +1777,13 @@ export default class KxsClient {
 		// Apply specific style to double buttons
 		const btnsDoubleRow = document.querySelector('.btns-double-row');
 		if (btnsDoubleRow instanceof HTMLElement) {
-			btnsDoubleRow.style.display = 'flex';
-			btnsDoubleRow.style.gap = '10px';
-			btnsDoubleRow.style.marginTop = '10px';
+			Object.assign(btnsDoubleRow.style, {
+				display: 'flex',
+				gap: '10px',
+				marginTop: '10px',
+				padding: is_glassmorphism_enabled ? '0' : '2px',
+				borderRadius: is_glassmorphism_enabled ? '0' : '4px'
+			});
 		}
 	}
 

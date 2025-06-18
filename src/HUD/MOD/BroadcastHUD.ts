@@ -44,7 +44,10 @@ export class BroadcastHUD {
 	 * Create the HUD container and elements
 	 */
 	private createHUD(): void {
-		// Apply glassmorphism effect matching the online menu style
+		// Check if glassmorphism is enabled
+		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
+		
+		// Apply the appropriate styling based on glassmorphism toggle
 		Object.assign(this.container.style, {
 			position: "fixed",
 			top: "20px",
@@ -60,12 +63,15 @@ export class BroadcastHUD {
 			pointerEvents: "none",
 			transition: "all 0.3s ease",
 			transform: "translateY(-20px)",
-			background: "rgba(255, 255, 255, 0.1)",
-			backdropFilter: "blur(20px) saturate(180%)",
-			WebkitBackdropFilter: "blur(20px) saturate(180%)",
-			border: "1px solid rgba(255, 255, 255, 0.2)",
-			borderRadius: "16px",
-			boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
+			// Apply different styles based on glassmorphism toggle
+			background: is_glassmorphism_enabled ? "rgba(255, 255, 255, 0.1)" : "rgba(50, 50, 50, 0.95)", 
+			backdropFilter: is_glassmorphism_enabled ? "blur(20px) saturate(180%)" : "none",
+			WebkitBackdropFilter: is_glassmorphism_enabled ? "blur(20px) saturate(180%)" : "none",
+			border: is_glassmorphism_enabled ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid #555",
+			borderRadius: is_glassmorphism_enabled ? "16px" : "10px",
+			boxShadow: is_glassmorphism_enabled ? 
+				"0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)" : 
+				"0 4px 15px rgba(0, 0, 0, 0.4)",
 			fontSize: "15px",
 			userSelect: "none",
 			fontFamily: "inherit",
@@ -118,22 +124,22 @@ export class BroadcastHUD {
 		// Create decorative line
 		const decorativeLine = document.createElement("div");
 		Object.assign(decorativeLine.style, {
-			height: "1px",
 			background: "linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.05) 100%)",
 			width: "100%",
 			margin: "8px 0"
 		});
 
-		// Create progress bar
+		// Create progress bar at the bottom
 		Object.assign(this.progressBar.style, {
-			position: "absolute",
-			bottom: "0",
-			left: "0",
-			height: "3px",
-			width: "100%",
-			background: "linear-gradient(90deg, #3fae2a, #8fef7a)",
+			height: is_glassmorphism_enabled ? "4px" : "3px",
+			marginTop: "10px",
+			background: "linear-gradient(to right, #3fae2a, #6ae95f)",
 			transformOrigin: "left",
-			transform: "scaleX(0)"
+			transform: "scaleX(0)",
+			transition: "transform 0.2s linear",
+			alignSelf: "flex-start",
+			marginLeft: "-18px", // To compensate for container padding
+			width: "calc(100% + 36px)" // Extend full width including padding
 		});
 
 		// Assemble HUD
