@@ -51,6 +51,7 @@ export default class KxsClient {
 	isKxsChatEnabled: boolean;
 	isHealBarIndicatorEnabled: boolean;
 	isKxsClientLogoEnable: boolean;
+	isGlassmorphismEnabled: boolean;
 	brightness: number;
 	currentFocusModeState: boolean;
 
@@ -126,6 +127,7 @@ export default class KxsClient {
 		this.isKxsClientLogoEnable = true;
 		this.isFocusModeEnabled = true;
 		this.currentFocusModeState = false;
+		this.isGlassmorphismEnabled = true;
 		this.kxsDeveloperOptions = {
 			enableGameIDExchange: false,
 			exchange: {
@@ -476,7 +478,8 @@ export default class KxsClient {
 				brightness: this.brightness,
 				isKxsClientLogoEnable: this.isKxsClientLogoEnable,
 				isFocusModeEnabled: this.isFocusModeEnabled,
-				kxsDeveloperOptions: this.kxsDeveloperOptions
+				kxsDeveloperOptions: this.kxsDeveloperOptions,
+				isGlassmorphismEnabled: this.isGlassmorphismEnabled
 			}),
 		);
 	};
@@ -952,6 +955,7 @@ export default class KxsClient {
 			this.isKxsClientLogoEnable = savedSettings.isKxsClientLogoEnable ?? this.isKxsClientLogoEnable;
 			this.isFocusModeEnabled = savedSettings.isFocusModeEnabled ?? this.isFocusModeEnabled;
 			this.kxsDeveloperOptions = savedSettings.kxsDeveloperOptions ?? this.kxsDeveloperOptions;
+			this.isGlassmorphismEnabled = savedSettings.isGlassmorphismEnabled ?? this.isGlassmorphismEnabled;
 
 			// Apply brightness setting
 			this.applyBrightness(this.brightness);
