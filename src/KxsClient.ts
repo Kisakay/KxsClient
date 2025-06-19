@@ -13,7 +13,7 @@ import { SoundLibrary } from "./types/SoundLibrary";
 import { background_song, gbl_sound, death_sound, full_logo, win_sound } from "./UTILS/vars";
 import { KxsClientHUD } from "./HUD/ClientHUD";
 import { Logger } from "./FUNC/Logger";
-import { SteganoDB } from "stegano.db/lib/browser";
+import { BrowserSteganoDB } from "stegano.db/lib/browser2";
 import config from "../config.json";
 import { GameHistoryMenu } from "./HUD/HistoryManager";
 import { KxsNetwork, KxsNetworkSettings } from "./NETWORK/KxsNetwork";
@@ -76,7 +76,7 @@ export default class KxsClient {
 	soundLibrary: SoundLibrary;
 	hud: KxsClientHUD;
 	logger: Logger;
-	db: SteganoDB;
+	db: BrowserSteganoDB;
 	historyManager: GameHistoryMenu;
 	kxsNetwork: KxsNetwork;
 	chat: KxsChat;
@@ -158,7 +158,7 @@ export default class KxsClient {
 		};
 
 		this.gridSystem = new GridSystem();
-		this.db = new SteganoDB({ database: "KxsClient", tableName: "gameplay_history" });
+		this.db = new BrowserSteganoDB({ database: "KxsClient", tableName: "gameplay_history" });
 		// Before all, load local storage
 		this.loadLocalStorage();
 		this.updateLocalStorage();

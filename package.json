@@ -25,6 +25,6 @@
 	},
 	"dependencies": {
 		"semver": "^7.7.2",
-		"stegano.db": "^4.3.8"
+		"stegano.db": "^4.7.0"
 	}
 }

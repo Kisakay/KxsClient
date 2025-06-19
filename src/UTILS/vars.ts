@@ -1,4 +1,4 @@
-import { SimplifiedSteganoDB } from "stegano.db/lib/simplified_browser";
+import { SimplifiedSteganoDB } from "stegano.db/lib/browser";
 import config from "../../config.json";
 
 export const background_song = config.base_url + "/assets/Stranger_Things_Theme_Song_C418_REMIX.mp3";
