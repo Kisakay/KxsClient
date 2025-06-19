@@ -161,6 +161,8 @@ class KxsNetwork {
 				{
 					if (d && d.user && d.text) {
 						this.kxsClient.chat.addChatMessage(d.user, d.text);
+					} else if (d && d.error && !d.user) {
+						this.kxsClient.chat.addErrorMessage(d.error);
 					}
 				}
 				break;

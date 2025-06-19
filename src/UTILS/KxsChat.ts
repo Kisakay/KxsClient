@@ -4,7 +4,7 @@ class KxsChat {
 	private chatInput: HTMLInputElement | null = null;
 	private chatBox: HTMLDivElement | null = null;
 	private messagesContainer: HTMLDivElement | null = null;
-	private chatMessages: { user: string, text: string, isSystem?: boolean }[] = [];
+	private chatMessages: { user: string, text: string, isSystem?: boolean, isError: boolean }[] = [];
 	private chatOpen = false;
 	private kxsClient: KxsClient;
 	private resizeObserver: ResizeObserver | null = null;
@@ -19,7 +19,7 @@ class KxsChat {
 			this.chatBox.style.display = 'none';
 			window.removeEventListener('keydown', this.handleKeyDown);
 		}
-		
+
 		// Ajouter un gestionnaire de clic global pour fermer le chat lorsqu'on clique ailleurs
 		document.addEventListener('mousedown', this.handleDocumentClick);
 	}
@@ -32,7 +32,7 @@ class KxsChat {
 			this.closeChatInput();
 		}
 	};
-	
+
 	// Gestionnaire de clic sur le document pour fermer le chat quand on clique ailleurs
 	private handleDocumentClick = (e: MouseEvent) => {
 		// Si le chat est ouvert et qu'on clique en dehors du chat
@@ -73,10 +73,10 @@ class KxsChat {
 		chatBox.style.maxWidth = '480px';
 		chatBox.style.minHeight = '150px'; // Hauteur minimale pour le chat box
 		chatBox.style.height = '200px'; // Hauteur par défaut
-		
+
 		// Apply styling based on glassmorphism toggle
 		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
-		
+
 		if (is_glassmorphism_enabled) {
 			// Glassmorphism style
 			chatBox.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';
@@ -258,7 +258,7 @@ class KxsChat {
 
 	public addChatMessage(user: string, text: string) {
 		if (!this.chatBox || !this.kxsClient.isKxsChatEnabled) return;
-		this.chatMessages.push({ user, text, isSystem: false });
+		this.chatMessages.push({ user, text, isSystem: false, isError: false });
 		this.renderMessages();
 	}
 
@@ -270,7 +270,19 @@ class KxsChat {
 		if (!this.chatBox || !this.kxsClient.isKxsChatEnabled) return;
 
 		// Ajouter le message système avec un marqueur spécifique isSystem = true
-		this.chatMessages.push({ user: "", text, isSystem: true });
+		this.chatMessages.push({ user: "", text, isSystem: true, isError: false });
+		this.renderMessages();
+	}
+
+	/**
+	 * Ajoute un message système dans le chat
+	 * @param text Texte du message système
+	 */
+	public addErrorMessage(text: string) {
+		if (!this.chatBox || !this.kxsClient.isKxsChatEnabled) return;
+
+		// Ajouter le message système avec un marqueur spécifique isSystem = true
+		this.chatMessages.push({ user: "", text, isSystem: true, isError: false });
 		this.renderMessages();
 	}
 
@@ -323,7 +335,9 @@ class KxsChat {
 
 		// Rend les messages visibles
 		this.messagesContainer.innerHTML = visible_messages.map(m => {
-			if (m.isSystem) {
+			if (m.isSystem && m.isError) {
+				return `<div style='color:#EB3023; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
+			} else if (m.isSystem) {
 				return `<div style='color:#3B82F6; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
 			} else {
 				return `<div style='margin-bottom:4px;'><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</div>`;
