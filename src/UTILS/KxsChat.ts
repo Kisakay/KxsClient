@@ -282,7 +282,7 @@ class KxsChat {
 		if (!this.chatBox || !this.kxsClient.isKxsChatEnabled) return;
 
 		// Ajouter le message système avec un marqueur spécifique isSystem = true
-		this.chatMessages.push({ user: "", text, isSystem: true, isError: false });
+		this.chatMessages.push({ user: "", text, isSystem: true, isError: true });
 		this.renderMessages();
 	}
 
