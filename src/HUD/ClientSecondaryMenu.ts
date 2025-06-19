@@ -138,7 +138,7 @@ class KxsClientSecondaryMenu {
 				maxHeight: "65vh",
 				top: "5%"
 			});
-		
+
 			// Add specific mobile styles based on glassmorphism toggle
 			if (this.kxsClient.isGlassmorphismEnabled) {
 				// Glassmorphism mobile optimisé pour les performances

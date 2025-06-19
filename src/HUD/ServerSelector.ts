@@ -207,7 +207,7 @@ export class ServerSelector {
 		// Subtle continuous movement for more 3D effect using requestAnimationFrame
 		let angle = 0;
 		let animationId: number;
-		
+
 		const animate = () => {
 			angle += 0.005;
 			if (this.serverContainer) {
@@ -215,7 +215,7 @@ export class ServerSelector {
 			}
 			animationId = requestAnimationFrame(animate);
 		};
-		
+
 		// Store the animation ID for cleanup
 		this.animation = animationId = requestAnimationFrame(animate);
 	}

@@ -26,12 +26,12 @@ class HealthWarning {
 
 		// Vérifier si le mode glassmorphism est activé
 		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
-		
+
 		// Appliquer le style approprié en fonction du toggle glassmorphism
 		DesignSystem.applyStyle(warning, 'dark', {
 			position: 'fixed',
-			border: is_glassmorphism_enabled ? 
-				'2px solid rgba(255, 0, 0, 0.8)' : 
+			border: is_glassmorphism_enabled ?
+				'2px solid rgba(255, 0, 0, 0.8)' :
 				'2px solid rgba(255, 50, 50, 0.9)',
 			padding: DesignSystem.spacing.md + ' ' + DesignSystem.spacing.lg,
 			color: '#ff4444',
@@ -184,10 +184,10 @@ class HealthWarning {
 		this.isDraggable = true;
 		this.warningElement.style.pointerEvents = 'auto';
 		this.warningElement.style.cursor = 'move';
-		
+
 		// Adaptation du style pour le mode placement, selon le toggle glassmorphism
 		this.warningElement.style.borderColor = '#00ff00'; // Feedback visuel quand déplaçable
-		
+
 		if (is_glassmorphism_enabled) {
 			this.warningElement.style.boxShadow = '0 8px 32px rgba(0, 255, 0, 0.2), 0 0 20px rgba(0, 255, 0, 0.15)';
 			this.warningElement.style.backdropFilter = 'blur(8px) saturate(180%)';
@@ -216,7 +216,7 @@ class HealthWarning {
 		this.warningElement.style.pointerEvents = 'none';
 		this.warningElement.style.cursor = 'default';
 		this.warningElement.style.borderColor = '#ff0000'; // Retour à la couleur normale
-		
+
 		// Restauration du style original en fonction du mode glassmorphism
 		if (is_glassmorphism_enabled) {
 			this.warningElement.style.boxShadow = '0 8px 32px rgba(255, 0, 0, 0.3), 0 0 20px rgba(255, 0, 0, 0.2)';
@@ -338,7 +338,7 @@ class HealthWarning {
 	public destroy(): void {
 		// Supprimer le callback du menu secondaire
 		if (this.kxsClient.secondaryMenu?.onMenuToggle) {
-			const index = this.kxsClient.secondaryMenu.onMenuToggle.findIndex(callback => 
+			const index = this.kxsClient.secondaryMenu.onMenuToggle.findIndex(callback =>
 				callback.toString().includes('checkMenuState')
 			);
 			if (index !== -1) {

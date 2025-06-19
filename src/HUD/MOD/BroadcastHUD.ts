@@ -46,7 +46,7 @@ export class BroadcastHUD {
 	private createHUD(): void {
 		// Check if glassmorphism is enabled
 		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
-		
+
 		// Apply the appropriate styling based on glassmorphism toggle
 		Object.assign(this.container.style, {
 			position: "fixed",
@@ -64,13 +64,13 @@ export class BroadcastHUD {
 			transition: "all 0.3s ease",
 			transform: "translateY(-20px)",
 			// Apply different styles based on glassmorphism toggle
-			background: is_glassmorphism_enabled ? "rgba(255, 255, 255, 0.1)" : "rgba(50, 50, 50, 0.95)", 
+			background: is_glassmorphism_enabled ? "rgba(255, 255, 255, 0.1)" : "rgba(50, 50, 50, 0.95)",
 			backdropFilter: is_glassmorphism_enabled ? "blur(20px) saturate(180%)" : "none",
 			WebkitBackdropFilter: is_glassmorphism_enabled ? "blur(20px) saturate(180%)" : "none",
 			border: is_glassmorphism_enabled ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid #555",
 			borderRadius: is_glassmorphism_enabled ? "16px" : "10px",
-			boxShadow: is_glassmorphism_enabled ? 
-				"0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)" : 
+			boxShadow: is_glassmorphism_enabled ?
+				"0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)" :
 				"0 4px 15px rgba(0, 0, 0, 0.4)",
 			fontSize: "15px",
 			userSelect: "none",
@@ -181,7 +181,7 @@ export class BroadcastHUD {
 			clearTimeout(this.hideTimeout);
 			this.hideTimeout = null;
 		}
-		
+
 		if (this.progressAnimation) {
 			this.progressAnimation.cancel();
 			this.progressAnimation = null;
@@ -252,7 +252,7 @@ export class BroadcastHUD {
 			this.progressAnimation.cancel();
 			this.progressAnimation = null;
 		}
-		
+
 		// Reset progress bar
 		this.progressBar.style.transform = "scaleX(0)";
 	}

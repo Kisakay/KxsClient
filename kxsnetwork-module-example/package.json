@@ -1,15 +1,15 @@
 {
-  "name": "kxsnetwork-module-example",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "kxs.rip": "^1.4.1"
-  }
+	"name": "kxsnetwork-module-example",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"kxs.rip": "^1.4.1"
+	}
 }

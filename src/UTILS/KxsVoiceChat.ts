@@ -207,10 +207,10 @@ class KxsVoiceChat {
 	private createOverlayContainer(): void {
 		this.overlayContainer = document.createElement('div');
 		this.overlayContainer.id = 'kxs-voice-chat-overlay';
-		
+
 		// Get glassmorphism setting from KxsClient
 		const isGlassmorphismEnabled = globalThis.kxsClient?.isGlassmorphismEnabled ?? true;
-		
+
 		// Common styles for both modes
 		const commonStyles = {
 			position: 'absolute',
@@ -225,7 +225,7 @@ class KxsVoiceChat {
 			display: 'none',
 			cursor: 'move'
 		};
-		
+
 		if (isGlassmorphismEnabled) {
 			// Apply glassmorphism styles
 			Object.assign(this.overlayContainer.style, {
