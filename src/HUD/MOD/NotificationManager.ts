@@ -92,7 +92,7 @@ class NotificationManager {
 		const notification = document.createElement("div");
 
 		// Apply styles using DesignSystem with dark theme to match the rest of the interface
-		DesignSystem.applyStyle(notification, 'dark', {
+		DesignSystem.applyGlassEffect(notification, 'light', {
 			position: "fixed",
 			top: "20px",
 			left: "20px",
