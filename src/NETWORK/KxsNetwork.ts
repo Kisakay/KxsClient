@@ -10,7 +10,6 @@ class KxsNetwork {
 	private currentGamePlayers: string[] = [];
 	public ws: WebSocket | null = null;
 	private heartbeatInterval: number = 0;
-	private isAuthenticated: boolean = false;
 	private kxsClient: KxsClient;
 	private HOST: string = config.api_url;
 	private reconnectAttempts: number = 0;
@@ -21,6 +20,8 @@ class KxsNetwork {
 	private privateUsername: string = this.generateRandomUsername();
 	private kxs_users: string[] = [];
 	public 0x1: boolean = false;
+	public connected: boolean = false;
+
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
 	}
@@ -52,7 +53,7 @@ class KxsNetwork {
 		this.ws.onclose = () => {
 			this.kxsClient.nm.showNotification('Disconnected from KxsNetwork', 'info', 1100);
 			clearInterval(this.heartbeatInterval);
-			this.isAuthenticated = false;
+			this.connected = true;
 
 			// Try to reconnect
 			this.attemptReconnect();
@@ -132,7 +133,7 @@ class KxsNetwork {
 			case 2: // Dispatch
 				{
 					if (d?.uuid) {
-						this.isAuthenticated = true;
+						this.connected = true;
 					}
 				}
 				break;
@@ -239,7 +240,7 @@ class KxsNetwork {
 	}
 
 	public sendGameInfoToWebSocket(gameId: string) {
-		if (!this.isAuthenticated || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+		if (!this.connected || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}
 		try {

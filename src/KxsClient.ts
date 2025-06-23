@@ -431,6 +431,8 @@ export default class KxsClient {
 		const userListMenu = this.onlineMenuElement.querySelector('#kxs-online-users-menu');
 
 		try {
+			if (!this.kxsNetwork.connected) throw "KxsNetwork not connected"
+
 			if (this.kxsNetwork["1"] === true) {
 				if (countEl) countEl.textContent = atob("WW91ciBpcCBoYXMgYmVlbiBiYW5uZWQgZnJvbSB1c2luZyBLeHNOZXR3b3Jr");
 				if (dot) {
