@@ -83,16 +83,11 @@ class NotificationManager {
 		return configs[type];
 	}
 
-	// Helper method to check if glassmorphism is enabled
-	private isGlassmorphismEnabled(): boolean {
-		return globalThis.kxsClient?.isGlassmorphismEnabled ?? true;
-	}
-
 	public showNotification(message: string, type: "success" | "info" | "error", duration: number = 5000): void {
 		const notification = document.createElement("div");
 
 		// Apply styles using DesignSystem with dark theme to match the rest of the interface
-		DesignSystem.applyGlassEffect(notification, this.isGlassmorphismEnabled() ? 'light' : 'dark', {
+		DesignSystem.applyGlassEffect(notification, global.kxsClient.isGlassmorphismEnabled ? 'light' : 'dark', {
 			position: "fixed",
 			top: "20px",
 			left: "20px",
@@ -131,7 +126,7 @@ class NotificationManager {
 		// Create progress bar with appropriate style based on glassmorphism setting
 		const progressBar = document.createElement("div");
 
-		if (this.isGlassmorphismEnabled()) {
+		if (global.kxsClient.isGlassmorphismEnabled) {
 			// Glassmorphism progress bar style
 			Object.assign(progressBar.style, {
 				height: "4px",

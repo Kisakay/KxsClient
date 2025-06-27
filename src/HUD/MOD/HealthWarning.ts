@@ -28,7 +28,7 @@ class HealthWarning {
 		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
 
 		// Appliquer le style approprié en fonction du toggle glassmorphism
-		DesignSystem.applyGlassEffect(warning, 'medium', {
+		DesignSystem.applyGlassEffect(warning, this.kxsClient.isGlassmorphismEnabled ? 'medium' : 'dark', {
 			position: 'fixed',
 			border: is_glassmorphism_enabled ?
 				'2px solid rgba(255, 0, 0, 0.8)' :
