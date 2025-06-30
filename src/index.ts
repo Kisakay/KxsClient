@@ -36,7 +36,10 @@ if (window.location.href === "https://kxs.rip/") {
 
 	setFavicon(kxs_logo);
 
-	const kxsClient = new KxsClient();
+	try {
+		const kxsClient = new KxsClient();
+	} catch {
+	}
 
 	document.title = "KxsClient";
 
