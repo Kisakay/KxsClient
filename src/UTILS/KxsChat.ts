@@ -104,7 +104,6 @@ class KxsChat {
 		chatBox.style.flexDirection = 'column';
 		chatBox.style.gap = '3px';
 		chatBox.style.opacity = '0.5';
-		chatBox.style.resize = 'both'; // Permet à l'utilisateur de redimensionner la boîte
 		chatBox.style.overflow = 'hidden'; // Nécessaire pour le redimensionnement
 
 		// Charger la position sauvegardée dès l'initialisation
@@ -132,17 +131,19 @@ class KxsChat {
 			this.resizeObserver.observe(this.chatBox);
 		}
 
-		// Rendre la chatbox draggable UNIQUEMENT si le menu secondaire est ouvert
+		// Rendre la chatbox draggable et resizable UNIQUEMENT si le menu secondaire est ouvert
 		const updateChatDraggable = () => {
 			const isMenuOpen = this.kxsClient.secondaryMenu.getMenuVisibility()
 
 			if (isMenuOpen) {
 				chatBox.style.pointerEvents = 'auto';
 				chatBox.style.cursor = 'move';
+				chatBox.style.resize = 'both'; // Active le redimensionnement avec l'indicateur gris
 				this.kxsClient.makeDraggable(chatBox, 'kxs-chat-box-position');
 			} else {
 				chatBox.style.pointerEvents = 'none';
 				chatBox.style.cursor = 'default';
+				chatBox.style.resize = 'none'; // Désactive le redimensionnement
 			}
 		};
 		// Initial state
