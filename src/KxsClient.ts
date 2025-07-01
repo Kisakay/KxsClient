@@ -749,13 +749,6 @@ export default class KxsClient {
 		}, 5000);
 	}
 
-	public cleanup(): void {
-		if (this.deathObserver) {
-			this.deathObserver.disconnect();
-			this.deathObserver = null;
-		}
-	}
-
 	private getUsername(): string {
 		const configKey = "surviv_config";
 		const savedConfig = localStorage.getItem(configKey)!;
@@ -799,67 +792,6 @@ export default class KxsClient {
 		this.animationFrameCallback = this.isFpsUncapped
 			? (callback) => setTimeout(callback, 1)
 			: window.requestAnimationFrame.bind(window);
-	}
-
-	makeResizable(element: HTMLDivElement, storageKey: string) {
-		let isResizing = false;
-		let startX: number, startY: number, startWidth: number, startHeight: number;
-
-		// Add a resize area in the bottom right
-		const resizer = document.createElement("div");
-		Object.assign(resizer.style, {
-			width: "10px",
-			height: "10px",
-			backgroundColor: "white",
-			position: "absolute",
-			right: "0",
-			bottom: "0",
-			cursor: "nwse-resize",
-			zIndex: "10001",
-		});
-		element.appendChild(resizer);
-
-		resizer.addEventListener("mousedown", (event) => {
-			isResizing = true;
-			startX = event.clientX;
-			startY = event.clientY;
-			startWidth = element.offsetWidth;
-			startHeight = element.offsetHeight;
-			event.stopPropagation(); // Empêche l'activation du déplacement
-		});
-
-		window.addEventListener("mousemove", (event) => {
-			if (isResizing) {
-				const newWidth = startWidth + (event.clientX - startX);
-				const newHeight = startHeight + (event.clientY - startY);
-
-				element.style.width = `${newWidth}px`;
-				element.style.height = `${newHeight}px`;
-
-				// Sauvegarde de la taille
-				localStorage.setItem(
-					storageKey,
-					JSON.stringify({
-						width: newWidth,
-						height: newHeight,
-					}),
-				);
-			}
-		});
-
-		window.addEventListener("mouseup", () => {
-			isResizing = false;
-		});
-
-		const savedSize = localStorage.getItem(storageKey);
-		if (savedSize) {
-			const { width, height } = JSON.parse(savedSize);
-			element.style.width = `${width}px`;
-			element.style.height = `${height}px`;
-		} else {
-			element.style.width = "150px"; // Taille par défaut
-			element.style.height = "50px";
-		}
 	}
 
 	makeDraggable(element: HTMLElement, storageKey: string) {
