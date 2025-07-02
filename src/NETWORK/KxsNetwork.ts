@@ -106,7 +106,10 @@ class KxsNetwork {
 	}
 
 	public getUsername() {
-		return this.kxsClient.kxsNetworkSettings.nickname_anonymized ? this.privateUsername : JSON.parse(localStorage.getItem("surviv_config") || "{}").playerName;
+		return this.kxsClient.kxsNetworkSettings.nickname_anonymized ?
+			this.privateUsername
+			:
+			this.kxsClient.getUsername()
 	}
 
 	private identify() {

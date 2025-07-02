@@ -155,7 +155,7 @@ class KillLeaderTracker {
 
 	private isKillLeader(): boolean {
 		const killLeaderNameElement = document.querySelector("#ui-kill-leader-name");
-		return this.kxsClient.getPlayerName() === killLeaderNameElement?.textContent;
+		return this.kxsClient.getUsername() === killLeaderNameElement?.textContent;
 	}
 
 	public update(myKills: number) {

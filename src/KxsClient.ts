@@ -10,7 +10,7 @@ import { DiscordWebSocket } from "./SERVER/DiscordRichPresence";
 import { NotificationManager } from "./HUD/MOD/NotificationManager";
 import { KxsClientSecondaryMenu } from "./HUD/ClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
-import { background_song, gbl_sound, death_sound, full_logo, win_sound } from "./UTILS/vars";
+import { background_song, gbl_sound, death_sound, full_logo, win_sound, survev_settings } from "./UTILS/vars";
 import { KxsClientHUD } from "./HUD/ClientHUD";
 import { Logger } from "./FUNC/Logger";
 import { BrowserSteganoDB } from "stegano.db/lib/browser2";
@@ -200,14 +200,6 @@ export default class KxsClient {
 			return token.replace(/^(["'`])(.+)\1$/, '$2');
 		}
 		return null;
-	}
-
-	getPlayerName() {
-		let config = localStorage.getItem("surviv_config");
-		if (config) {
-			let configObject = JSON.parse(config);
-			return configObject.playerName;
-		}
 	}
 
 	private changeSurvevLogo() {
@@ -749,17 +741,8 @@ export default class KxsClient {
 		}, 5000);
 	}
 
-	private getUsername(): string {
-		const configKey = "surviv_config";
-		const savedConfig = localStorage.getItem(configKey)!;
-
-		const config = JSON.parse(savedConfig);
-
-		if (config.playerName) {
-			return config.playerName;
-		} else {
-			return "Player";
-		}
+	public getUsername(): string {
+		return survev_settings.get("playerName") || "Player";
 	}
 
 	private getPlayerStats(win: boolean): PlayerStats {
@@ -873,15 +856,6 @@ export default class KxsClient {
 			return isNaN(kills) ? 0 : kills;
 		}
 		return 0;
-	}
-
-	getRegionFromLocalStorage() {
-		let config = localStorage.getItem("surviv_config");
-		if (config) {
-			let configObject = JSON.parse(config);
-			return configObject.region;
-		}
-		return null;
 	}
 
 	saveBackgroundToLocalStorage(image: string | File) {
@@ -2045,5 +2019,42 @@ export default class KxsClient {
 			cleanup();
 		});
 		modal.appendChild(closeButton);
+	}
+
+	getKxsJSONConfig() {
+		var local_storage_key = [
+			"kxs-voice-chat-position",
+			"kxs-chat-box-position",
+			"lastBackgroundValue",
+			"lastBackgroundUrl",
+			"kxsSpotifyPlayerLeft",
+			"kxsSpotifyPlayerTop",
+			"position_lowHpWarning",
+			"lastBackgroundType",
+			"userSettings",
+			"kxsSpotifyPlaylist",
+			"fpsCounterSize",
+			"pingCounterSize",
+			"killsCounterSize",
+			"killsCounterPosition",
+			"pingCounterPosition",
+			"fpsCounterPosition"
+		];
+
+		var data: any = {};
+		local_storage_key.forEach(key => {
+			data[key] = localStorage.getItem(key);
+		});
+		return JSON.stringify(data, null, 0);
+	}
+
+	setKxsJSONConfig(jsonConfig: any) {
+		try {
+			Object.keys(jsonConfig).forEach(key => {
+				localStorage.setItem(key, jsonConfig[key]);
+			});
+		} catch (error) {
+			console.error("Error parsing JSON config:", error);
+		}
 	}
 }
