@@ -4,7 +4,7 @@ import gt from 'semver/functions/gt';
 import config from "../../config.json";
 
 class UpdateChecker {
-	private readonly remoteScriptUrl = config.base_url + "/download/latest-dev.js";
+	private readonly remoteScriptUrl = `${config.api_url}/cors/${encodeURIComponent(config.base_url + "/download/latest-dev.js")}`;
 	kxsClient: KxsClient;
 	hostedScriptVersion: string | undefined;
 
