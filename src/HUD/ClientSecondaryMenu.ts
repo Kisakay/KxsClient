@@ -91,8 +91,6 @@ class KxsClientSecondaryMenu {
 		this.menu.addEventListener('wheel', (e) => {
 			e.stopPropagation();
 		});
-
-		// Nous ne gérons pas mousedown et mouseup ici car ils sont gérés dans addDragListeners()
 	}
 
 	private applyMenuStyles(): void {
@@ -931,34 +929,67 @@ class KxsClientSecondaryMenu {
 	}
 
 	private createOptionCard(option: MenuOption, container: HTMLElement): void {
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
 		const optionCard = document.createElement("div");
 		Object.assign(optionCard.style, {
 			background: "rgba(31, 41, 55, 0.8)",
-			borderRadius: "10px",
-			padding: "16px",
+			borderRadius: "12px",
+			padding: isMobile ? "12px" : "16px",
 			display: "flex",
-			flexDirection: "column",
+			flexDirection: "row",
 			alignItems: "center",
-			gap: "12px",
-			minHeight: "150px",
+			gap: isMobile ? "12px" : "16px",
+			minHeight: isMobile ? "50px" : "60px",
+			width: "100%",
+			boxSizing: "border-box",
+			border: "1px solid rgba(255, 255, 255, 0.1)",
+			transition: "all 0.2s ease"
+		});
+
+		// Hover effect for the card
+		optionCard.addEventListener("mouseenter", () => {
+			optionCard.style.background = "rgba(31, 41, 55, 0.9)";
+			optionCard.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+		});
+
+		optionCard.addEventListener("mouseleave", () => {
+			optionCard.style.background = "rgba(31, 41, 55, 0.8)";
+			optionCard.style.border = "1px solid rgba(255, 255, 255, 0.1)";
 		});
 
 		const iconContainer = document.createElement("div");
 		Object.assign(iconContainer.style, {
-			width: "48px",
-			height: "48px",
-			borderRadius: "50%",
+			width: isMobile ? "32px" : "40px",
+			height: isMobile ? "32px" : "40px",
+			borderRadius: "8px",
 			display: "flex",
 			alignItems: "center",
 			justifyContent: "center",
-			marginBottom: "8px"
+			background: "rgba(59, 130, 246, 0.1)",
+			border: "1px solid rgba(59, 130, 246, 0.2)",
+			flexShrink: "0"
 		});
 		iconContainer.innerHTML = option.icon || '';
 
+		const contentContainer = document.createElement("div");
+		Object.assign(contentContainer.style, {
+			display: "flex",
+			flexDirection: "column",
+			flex: "1",
+			minWidth: "0" // Allow text truncation
+		});
+
 		const title = document.createElement("div");
 		title.textContent = option.label;
-		title.style.fontSize = "16px";
-		title.style.textAlign = "center";
+		Object.assign(title.style, {
+			fontSize: isMobile ? "14px" : "16px",
+			fontWeight: "600",
+			color: "#ffffff",
+			marginBottom: "4px",
+			whiteSpace: "nowrap",
+			overflow: "hidden",
+			textOverflow: "ellipsis"
+		});
 
 		let control: null | HTMLElement = null;
 
@@ -982,9 +1013,21 @@ class KxsClientSecondaryMenu {
 				control = this.createClickButton(option);
 		}
 
+		const controlContainer = document.createElement("div");
+		Object.assign(controlContainer.style, {
+			flexShrink: "0",
+			minWidth: isMobile ? "80px" : "120px",
+			maxWidth: isMobile ? "120px" : "200px"
+		});
+
+		contentContainer.appendChild(title);
+		if (control) {
+			controlContainer.appendChild(control);
+		}
+
 		optionCard.appendChild(iconContainer);
-		optionCard.appendChild(title);
-		optionCard.appendChild(control!);
+		optionCard.appendChild(contentContainer);
+		optionCard.appendChild(controlContainer);
 
 		container.appendChild(optionCard);
 	}
@@ -1035,10 +1078,10 @@ class KxsClientSecondaryMenu {
 			if (displayedOptions.size === 0 && this.searchTerm !== '') {
 				const noResultsMsg = document.createElement('div');
 				noResultsMsg.textContent = `No results found for "${this.searchTerm}"`;
-				noResultsMsg.style.gridColumn = '1 / -1';
 				noResultsMsg.style.textAlign = 'center';
 				noResultsMsg.style.padding = '20px';
 				noResultsMsg.style.color = '#9CA3AF';
+				noResultsMsg.style.width = '100%';
 				gridContainer.appendChild(noResultsMsg);
 			}
 		}
@@ -1048,14 +1091,13 @@ class KxsClientSecondaryMenu {
 		const gridContainer = document.createElement("div");
 		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
 		Object.assign(gridContainer.style, {
-			display: "grid",
-			gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(3, 1fr)",
-			gap: isMobile ? "5px" : "16px",
-			padding: isMobile ? "2px" : "16px",
-			gridAutoRows: isMobile ? "minmax(38px, auto)" : "minmax(150px, auto)",
+			display: "flex",
+			flexDirection: "column",
+			gap: isMobile ? "8px" : "12px",
+			padding: isMobile ? "8px" : "16px",
 			overflowY: "auto",
 			overflowX: "hidden", // Prevent horizontal scrolling
-			maxHeight: isMobile ? "28vh" : "calc(3 * 150px + 2 * 16px)",
+			maxHeight: isMobile ? "35vh" : "50vh",
 			width: "100%",
 			boxSizing: "border-box" // Include padding in width calculation
 		});
@@ -1501,24 +1543,6 @@ class KxsClientSecondaryMenu {
 		return info;
 	}
 
-	private mouseMoveListener = (e: MouseEvent) => {
-		if (this.isDragging) {
-			// Optimized: use requestAnimationFrame for smooth dragging
-			requestAnimationFrame(() => {
-				const x = e.clientX - this.dragOffset.x;
-				const y = e.clientY - this.dragOffset.y;
-				this.menu.style.transform = 'none';
-				this.menu.style.left = `${x}px`;
-				this.menu.style.top = `${y}px`;
-			});
-		}
-	};
-
-	private mouseUpListener = () => {
-		this.isDragging = false;
-		this.menu.style.cursor = "grab";
-	};
-
 	// Crée un bouton pour ouvrir un sous-menu de configuration de mode
 	private createSubButton(option: MenuOption): HTMLButtonElement {
 		const btn = document.createElement("button");
@@ -1839,7 +1863,7 @@ class KxsClientSecondaryMenu {
 
 		// Optimized: use throttled mousemove for better performance
 		let mouseMoveThrottle = false;
-		document.addEventListener('mousemove', (e: MouseEvent) => {
+		document.addEventListener('mousemove', (e) => {
 			if (this.isDragging && !mouseMoveThrottle) {
 				mouseMoveThrottle = true;
 				requestAnimationFrame(() => {
@@ -1853,7 +1877,7 @@ class KxsClientSecondaryMenu {
 			}
 		});
 
-		document.addEventListener('mouseup', (e: MouseEvent) => {
+		document.addEventListener('mouseup', (e) => {
 			// Arrêter le drag & drop
 			const wasDragging = this.isDragging;
 			this.isDragging = false;
@@ -1896,10 +1920,6 @@ class KxsClientSecondaryMenu {
 	}
 
 	destroy() {
-		// Remove global event listeners
-		document.removeEventListener('mousemove', this.mouseMoveListener);
-		document.removeEventListener('mouseup', this.mouseUpListener);
-
 		// Supprimer tous les écouteurs d'événements keydown du document
 		// Nous ne pouvons pas supprimer directement l'écouteur anonyme, mais ce n'est pas grave
 		// car la vérification isClientMenuVisible empêchera toute action une fois le menu détruit
