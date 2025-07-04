@@ -3,10 +3,19 @@ export type Category = typeof category[number];
 
 export const X0 = ["Kxs Network", "Developer Options"];
 
+export enum ModType {
+	Toggle = 1,
+	Input = 2,
+	Click = 3,
+	Info = 4,
+	Slider = 5,
+	Sub = 6
+}
+
 export interface Mod {
 	label: string;
 	value: string | boolean | number;
-	type: "toggle" | "input" | "click" | "info" | "slider";
+	type: ModType;
 	onChange?: (value: string | boolean | number) => void;
 	icon: string;
 	placeholder?: string;
@@ -18,7 +27,7 @@ export interface Mod {
 export interface MenuOption {
 	label: string;
 	value: string | boolean | number;
-	type: "toggle" | "input" | "click" | "info" | "sub" | "slider";
+	type: ModType;
 	onChange?: (value: string | boolean | number) => void;
 	icon: string;
 	placeholder?: string;
