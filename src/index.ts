@@ -32,7 +32,14 @@ if (window.location.href === "https://kxs.rip/") {
 	loadingScreen.show();
 
 	const backgroundElement = document.getElementById("background");
-	if (backgroundElement) backgroundElement.style.backgroundImage = `url("${background_image}")`;
+
+	if (backgroundElement && (
+		!kxs_settings.has("isCustomBackgroundEnabled") ||
+		kxs_settings.get("isCustomBackgroundEnabled") === true
+	)
+	) {
+		backgroundElement.style.backgroundImage = `url("${background_image}")`;
+	}
 
 	setFavicon(kxs_logo);
 

@@ -52,6 +52,7 @@ export default class KxsClient {
 	isHealBarIndicatorEnabled: boolean;
 	isKxsClientLogoEnable: boolean;
 	isGlassmorphismEnabled: boolean;
+	isCustomBackgroundEnabled: boolean;
 	brightness: number;
 	currentFocusModeState: boolean;
 
@@ -128,6 +129,7 @@ export default class KxsClient {
 		this.isFocusModeEnabled = true;
 		this.currentFocusModeState = false;
 		this.isGlassmorphismEnabled = true;
+		this.isCustomBackgroundEnabled = true;
 		this.kxsDeveloperOptions = {
 			enableGameIDExchange: false,
 			exchange: {
@@ -533,7 +535,8 @@ export default class KxsClient {
 				isKxsClientLogoEnable: this.isKxsClientLogoEnable,
 				isFocusModeEnabled: this.isFocusModeEnabled,
 				kxsDeveloperOptions: this.kxsDeveloperOptions,
-				isGlassmorphismEnabled: this.isGlassmorphismEnabled
+				isGlassmorphismEnabled: this.isGlassmorphismEnabled,
+				isCustomBackgroundEnabled: this.isCustomBackgroundEnabled
 			}),
 		);
 	};
@@ -881,12 +884,8 @@ export default class KxsClient {
 		const backgroundValue = localStorage.getItem("lastBackgroundValue");
 
 		const backgroundElement = document.getElementById("background");
-		if (backgroundElement && backgroundType && backgroundValue) {
-			if (backgroundType === "url") {
-				backgroundElement.style.backgroundImage = `url(${backgroundValue})`;
-			} else if (backgroundType === "local") {
-				backgroundElement.style.backgroundImage = `url(${backgroundValue})`;
-			}
+		if (backgroundElement && backgroundType && backgroundValue && this.isCustomBackgroundEnabled) {
+			backgroundElement.style.backgroundImage = `url(${backgroundValue})`;
 		}
 	}
 
@@ -924,6 +923,7 @@ export default class KxsClient {
 			this.isFocusModeEnabled = savedSettings.isFocusModeEnabled ?? this.isFocusModeEnabled;
 			this.kxsDeveloperOptions = savedSettings.kxsDeveloperOptions ?? this.kxsDeveloperOptions;
 			this.isGlassmorphismEnabled = savedSettings.isGlassmorphismEnabled ?? this.isGlassmorphismEnabled;
+			this.isCustomBackgroundEnabled = savedSettings.isCustomBackgroundEnabled ?? this.isCustomBackgroundEnabled;
 
 			// Apply brightness setting
 			this.applyBrightness(this.brightness);
