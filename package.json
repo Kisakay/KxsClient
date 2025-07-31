@@ -24,7 +24,6 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
-		"semver": "^7.7.2",
-		"stegano.db": "^4.7.1"
+		"semver": "^7.7.2"
 	}
 }
