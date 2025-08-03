@@ -26,6 +26,10 @@ module.exports = {
 				},
 				exclude: /node_modules/,
 			},
+			{
+				test: /\.html$/i,
+				type: 'asset/source',
+			}
 		],
 	},
 	mode: 'production',

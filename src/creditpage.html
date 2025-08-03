@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>KxsClient - Credits</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+			background: #0d1117;
+			color: #c9d1d9;
+			height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.tabs {
+			display: flex;
+			background: #161b22;
+			border-bottom: 1px solid #21262d;
+		}
+
+		.tab {
+			padding: 12px 24px;
+			cursor: pointer;
+			background: transparent;
+			border: none;
+			color: #7d8590;
+			font: inherit;
+			transition: all 0.15s ease;
+			border-bottom: 2px solid transparent;
+		}
+
+		.tab:hover {
+			color: #c9d1d9;
+			background: #21262d;
+		}
+
+		.tab.active {
+			color: #58a6ff;
+			border-bottom-color: #58a6ff;
+		}
+
+		.content-area {
+			flex: 1;
+			overflow: hidden;
+		}
+
+		.content {
+			height: 100%;
+			padding: 24px;
+			overflow-y: auto;
+			white-space: pre-wrap;
+			font-size: 13px;
+			line-height: 1.6;
+			display: none;
+		}
+
+		.content.active {
+			display: block;
+		}
+
+		.loading {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 200px;
+			color: #7d8590;
+			font-size: 14px;
+		}
+
+		.error {
+			color: #f85149;
+			text-align: center;
+			padding: 24px;
+			font-size: 14px;
+		}
+
+		::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		::-webkit-scrollbar-track {
+			background: #0d1117;
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: #30363d;
+			border-radius: 4px;
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background: #484f58;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="tabs">
+		<button class="tab active" onclick="switchTab('credits')">credits</button>
+		<button class="tab" onclick="switchTab('contributors')">contributors</button>
+		<button class="tab" onclick="switchTab('changelogs')">changelogs</button>
+	</div>
+
+	<div class="content-area">
+		<div id="credits-content" class="content active">
+			<div class="loading">Loading credits.txt...</div>
+		</div>
+		<div id="contributors-content" class="content">
+			<div class="loading">Loading contributors_wall.txt...</div>
+		</div>
+		<div id="changelogs-content" class="content">
+			<div class="loading">Loading changelogs.txt...</div>
+		</div>
+	</div>
+
+	<script>
+		let loadedTabs = new Set();
+
+		function switchTab(tabName) {
+			// Update tab states
+			document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+			document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+
+			// Activate selected tab
+			event.target.classList.add('active');
+			const contentElement = document.getElementById(`${tabName}-content`);
+			contentElement.classList.add('active');
+
+			// Load content if not already loaded
+			if (!loadedTabs.has(tabName)) {
+				loadContent(tabName);
+			}
+		}
+
+		async function loadContent(type) {
+			const contentElement = document.getElementById(`${type}-content`);
+			const urls = {
+				'credits': 'https://kxs.rip/credits.txt',
+				'contributors': 'https://kxs.rip/contributors_wall.txt',
+				'changelogs': 'https://kxs.rip/changelogs.txt'
+			};
+
+			try {
+				const response = await fetch(urls[type]);
+				if (!response.ok) throw new Error(`Failed to load ${type}`);
+				const text = await response.text();
+				contentElement.textContent = text;
+				loadedTabs.add(type);
+			} catch (error) {
+				contentElement.innerHTML = `<div class="error">Error loading ${type}: ${error.message}</div>`;
+			}
+		}
+
+		// Load initial content
+		loadContent('credits');
+	</script>
+</body>
+
+</html>

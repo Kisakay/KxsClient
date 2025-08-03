@@ -10,6 +10,7 @@ import { LoadingScreen } from "./HUD/MOD/LoadingScreen";
 import config from "../config.json";
 import { EasterEgg } from "./HUD/EasterEgg";
 
+import { openCreditsWindow, showClickMeAnimation } from "./UTILS/credits-helper";
 
 if (window.location.href === "https://kxs.rip/") {
 	/*
@@ -54,17 +55,33 @@ if (window.location.href === "https://kxs.rip/") {
 	if (uiStatsLogo && kxs_settings.get("isKxsClientLogoEnable") === true) {
 		uiStatsLogo.style.backgroundImage = `url('${full_logo}')`;
 	}
-	const newChangelogUrl = config.base_url;
-	const startBottomMiddle = document.getElementById("start-bottom-middle");
 
+	const startBottomMiddle = document.getElementById("start-bottom-middle");
 	if (startBottomMiddle) {
 		const links = startBottomMiddle.getElementsByTagName("a");
 
 		if (links.length > 0) {
 			const firstLink = links[0];
-			firstLink.href = newChangelogUrl;
+			firstLink.removeAttribute('href');
+			firstLink.style.cursor = 'pointer';
 			firstLink.textContent = kxsClient.pkg.version;
 
+			firstLink.addEventListener('click', (e) => {
+				e.preventDefault();
+				openCreditsWindow();
+				// Hide the animation when clicked
+				const animation = document.getElementById('click-me-animation');
+				if (animation) {
+					animation.style.animation = 'fadeOut 0.3s ease-in forwards';
+					setTimeout(() => {
+						if (animation.parentNode) {
+							animation.parentNode.removeChild(animation);
+						}
+					}, 300);
+				}
+			});
+
+			// Remove additional links
 			while (links.length > 1) {
 				links[1].remove();
 			}
@@ -74,5 +91,8 @@ if (window.location.href === "https://kxs.rip/") {
 	setTimeout(() => {
 		loadingScreen.hide();
 
+		setTimeout(() => {
+			showClickMeAnimation();
+		}, 500);
 	}, 1400);
 }
