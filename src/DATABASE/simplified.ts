@@ -56,10 +56,8 @@ class SimplifiedDatabase {
 			const content = this.read();
 			if (content && content !== "null" && content !== "") {
 				this.data = JSON.parse(content);
-				console.log("Loaded data from localStorage:", this.data);
 			} else {
 				this.data = {};
-				console.log("No data in localStorage, using empty object");
 			}
 		} catch (error) {
 			this.data = {};
