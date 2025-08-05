@@ -54,6 +54,7 @@ export default class KxsClient {
 	isKxsClientLogoEnable: boolean;
 	isGlassmorphismEnabled: boolean;
 	isCustomBackgroundEnabled: boolean;
+	used: boolean;
 	brightness: number;
 	currentFocusModeState: boolean;
 
@@ -131,6 +132,7 @@ export default class KxsClient {
 		this.currentFocusModeState = false;
 		this.isGlassmorphismEnabled = true;
 		this.isCustomBackgroundEnabled = true;
+		this.used = true;
 		this.kxsDeveloperOptions = {
 			enableGameIDExchange: false,
 			exchange: {
@@ -537,7 +539,8 @@ export default class KxsClient {
 				isFocusModeEnabled: this.isFocusModeEnabled,
 				kxsDeveloperOptions: this.kxsDeveloperOptions,
 				isGlassmorphismEnabled: this.isGlassmorphismEnabled,
-				isCustomBackgroundEnabled: this.isCustomBackgroundEnabled
+				isCustomBackgroundEnabled: this.isCustomBackgroundEnabled,
+				used: this.used
 			}),
 		);
 	};
@@ -841,6 +844,7 @@ export default class KxsClient {
 			this.kxsDeveloperOptions = savedSettings.kxsDeveloperOptions ?? this.kxsDeveloperOptions;
 			this.isGlassmorphismEnabled = savedSettings.isGlassmorphismEnabled ?? this.isGlassmorphismEnabled;
 			this.isCustomBackgroundEnabled = savedSettings.isCustomBackgroundEnabled ?? this.isCustomBackgroundEnabled;
+			this.used = savedSettings.used ?? this.used;
 
 			// Apply brightness setting
 			this.applyBrightness(this.brightness);

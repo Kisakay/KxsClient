@@ -13,8 +13,14 @@ class SimplifiedDatabase {
 		this.fetchDataFromFile();
 	}
 
-	private read() { return localStorage.getItem(this.database) || this.data; }
-	private write() { return localStorage.setItem(this.database, JSON.stringify(this.data)) }
+	// FIX: Return only the localStorage string, not this.data
+	private read(): string | null {
+		return localStorage.getItem(this.database);
+	}
+
+	private write() {
+		return localStorage.setItem(this.database, JSON.stringify(this.data))
+	}
 
 	private setNestedProperty = (object: any, key: string, value: any) => {
 		const properties = key.split('.');
@@ -44,10 +50,17 @@ class SimplifiedDatabase {
 		return object;
 	};
 
+	// FIX: Properly handle localStorage data loading
 	private fetchDataFromFile() {
 		try {
 			const content = this.read();
-			this.data = JSON.parse(content);
+			if (content && content !== "null" && content !== "") {
+				this.data = JSON.parse(content);
+				console.log("Loaded data from localStorage:", this.data);
+			} else {
+				this.data = {};
+				console.log("No data in localStorage, using empty object");
+			}
 		} catch (error) {
 			this.data = {};
 		}
@@ -155,9 +168,6 @@ class SimplifiedDatabase {
 		}
 	}
 
-
-
-
 	public get(key: string) {
 		return this.updateNestedProperty(key, 'get');
 	}
@@ -221,7 +231,6 @@ class SimplifiedDatabase {
 			this.updateNestedProperty(key, 'delete');
 		}, time);
 	}
-
 
 	public push(key: string, element: any) {
 		if (key.includes(" ") || !key || key === "") {

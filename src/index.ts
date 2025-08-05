@@ -4,11 +4,11 @@ import { background_song, kxs_logo, full_logo, background_image, survev_settings
 import { setFavicon } from "./UTILS/favicon";
 import { intercept } from "./MECHANIC/intercept";
 
-import KxsClient from "./KxsClient";
 import { LoadingScreen } from "./HUD/MOD/LoadingScreen";
-
-import config from "../config.json";
 import { EasterEgg } from "./HUD/EasterEgg";
+
+import { OnboardingModal } from './FUNC/Onboarding';
+import KxsClient from "./KxsClient";
 
 import { openCreditsWindow, showClickMeAnimation } from "./UTILS/credits-helper";
 
@@ -28,6 +28,15 @@ if (window.location.href === "https://kxs.rip/") {
 	};
 
 	survev_settings.set("language", "en");
+
+	if (kxs_settings.get("used") === undefined) {
+		document.addEventListener('DOMContentLoaded', () => {
+			setTimeout(() => {
+				const onboardingModal = new OnboardingModal();
+				onboardingModal.show();
+			}, 1000);
+		});
+	}
 
 	const loadingScreen = new LoadingScreen(kxs_logo);
 	loadingScreen.show();
