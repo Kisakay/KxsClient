@@ -76,6 +76,14 @@ export class OnboardingModal {
 			});
 		}
 
+		// Discord button click handler
+		const discordButton = this.overlay.querySelector('#discord-btn') as HTMLButtonElement;
+		if (discordButton) {
+			discordButton.addEventListener('click', () => {
+				this.onDiscordButtonClick();
+			});
+		}
+
 		// Click outside to close (optional)
 		this.overlay.addEventListener('click', (e) => {
 			if (e.target === this.overlay) {
@@ -95,6 +103,12 @@ export class OnboardingModal {
 	private onPlayButtonClick(): void {
 		// Close the modal
 		this.hide();
+	}
+
+	// Handle Discord button click
+	private onDiscordButtonClick(): void {
+		// Replace with your actual Discord invite link
+		window.open('https://discord.wf/kxsclient', '_blank');
 	}
 
 	// Check if modal is currently visible
