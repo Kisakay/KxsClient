@@ -29,6 +29,19 @@ module.exports = {
 			{
 				test: /\.html$/i,
 				type: 'asset/source',
+			},
+			// Support for ?raw imports (CSS, HTML, etc.)
+			{
+				resourceQuery: /raw/,
+				type: 'asset/source',
+			},
+			// Support for image imports
+			{
+				test: /\.(png|jpe?g|gif|svg)$/i,
+				type: 'asset/resource',
+				generator: {
+					filename: 'images/[name][ext]'
+				}
 			}
 		],
 	},
