@@ -29,7 +29,7 @@ if (window.location.href === "https://kxs.rip/") {
 
 	survev_settings.set("language", "en");
 
-	if (kxs_settings.get("used") === undefined) {
+	if (localStorage.getItem("on_boarding_complete") !== "yes") {
 		document.addEventListener('DOMContentLoaded', () => {
 			setTimeout(() => {
 				const onboardingModal = new OnboardingModal();
