@@ -630,7 +630,7 @@ export default class KxsClient {
 
 	private async handlePlayerWin(): Promise<void> {
 		if (this.isWinningAnimationEnabled) {
-			felicitation(kxsClient.isWinSoundEnabled, this.soundLibrary.win_sound_url);
+			felicitation(kxsClient.isWinSoundEnabled, this.soundLibrary.win_sound_url, 5000, '#1');
 		}
 
 		const stats = this.getPlayerStats(true);

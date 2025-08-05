@@ -1,8 +1,8 @@
 import { Logger } from "./Logger";
 
-export function felicitation(enable: boolean, url_string: string) {
+export function felicitation(enable: boolean, url_string: string, time: number = 5000, text: string) {
 	const goldText = document.createElement("div");
-	goldText.textContent = "#1";
+	goldText.textContent = text;
 	goldText.style.position = "fixed";
 	goldText.style.top = "50%";
 	goldText.style.left = "50%";
@@ -69,7 +69,7 @@ export function felicitation(enable: boolean, url_string: string) {
 		}
 	}, 100);
 
-	if (kxsClient.isWinSoundEnabled) {
+	if (enable) {
 		const audio = new Audio(url_string);
 		audio.play().catch((err) => new Logger().error("Erreur lecture:", err));
 	}
@@ -79,5 +79,5 @@ export function felicitation(enable: boolean, url_string: string) {
 		goldText.style.transition = "opacity 1s";
 		goldText.style.opacity = "0";
 		setTimeout(() => goldText.remove(), 1000);
-	}, 5000);
+	}, time);
 }
