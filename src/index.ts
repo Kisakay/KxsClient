@@ -1,4 +1,5 @@
 import "./UTILS/websocket-hook";
+import "./HUD/KxsClientLogoReplacer";
 
 import { background_song, kxs_logo, full_logo, background_image, survev_settings, kxs_settings } from "./UTILS/vars";
 import { setFavicon } from "./UTILS/favicon";
@@ -23,9 +24,6 @@ if (window.location.href === "https://kxs.rip/") {
 	*/
 
 	intercept("audio/ambient/menu_music_01.mp3", kxs_settings.get("soundLibrary.background_sound_url") || background_song);
-	if (kxs_settings.get("isKxsClientLogoEnable") === true) {
-		intercept('img/survev_logo_full.png', full_logo)
-	};
 
 	survev_settings.set("language", "en");
 
