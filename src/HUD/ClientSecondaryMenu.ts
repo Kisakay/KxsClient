@@ -130,191 +130,6 @@ class KxsClientSecondaryMenu {
 		});
 	}
 
-	private createHeader(): void {
-		const header = document.createElement("div");
-
-		// Mobile detection for reduced styles
-		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
-
-		const logoSize = isMobile ? 20 : 30;
-		const titleFontSize = isMobile ? 12 : 20;
-		const headerGap = isMobile ? 4 : 10;
-		const headerMarginBottom = isMobile ? 8 : 20;
-		const closeBtnPadding = isMobile ? 2 : 6;
-		const closeBtnFontSize = isMobile ? 12 : 18;
-		const discordBtnPadding = isMobile ? '4px 6px' : '6px 12px';
-		const discordBtnFontSize = isMobile ? 10 : 12;
-		const discordIconSize = isMobile ? 12 : 16;
-
-		header.style.marginBottom = `${headerMarginBottom}px`;
-		header.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${isMobile ? 7 : 15}px; width: 100%; box-sizing: border-box;">
-            <div style="display: flex; align-items: center; gap: ${headerGap}px;">
-                <img src="${kxs_logo}" 
-                    alt="Logo" style="width: ${logoSize}px; height: ${logoSize}px;">
-                <span style="font-size: ${titleFontSize}px; font-weight: bold;">KXS CLIENT <span style="
-                 font-size: ${isMobile ? 10 : 14}px;
-                 font-weight: 700;
-                 color: #3B82F6;
-                 opacity: 0.95;
-                 position: relative;
-                 top: ${isMobile ? -1 : -2}px;
-                 margin-left: ${isMobile ? 2 : 3}px;
-                 letter-spacing: 0.5px;
-               ">v${this.kxsClient.pkg.version}</span></span>
-            </div>
-            <div style="display: flex; gap: ${headerGap}px; align-items: center;">
-              <button id="discordBtn" style="
-                padding: ${discordBtnPadding};
-                border: none;
-                border-radius: ${isMobile ? '3px' : '4px'};
-                color: white;
-                cursor: pointer;
-                font-size: ${discordBtnFontSize}px;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                gap: ${isMobile ? '3px' : '6px'};
-                transition: background 0.2s;
-              " onmouseover="this.style.background='#4752C4'" onmouseout="this.style.background='#242632'">
-                <svg width="${discordIconSize}" height="${discordIconSize}" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
-                </svg>
-                ${isMobile ? '' : 'Join Discord'}
-              </button>
-              <button style="
-                padding: ${closeBtnPadding}px;
-                background: none;
-                border: none;
-                color: white;
-                cursor: pointer;
-                font-size: ${closeBtnFontSize}px;
-              ">×</button>
-            </div>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box;">
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 5px;">
-              ${category.map(cat => `
-                <button class="category-btn" data-category="${cat}" style="
-                  padding: ${isMobile ? '2px 6px' : '6px 16px'};
-                  background: ${this.activeCategory === cat ? '#3B82F6' : 'rgba(55, 65, 81, 0.8)'};
-                  border: none;
-                  border-radius: ${isMobile ? '3px' : '6px'};
-                  color: white;
-                  cursor: pointer;
-                  font-size: ${isMobile ? '9px' : '14px'};
-                  transition: background 0.2s;
-                ">${cat}</button>
-              `).join('')}
-            </div>
-            <div style="display: flex; width: 100%; box-sizing: border-box;">
-              <div style="position: relative; width: 100%; box-sizing: border-box;">
-                <input type="text" id="kxsSearchInput" placeholder="Search options..." style="
-                  width: 100%;
-                  padding: ${isMobile ? '3px 5px 3px 20px' : '8px 12px 8px 32px'};
-                  background: rgba(55, 65, 81, 0.8);
-                  border: none;
-                  border-radius: ${isMobile ? '3px' : '6px'};
-                  color: white;
-                  font-size: ${isMobile ? '9px' : '14px'};
-                  outline: none;
-                  box-sizing: border-box;
-                ">
-                <div style="
-                  position: absolute;
-                  left: ${isMobile ? '4px' : '10px'};
-                  top: 50%;
-                  transform: translateY(-50%);
-                  width: ${isMobile ? '9px' : '14px'};
-                  height: ${isMobile ? '9px' : '14px'};
-                ">
-                  <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-
-		header.querySelectorAll('.category-btn').forEach(btn => {
-			this.blockMousePropagation(btn as HTMLElement);
-			btn.addEventListener('click', (e) => {
-				const category = (e.target as HTMLElement).dataset.category;
-				if (category) {
-					this.setActiveCategory(category);
-				}
-			});
-		});
-
-		const closeButton = header.querySelector('button');
-		closeButton?.addEventListener('click', () => {
-			this.toggleMenuVisibility();
-		});
-
-		// Discord button event listener
-		const discordButton = header.querySelector('#discordBtn');
-		DesignSystem.applyGlassEffect((discordButton as HTMLElement), this.kxsClient.isGlassmorphismEnabled ? 'medium' : 'dark')
-		if (discordButton) {
-			this.blockMousePropagation(discordButton as HTMLElement);
-			discordButton.addEventListener('click', () => {
-				// Open Discord invite link in new tab
-				window.open('https://discord.wf/kxsclient', '_blank');
-			});
-		}
-
-		const searchInput = header.querySelector('#kxsSearchInput') as HTMLInputElement;
-		if (searchInput) {
-			this.blockMousePropagation(searchInput, false);
-			// Handler to update search
-			searchInput.addEventListener('input', (e) => {
-				this.searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
-				this.filterOptions();
-			});
-
-			// Prevent keys from being interpreted by the game
-			// We only block the propagation of keyboard events, except for special keys
-			['keydown', 'keyup', 'keypress'].forEach(eventType => {
-				searchInput.addEventListener(eventType, (e: Event) => {
-					const keyEvent = e as KeyboardEvent;
-
-					// Don't block special keys (Escape, Shift)
-					if (keyEvent.key === 'Escape' || (keyEvent.key === 'Shift' && keyEvent.location === 2)) {
-						return; // Let the event propagate normally
-					}
-
-					// Block propagation for all other keys
-					e.stopPropagation();
-				});
-			});
-
-			// Prevent search bar from automatically refocusing
-			// when user interacts with another text field
-			searchInput.addEventListener('blur', (e) => {
-				// Don't refocus if user clicked on another input
-				const newFocusElement = e.relatedTarget as HTMLElement | null;
-				if (newFocusElement && (newFocusElement.tagName === 'INPUT' || newFocusElement.tagName === 'TEXTAREA')) {
-					// User clicked on another text field, don't refocus
-					return;
-				}
-
-				// For other cases, only if no other element has focus (optimized)
-				requestAnimationFrame(() => {
-					const activeElement = document.activeElement as HTMLElement | null;
-					if (this.isClientMenuVisible &&
-						activeElement &&
-						activeElement !== searchInput &&
-						activeElement.tagName !== 'INPUT' &&
-						activeElement.tagName !== 'TEXTAREA') {
-						searchInput.focus();
-					}
-				});
-			});
-		}
-
-		this.menu.appendChild(header);
-	}
-
 
 	private clearMenu(): void {
 		const gridContainer = document.getElementById('kxsMenuGrid');
@@ -1053,6 +868,11 @@ class KxsClientSecondaryMenu {
 	}
 
 	private setActiveCategory(category: string): void {
+		// Fermer le sous-menu s'il est ouvert lors du changement de catégorie
+		if (this.closeSubMenu) {
+			this.closeSubMenu();
+		}
+
 		this.activeCategory = category;
 		this.filterOptions();
 
@@ -1081,10 +901,14 @@ class KxsClientSecondaryMenu {
 						}
 						const optionKey = `${option.label}-${section.category}`;
 
-						// Check if option matches search term
+						// Check if option matches search term (including subfields)
 						const matchesSearch = this.searchTerm === '' ||
 							option.label.toLowerCase().includes(this.searchTerm) ||
-							section.category.toLowerCase().includes(this.searchTerm);
+							section.category.toLowerCase().includes(this.searchTerm) ||
+							// Search in sub-menu fields
+							(option.fields && option.fields.some(field =>
+								field.label.toLowerCase().includes(this.searchTerm)
+							));
 
 						if (!displayedOptions.has(optionKey) && matchesSearch) {
 							displayedOptions.add(optionKey);
@@ -1563,7 +1387,6 @@ class KxsClientSecondaryMenu {
 		return info;
 	}
 
-	// Crée un bouton pour ouvrir un sous-menu de configuration de mode
 	private createSubButton(option: MenuOption): HTMLButtonElement {
 		const btn = document.createElement("button");
 		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
@@ -1593,12 +1416,12 @@ class KxsClientSecondaryMenu {
 
 		// Add a subtle icon to indicate configuration
 		btn.innerHTML = `<span style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-			<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-				<path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.258 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.0113 9.77251C4.28059 9.5799 4.48572 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-			</svg>
-			CONFIGURE
-		</span>`;
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.258 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.0113 9.77251C4.28059 9.5799 4.48572 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        CONFIGURE
+    </span>`;
 
 		// Add sophisticated hover effects
 		btn.addEventListener("mouseenter", () => {
@@ -1612,7 +1435,7 @@ class KxsClientSecondaryMenu {
 		btn.addEventListener("mouseleave", () => {
 			btn.style.transform = "translateY(0) scale(1)";
 			btn.style.backdropFilter = "blur(12px) saturate(180%)";
-			btn.style.backdropFilter = "blur(12px) saturate(180%)";
+			btn.style.setProperty('-webkit-backdrop-filter', 'blur(12px) saturate(180%)');
 			btn.style.boxShadow = "0 4px 16px rgba(59, 130, 246, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)";
 			btn.style.border = "1px solid rgba(59, 130, 246, 0.3)";
 		});
@@ -1625,13 +1448,11 @@ class KxsClientSecondaryMenu {
 
 		// Variables pour le sous-menu
 		let subMenuContainer: HTMLElement | null = null;
-		// Sauvegarde des éléments originaux à masquer/afficher
 		let originalElements: HTMLElement[] = [];
 		let isSubMenuOpen = false;
 
 		// Gestionnaire d'événement pour ouvrir le sous-menu
 		btn.addEventListener("click", () => {
-			// Si aucun champ n'est défini, ne rien faire
 			if (!option.fields || option.fields.length === 0) {
 				if (option.onChange) {
 					option.onChange(option.value as boolean);
@@ -1639,13 +1460,12 @@ class KxsClientSecondaryMenu {
 				return;
 			}
 
-			// Si le sous-menu est déjà ouvert, le fermer
 			if (isSubMenuOpen) {
 				this.closeSubMenu();
 				return;
 			}
 
-			// Trouver tous les éléments principaux à masquer
+			// Sauvegarder et masquer les éléments originaux
 			originalElements = [];
 			const allSections = document.querySelectorAll('.menu-section');
 			allSections.forEach(section => {
@@ -1653,27 +1473,41 @@ class KxsClientSecondaryMenu {
 				(section as HTMLElement).style.display = 'none';
 			});
 
-			// Masquer aussi le conteneur de la grille
 			const grid = document.getElementById('kxsMenuGrid');
 			if (grid) {
 				originalElements.push(grid as HTMLElement);
 				grid.style.display = 'none';
 			}
 
-			// Créer le conteneur du sous-menu
+			// Créer le conteneur du sous-menu avec glassmorphism amélioré
 			subMenuContainer = document.createElement("div");
 			subMenuContainer.id = "kxs-submenu";
 			subMenuContainer.className = "kxs-submenu-container";
-			Object.assign(subMenuContainer.style, {
+
+			// Appliquer l'effet glassmorphism moderne au sous-menu
+			DesignSystem.applyGlassEffect(subMenuContainer, this.kxsClient.isGlassmorphismEnabled ? 'medium' : 'dark', {
 				width: "100%",
 				padding: "10px 0",
 				boxSizing: "border-box",
 				overflowY: "auto",
-				background: "rgba(17, 24, 39, 0.95)"
+				borderRadius: "16px",
+				border: this.kxsClient.isGlassmorphismEnabled
+					? "1px solid rgba(255, 255, 255, 0.15)"
+					: "1px solid rgba(31, 41, 55, 0.8)",
+				background: this.kxsClient.isGlassmorphismEnabled
+					? "rgba(17, 24, 39, 0.3)"
+					: "rgba(17, 24, 39, 0.95)",
+				backdropFilter: this.kxsClient.isGlassmorphismEnabled
+					? "blur(20px) saturate(180%)"
+					: "none",
+				WebkitBackdropFilter: this.kxsClient.isGlassmorphismEnabled
+					? "blur(20px) saturate(180%)"
+					: "none"
 			});
+
 			this.blockMousePropagation(subMenuContainer);
 
-			// Créer l'en-tête du sous-menu
+			// Créer l'en-tête du sous-menu avec glassmorphism
 			const subMenuHeader = document.createElement("div");
 			Object.assign(subMenuHeader.style, {
 				display: "flex",
@@ -1681,29 +1515,50 @@ class KxsClientSecondaryMenu {
 				alignItems: "center",
 				marginBottom: isMobile ? "10px" : "15px",
 				paddingBottom: isMobile ? "5px" : "10px",
-				borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+				borderBottom: this.kxsClient.isGlassmorphismEnabled
+					? "1px solid rgba(255, 255, 255, 0.1)"
+					: "1px solid rgba(255, 255, 255, 0.1)",
 				paddingLeft: isMobile ? "10px" : "15px",
 				paddingRight: isMobile ? "10px" : "15px",
 				width: "100%",
-				boxSizing: "border-box"
+				boxSizing: "border-box",
+				background: this.kxsClient.isGlassmorphismEnabled
+					? "rgba(31, 41, 55, 0.2)"
+					: "rgba(31, 41, 55, 0.3)",
+				borderRadius: "12px",
+				backdropFilter: this.kxsClient.isGlassmorphismEnabled
+					? "blur(10px)"
+					: "none",
+				WebkitBackdropFilter: this.kxsClient.isGlassmorphismEnabled
+					? "blur(10px)"
+					: "none"
 			});
 			this.blockMousePropagation(subMenuHeader);
 
-			// Bouton de retour
+			// Bouton de retour avec glassmorphism
 			const backBtn = document.createElement("button");
 			backBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M15 19L8 12L15 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-			</svg> Back`;
-			Object.assign(backBtn.style, {
-				background: "none",
-				border: "none",
+            <path d="M15 19L8 12L15 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg> Back`;
+
+			DesignSystem.applyGlassEffect(backBtn, this.kxsClient.isGlassmorphismEnabled ? 'light' : 'dark', {
+				background: this.kxsClient.isGlassmorphismEnabled
+					? "rgba(255, 255, 255, 0.1)"
+					: "rgba(55, 65, 81, 0.8)",
+				border: this.kxsClient.isGlassmorphismEnabled
+					? "1px solid rgba(255, 255, 255, 0.2)"
+					: "1px solid rgba(75, 85, 99, 0.5)",
+				borderRadius: "8px",
 				color: "#fff",
 				cursor: "pointer",
 				display: "flex",
 				alignItems: "center",
 				gap: "6px",
-				padding: "5px",
-				fontSize: isMobile ? "12px" : "14px"
+				padding: isMobile ? "4px 8px" : "6px 12px",
+				fontSize: isMobile ? "12px" : "14px",
+				backdropFilter: this.kxsClient.isGlassmorphismEnabled ? "blur(8px)" : "none",
+				WebkitBackdropFilter: this.kxsClient.isGlassmorphismEnabled ? "blur(8px)" : "none",
+				transition: "all 0.3s ease"
 			});
 			this.blockMousePropagation(backBtn);
 
@@ -1716,13 +1571,29 @@ class KxsClientSecondaryMenu {
 				fontSize: isMobile ? "16px" : "20px",
 				fontWeight: "bold",
 				textAlign: "center",
-				flex: "1"
+				flex: "1",
+				textShadow: "0 1px 3px rgba(0, 0, 0, 0.3)"
 			});
 			this.blockMousePropagation(subMenuTitle);
 
-			// Ajouter l'événement au bouton retour pour fermer le sous-menu
+			// Ajouter l'événement au bouton retour
 			backBtn.addEventListener("click", () => {
 				this.closeSubMenu();
+			});
+
+			// Effet hover pour le bouton retour
+			backBtn.addEventListener("mouseenter", () => {
+				backBtn.style.background = this.kxsClient.isGlassmorphismEnabled
+					? "rgba(255, 255, 255, 0.15)"
+					: "rgba(75, 85, 99, 0.8)";
+				backBtn.style.transform = "translateY(-1px)";
+			});
+
+			backBtn.addEventListener("mouseleave", () => {
+				backBtn.style.background = this.kxsClient.isGlassmorphismEnabled
+					? "rgba(255, 255, 255, 0.1)"
+					: "rgba(55, 65, 81, 0.8)";
+				backBtn.style.transform = "translateY(0)";
 			});
 
 			// Assembler l'en-tête
@@ -1731,20 +1602,20 @@ class KxsClientSecondaryMenu {
 			subMenuHeader.appendChild(document.createElement("div")); // Espace vide pour l'équilibre
 			subMenuContainer.appendChild(subMenuHeader);
 
-			// Créer la grille pour les options
+			// Créer la grille pour les options avec glassmorphism
 			const optionsGrid = document.createElement("div");
 			Object.assign(optionsGrid.style, {
 				display: "grid",
 				gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
 				gap: isMobile ? "8px" : "16px",
-				padding: isMobile ? "4px" : "16px",
+				padding: isMobile ? "8px" : "16px",
 				gridAutoRows: isMobile ? "minmax(100px, auto)" : "minmax(150px, auto)",
 				width: "100%",
 				boxSizing: "border-box"
 			});
 			this.blockMousePropagation(optionsGrid);
 
-			// Créer les cartes pour chaque option
+			// Créer les cartes pour chaque option avec glassmorphism
 			option.fields.forEach(mod => {
 				this.createModCard(mod, optionsGrid);
 			});
@@ -1757,7 +1628,6 @@ class KxsClientSecondaryMenu {
 
 			// Définir la méthode pour fermer le sous-menu
 			this.closeSubMenu = () => {
-				// Supprimer le sous-menu
 				if (subMenuContainer && subMenuContainer.parentElement) {
 					subMenuContainer.parentElement.removeChild(subMenuContainer);
 				}
@@ -1765,19 +1635,17 @@ class KxsClientSecondaryMenu {
 				// Réafficher tous les éléments originaux
 				originalElements.forEach(el => {
 					if (el.id === 'kxsMenuGrid') {
-						el.style.display = 'grid';
+						el.style.display = 'flex';
 					} else {
 						el.style.display = 'block';
 					}
 				});
 
-				// Réinitialiser les états
-				this.filterOptions(); // S'assurer que les options sont correctement filtrées
+				this.filterOptions();
 				subMenuContainer = null;
 				isSubMenuOpen = false;
 			};
 
-			// Appeler le callback si défini
 			if (option.onChange) {
 				option.onChange(option.value as boolean);
 			}
@@ -1787,40 +1655,91 @@ class KxsClientSecondaryMenu {
 		return btn;
 	}
 
-	// Crée une carte pour un mod dans le sous-menu
 	private createModCard(mod: Mod, container: HTMLElement): void {
 		const modCard = document.createElement("div");
 		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
 
-		Object.assign(modCard.style, {
-			background: "rgba(31, 41, 55, 0.8)",
-			borderRadius: "10px",
-			padding: isMobile ? "10px" : "16px",
+		// Appliquer l'effet glassmorphism aux cartes des mods
+		DesignSystem.applyGlassEffect(modCard, this.kxsClient.isGlassmorphismEnabled ? 'medium' : 'dark', {
+			background: this.kxsClient.isGlassmorphismEnabled
+				? "rgba(31, 41, 55, 0.4)"
+				: "rgba(31, 41, 55, 0.8)",
+			borderRadius: "12px",
+			padding: isMobile ? "12px" : "16px",
 			display: "flex",
 			flexDirection: "column",
 			alignItems: "center",
 			gap: isMobile ? "8px" : "12px",
 			minHeight: isMobile ? "100px" : "150px",
+			border: this.kxsClient.isGlassmorphismEnabled
+				? "1px solid rgba(255, 255, 255, 0.15)"
+				: "1px solid rgba(255, 255, 255, 0.1)",
+			backdropFilter: this.kxsClient.isGlassmorphismEnabled
+				? "blur(12px) saturate(180%)"
+				: "none",
+			WebkitBackdropFilter: this.kxsClient.isGlassmorphismEnabled
+				? "blur(12px) saturate(180%)"
+				: "none",
+			boxShadow: this.kxsClient.isGlassmorphismEnabled
+				? "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
+				: "0 4px 16px rgba(0, 0, 0, 0.2)",
+			transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+			cursor: "default"
 		});
 
-		// Icône
+		// Effet hover pour les cartes
+		modCard.addEventListener("mouseenter", () => {
+			modCard.style.transform = "translateY(-2px) scale(1.02)";
+			modCard.style.boxShadow = this.kxsClient.isGlassmorphismEnabled
+				? "0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15)"
+				: "0 8px 24px rgba(0, 0, 0, 0.3)";
+			modCard.style.border = this.kxsClient.isGlassmorphismEnabled
+				? "1px solid rgba(255, 255, 255, 0.2)"
+				: "1px solid rgba(255, 255, 255, 0.15)";
+		});
+
+		modCard.addEventListener("mouseleave", () => {
+			modCard.style.transform = "translateY(0) scale(1)";
+			modCard.style.boxShadow = this.kxsClient.isGlassmorphismEnabled
+				? "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
+				: "0 4px 16px rgba(0, 0, 0, 0.2)";
+			modCard.style.border = this.kxsClient.isGlassmorphismEnabled
+				? "1px solid rgba(255, 255, 255, 0.15)"
+				: "1px solid rgba(255, 255, 255, 0.1)";
+		});
+
+		// Icône avec effet glassmorphism
 		const iconContainer = document.createElement("div");
-		Object.assign(iconContainer.style, {
-			width: isMobile ? "32px" : "48px",
-			height: isMobile ? "32px" : "48px",
+		DesignSystem.applyGlassEffect(iconContainer, this.kxsClient.isGlassmorphismEnabled ? 'light' : 'dark', {
+			width: isMobile ? "32px" : "40px",
+			height: isMobile ? "32px" : "40px",
 			borderRadius: "50%",
 			display: "flex",
 			alignItems: "center",
 			justifyContent: "center",
-			marginBottom: isMobile ? "4px" : "8px"
+			marginBottom: isMobile ? "4px" : "8px",
+			background: this.kxsClient.isGlassmorphismEnabled
+				? "rgba(59, 130, 246, 0.15)"
+				: "rgba(59, 130, 246, 0.1)",
+			border: this.kxsClient.isGlassmorphismEnabled
+				? "1px solid rgba(59, 130, 246, 0.3)"
+				: "1px solid rgba(59, 130, 246, 0.2)",
+			backdropFilter: this.kxsClient.isGlassmorphismEnabled ? "blur(8px)" : "none",
+			WebkitBackdropFilter: this.kxsClient.isGlassmorphismEnabled ? "blur(8px)" : "none"
 		});
 		iconContainer.innerHTML = mod.icon || '';
 
-		// Titre
+		// Titre avec effet de texte
 		const title = document.createElement("div");
 		title.textContent = mod.label;
-		title.style.fontSize = isMobile ? "14px" : "16px";
-		title.style.textAlign = "center";
+		Object.assign(title.style, {
+			fontSize: isMobile ? "14px" : "16px",
+			textAlign: "center",
+			color: "#ffffff",
+			fontWeight: "600",
+			textShadow: "0 1px 2px rgba(0, 0, 0, 0.3)",
+			marginBottom: "8px"
+		});
 
 		// Contrôle selon le type
 		let control: null | HTMLElement = null;
@@ -1850,6 +1769,197 @@ class KxsClientSecondaryMenu {
 
 		container.appendChild(modCard);
 		this.blockMousePropagation(modCard);
+	}
+
+	// 5. Mise à jour de la méthode pour gérer la fermeture automatique lors des recherches
+	private createHeader(): void {
+		const header = document.createElement("div");
+
+		// Mobile detection for reduced styles
+		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
+
+		const logoSize = isMobile ? 20 : 30;
+		const titleFontSize = isMobile ? 12 : 20;
+		const headerGap = isMobile ? 4 : 10;
+		const headerMarginBottom = isMobile ? 8 : 20;
+		const closeBtnPadding = isMobile ? 2 : 6;
+		const closeBtnFontSize = isMobile ? 12 : 18;
+		const discordBtnPadding = isMobile ? '4px 6px' : '6px 12px';
+		const discordBtnFontSize = isMobile ? 10 : 12;
+		const discordIconSize = isMobile ? 12 : 16;
+
+		header.style.marginBottom = `${headerMarginBottom}px`;
+		header.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${isMobile ? 7 : 15}px; width: 100%; box-sizing: border-box;">
+        <div style="display: flex; align-items: center; gap: ${headerGap}px;">
+            <img src="${kxs_logo}" 
+                alt="Logo" style="width: ${logoSize}px; height: ${logoSize}px;">
+            <span style="font-size: ${titleFontSize}px; font-weight: bold;">KXS CLIENT <span style="
+             font-size: ${isMobile ? 10 : 14}px;
+             font-weight: 700;
+             color: #3B82F6;
+             opacity: 0.95;
+             position: relative;
+             top: ${isMobile ? -1 : -2}px;
+             margin-left: ${isMobile ? 2 : 3}px;
+             letter-spacing: 0.5px;
+           ">v${this.kxsClient.pkg.version}</span></span>
+        </div>
+        <div style="display: flex; gap: ${headerGap}px; align-items: center;">
+          <button id="discordBtn" style="
+            padding: ${discordBtnPadding};
+            border: none;
+            border-radius: ${isMobile ? '3px' : '4px'};
+            color: white;
+            cursor: pointer;
+            font-size: ${discordBtnFontSize}px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: ${isMobile ? '3px' : '6px'};
+            transition: background 0.2s;
+          " onmouseover="this.style.background='#4752C4'" onmouseout="this.style.background='#242632'">
+            <svg width="${discordIconSize}" height="${discordIconSize}" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+            </svg>
+            ${isMobile ? '' : 'Join Discord'}
+          </button>
+          <button style="
+            padding: ${closeBtnPadding}px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: ${closeBtnFontSize}px;
+          ">×</button>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box;">
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 5px;">
+          ${category.map(cat => `
+            <button class="category-btn" data-category="${cat}" style="
+              padding: ${isMobile ? '2px 6px' : '6px 16px'};
+              background: ${this.activeCategory === cat ? '#3B82F6' : 'rgba(55, 65, 81, 0.8)'};
+              border: none;
+              border-radius: ${isMobile ? '3px' : '6px'};
+              color: white;
+              cursor: pointer;
+              font-size: ${isMobile ? '9px' : '14px'};
+              transition: background 0.2s;
+            ">${cat}</button>
+          `).join('')}
+        </div>
+        <div style="display: flex; width: 100%; box-sizing: border-box;">
+          <div style="position: relative; width: 100%; box-sizing: border-box;">
+            <input type="text" id="kxsSearchInput" placeholder="Search options..." style="
+              width: 100%;
+              padding: ${isMobile ? '3px 5px 3px 20px' : '8px 12px 8px 32px'};
+              background: rgba(55, 65, 81, 0.8);
+              border: none;
+              border-radius: ${isMobile ? '3px' : '6px'};
+              color: white;
+              font-size: ${isMobile ? '9px' : '14px'};
+              outline: none;
+              box-sizing: border-box;
+            ">
+            <div style="
+              position: absolute;
+              left: ${isMobile ? '4px' : '10px'};
+              top: 50%;
+              transform: translateY(-50%);
+              width: ${isMobile ? '9px' : '14px'};
+              height: ${isMobile ? '9px' : '14px'};
+            ">
+              <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+		header.querySelectorAll('.category-btn').forEach(btn => {
+			this.blockMousePropagation(btn as HTMLElement);
+			btn.addEventListener('click', (e) => {
+				const category = (e.target as HTMLElement).dataset.category;
+				if (category) {
+					this.setActiveCategory(category);
+				}
+			});
+		});
+
+		const closeButton = header.querySelector('button');
+		closeButton?.addEventListener('click', () => {
+			this.toggleMenuVisibility();
+		});
+
+		// Discord button event listener
+		const discordButton = header.querySelector('#discordBtn');
+		DesignSystem.applyGlassEffect((discordButton as HTMLElement), this.kxsClient.isGlassmorphismEnabled ? 'medium' : 'dark')
+		if (discordButton) {
+			this.blockMousePropagation(discordButton as HTMLElement);
+			discordButton.addEventListener('click', () => {
+				// Open Discord invite link in new tab
+				window.open('https://discord.wf/kxsclient', '_blank');
+			});
+		}
+
+		const searchInput = header.querySelector('#kxsSearchInput') as HTMLInputElement;
+		if (searchInput) {
+			this.blockMousePropagation(searchInput, false);
+			// Handler to update search
+			searchInput.addEventListener('input', (e) => {
+				// Fermer le sous-menu si ouvert lors de la recherche
+				if (this.closeSubMenu) {
+					this.closeSubMenu();
+				}
+
+				this.searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+				this.filterOptions();
+			});
+
+			// Prevent keys from being interpreted by the game
+			// We only block the propagation of keyboard events, except for special keys
+			['keydown', 'keyup', 'keypress'].forEach(eventType => {
+				searchInput.addEventListener(eventType, (e: Event) => {
+					const keyEvent = e as KeyboardEvent;
+
+					// Don't block special keys (Escape, Shift)
+					if (keyEvent.key === 'Escape' || (keyEvent.key === 'Shift' && keyEvent.location === 2)) {
+						return; // Let the event propagate normally
+					}
+
+					// Block propagation for all other keys
+					e.stopPropagation();
+				});
+			});
+
+			// Prevent search bar from automatically refocusing
+			// when user interacts with another text field
+			searchInput.addEventListener('blur', (e) => {
+				// Don't refocus if user clicked on another input
+				const newFocusElement = e.relatedTarget as HTMLElement | null;
+				if (newFocusElement && (newFocusElement.tagName === 'INPUT' || newFocusElement.tagName === 'TEXTAREA')) {
+					// User clicked on another text field, don't refocus
+					return;
+				}
+
+				// For other cases, only if no other element has focus (optimized)
+				requestAnimationFrame(() => {
+					const activeElement = document.activeElement as HTMLElement | null;
+					if (this.isClientMenuVisible &&
+						activeElement &&
+						activeElement !== searchInput &&
+						activeElement.tagName !== 'INPUT' &&
+						activeElement.tagName !== 'TEXTAREA') {
+						searchInput.focus();
+					}
+				});
+			});
+		}
+
+		this.menu.appendChild(header);
 	}
 
 	private addDragListeners(): void {
