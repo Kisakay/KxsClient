@@ -1,6 +1,5 @@
-import { Logger } from "./Logger";
 
-export function felicitation(enable: boolean, url_string: string, time: number = 5000, text: string) {
+export function felicitation(win_sound_url: string, text: string) {
 	const goldText = document.createElement("div");
 	goldText.textContent = text;
 	goldText.style.position = "fixed";
@@ -69,15 +68,15 @@ export function felicitation(enable: boolean, url_string: string, time: number =
 		}
 	}, 100);
 
-	if (enable) {
-		const audio = new Audio(url_string);
-		audio.play().catch((err) => new Logger().error("Erreur lecture:", err));
-	}
+	const audio = new Audio(
+		win_sound_url,
+	);
+	audio.play().catch((err) => console.error("Erreur lecture:", err));
 
 	setTimeout(() => {
 		clearInterval(confettiInterval);
 		goldText.style.transition = "opacity 1s";
 		goldText.style.opacity = "0";
 		setTimeout(() => goldText.remove(), 1000);
-	}, time);
+	}, 5000);
 }
