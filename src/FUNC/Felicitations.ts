@@ -1,5 +1,5 @@
 
-export function felicitation(win_sound_url: string, text: string) {
+export function felicitation(enable: boolean, win_sound_url: string, text: string) {
 	const goldText = document.createElement("div");
 	goldText.textContent = text;
 	goldText.style.position = "fixed";
@@ -68,10 +68,12 @@ export function felicitation(win_sound_url: string, text: string) {
 		}
 	}, 100);
 
-	const audio = new Audio(
-		win_sound_url,
-	);
-	audio.play().catch((err) => console.error("Erreur lecture:", err));
+	if (enable) {
+		const audio = new Audio(
+			win_sound_url,
+		);
+		audio.play().catch((err) => console.error("Erreur lecture:", err));
+	}
 
 	setTimeout(() => {
 		clearInterval(confettiInterval);
