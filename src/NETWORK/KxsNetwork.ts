@@ -112,13 +112,17 @@ class KxsNetwork {
 			this.kxsClient.getUsername()
 	}
 
+	private capitalizeFirstLetter(str: string) {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
+
 	private identify() {
 		const payload = {
 			op: 2,
 			d: {
 				username: this.getUsername(),
 				isVoiceChat: this.kxsClient.isVoiceChatEnabled,
-				v: "KxsClient@" + this.kxsClient.pkg.version
+				v: this.capitalizeFirstLetter(this.kxsClient.pkg.name) + "@" + this.kxsClient.pkg.version
 			}
 		};
 		this.send(payload);
