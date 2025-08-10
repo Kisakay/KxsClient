@@ -239,6 +239,7 @@ class KxsChat {
 		// Gestion clavier
 		window.addEventListener('keydown', this.handleKeyDown);
 
+		this.addSystemMessage("Wanna disable the chat ? Right Shift => Kxs Network => Chat 🙂")
 	}
 
 	private openChatInput() {
