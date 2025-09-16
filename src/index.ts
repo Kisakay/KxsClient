@@ -46,7 +46,9 @@ if (window.location.href === "https://kxs.rip/") {
 		kxs_settings.get("isCustomBackgroundEnabled") === true
 	)
 	) {
-		backgroundElement.style.backgroundImage = `url("${background_image}")`;
+		setTimeout(() => {
+			backgroundElement.style.backgroundImage = `url("${background_image}")`
+		}, 2900);
 	}
 
 	setFavicon(kxs_logo);

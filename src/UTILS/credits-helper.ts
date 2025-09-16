@@ -127,7 +127,7 @@ function showClickMeAnimation() {
 				styleElement.parentNode.removeChild(styleElement);
 			}
 		}, 500);
-	}, 8000);
+	}, 4000);
 
 	return animationContainer;
 }
