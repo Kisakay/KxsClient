@@ -805,7 +805,9 @@ export default class KxsClient {
 
 		const backgroundElement = document.getElementById("background");
 		if (backgroundElement && backgroundType && backgroundValue && this.isCustomBackgroundEnabled) {
-			backgroundElement.style.backgroundImage = `url(${backgroundValue})`;
+			setInterval(() => {
+				backgroundElement.style.backgroundImage = `url(${backgroundValue})`;
+			}, 2900)
 		}
 	}
 
