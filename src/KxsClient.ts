@@ -1390,6 +1390,37 @@ export default class KxsClient {
 		const nameInput = document.getElementById('player-name-input-solo');
 		const helpSection = document.getElementById('start-help');
 
+		// Remove default cyan/blue effect from team buttons
+		const teamButtons = document.querySelectorAll('#btn-join-team, #btn-create-team');
+		teamButtons.forEach(button => {
+			if (button instanceof HTMLElement) {
+				// Remove any default hover effects
+				button.style.transition = 'none';
+				button.style.boxShadow = 'none';
+				button.style.outline = 'none';
+
+				// Force remove any pseudo-element effects by overriding with !important via inline style
+				const styleSheet = document.createElement('style');
+				styleSheet.textContent = `
+					#btn-join-team, #btn-create-team {
+						box-shadow: none !important;
+						outline: none !important;
+					}
+					#btn-join-team:hover, #btn-create-team:hover,
+					#btn-join-team:focus, #btn-create-team:focus,
+					#btn-join-team:active, #btn-create-team:active {
+						box-shadow: none !important;
+						outline: none !important;
+						filter: none !important;
+					}
+				`;
+				if (!document.getElementById('team-buttons-override')) {
+					styleSheet.id = 'team-buttons-override';
+					document.head.appendChild(styleSheet);
+				}
+			}
+		});
+
 		if (startMenu) {
 			// Apply styles to the main container based on glassmorphism toggle
 			Object.assign(startMenu.style, {
