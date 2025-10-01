@@ -1421,6 +1421,26 @@ export default class KxsClient {
 			}
 		});
 
+		const playButtonsClean = document.querySelectorAll('.btn-green');
+		const playButtonOverrideStyle = document.createElement('style');
+		playButtonOverrideStyle.textContent = `
+			.btn-green, .btn-green.btn-darken {
+				background-image: none !important;
+				border-bottom: none !important;
+				box-shadow: none !important;
+			}
+			.btn-green:hover, .btn-green.btn-darken:hover,
+			.btn-green:focus, .btn-green.btn-darken:focus,
+			.btn-green:active, .btn-green.btn-darken:active {
+				background-image: none !important;
+				border-bottom: none !important;
+			}
+		`;
+		if (!document.getElementById('play-buttons-override')) {
+			playButtonOverrideStyle.id = 'play-buttons-override';
+			document.head.appendChild(playButtonOverrideStyle);
+		}
+
 		if (startMenu) {
 			// Apply styles to the main container based on glassmorphism toggle
 			Object.assign(startMenu.style, {
