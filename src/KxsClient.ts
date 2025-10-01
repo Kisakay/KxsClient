@@ -1389,6 +1389,8 @@ export default class KxsClient {
 		const serverSelect = document.getElementById('server-select-main');
 		const nameInput = document.getElementById('player-name-input-solo');
 		const helpSection = document.getElementById('start-help');
+		const helpButton = document.getElementById('btn-help');
+		if (helpButton) helpButton.innerText = "Really need help? lol"
 
 		// Remove default cyan/blue effect from team buttons
 		const teamButtons = document.querySelectorAll('#btn-join-team, #btn-create-team');
