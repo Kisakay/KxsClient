@@ -133,9 +133,9 @@ function showClickMeAnimation() {
 }
 
 // Function to create and open the credits window
-function openCreditsWindow() {
+function openCreditsWindow(focusTab: string = "credits") {
 	// Use the imported HTML content
-	const htmlContent = creditsWindowHtml;
+	const htmlContent = creditsWindowHtml.replace('%%FOCUS_TAB%%', focusTab);
 
 	// Create a blob URL from the HTML content
 	const blob = new Blob([htmlContent], { type: 'text/html' });

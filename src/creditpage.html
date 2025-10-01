@@ -104,9 +104,9 @@
 
 <body>
 	<div class="tabs">
-		<button class="tab active" onclick="switchTab('credits')">credits</button>
-		<button class="tab" onclick="switchTab('contributors')">contributors</button>
-		<button class="tab" onclick="switchTab('changelogs')">changelogs</button>
+		<button class="tab active" onclick="switchTab('credits', this)">credits</button>
+		<button class="tab" onclick="switchTab('contributors', this)">contributors</button>
+		<button class="tab" onclick="switchTab('changelogs', this)">changelogs</button>
 	</div>
 
 	<div class="content-area">
@@ -130,7 +130,9 @@
 			document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
 
 			// Activate selected tab
-			event.target.classList.add('active');
+			const tabButton = Array.from(document.querySelectorAll('.tab'))
+				.find(btn => btn.textContent.toLowerCase() === tabName);
+			if (tabButton) tabButton.classList.add('active');
 			const contentElement = document.getElementById(`${tabName}-content`);
 			contentElement.classList.add('active');
 
@@ -160,7 +162,7 @@
 		}
 
 		// Load initial content
-		loadContent('credits');
+		switchTab('%%FOCUS_TAB%%');
 	</script>
 </body>
 

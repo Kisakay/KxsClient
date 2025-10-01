@@ -2,6 +2,7 @@ import KxsClient from "../KxsClient";
 import gt from 'semver/functions/gt';
 
 import config from "../../config.json";
+import { openCreditsWindow } from "../UTILS/credits-helper";
 
 class UpdateChecker {
 	private readonly remoteScriptUrl = `${config.api_url}/cors/${encodeURIComponent(config.base_url + "/download/latest-dev.js")}`;
@@ -101,16 +102,39 @@ class UpdateChecker {
 		title.style.fontWeight = "600";
 		header.appendChild(title);
 
+		const buttonContainer = document.createElement("div");
+		buttonContainer.style.marginLeft = "auto";
+		buttonContainer.style.display = "flex";
+		buttonContainer.style.alignItems = "center";
+		buttonContainer.style.gap = "10px";
+
+		const changelogButton = document.createElement("button");
+		changelogButton.textContent = "See changelog";
+		changelogButton.style.border = "1px solid rgb(229, 229, 229)";
+		changelogButton.style.background = "white";
+		changelogButton.style.fontSize = "13px";
+		changelogButton.style.cursor = "pointer";
+		changelogButton.style.padding = "6px 12px";
+		changelogButton.style.borderRadius = "6px";
+		changelogButton.style.fontWeight = "500";
+		changelogButton.style.color = "rgb(75, 85, 99)";
+		changelogButton.style.transition = "background-color 0.2s ease";
+		changelogButton.onmouseover = () => changelogButton.style.backgroundColor = "rgb(243, 244, 246)";
+		changelogButton.onmouseout = () => changelogButton.style.backgroundColor = "white";
+		changelogButton.onclick = () => openCreditsWindow("changelogs");
+		buttonContainer.appendChild(changelogButton);
+
 		const closeButton = document.createElement("button");
 		closeButton.innerHTML = "×";
-		closeButton.style.marginLeft = "auto";
 		closeButton.style.border = "none";
 		closeButton.style.background = "none";
 		closeButton.style.fontSize = "24px";
 		closeButton.style.cursor = "pointer";
 		closeButton.style.padding = "0 5px";
 		closeButton.onclick = () => modal.remove();
-		header.appendChild(closeButton);
+		buttonContainer.appendChild(closeButton);
+
+		header.appendChild(buttonContainer);
 
 		const content = document.createElement("div");
 		content.innerHTML = `<div style="margin-bottom: 20px;">
