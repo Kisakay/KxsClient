@@ -1896,13 +1896,17 @@ class KxsClientSecondaryMenu {
             <input type="text" id="kxsSearchInput" placeholder="Search options..." style="
               width: 100%;
               padding: ${isMobile ? '3px 5px 3px 20px' : '8px 12px 8px 32px'};
-              background: rgba(55, 65, 81, 0.8);
+              background: rgba(55, 65, 81, 0.9);
               border: none;
               border-radius: ${isMobile ? '3px' : '6px'};
               color: white;
-              font-size: ${isMobile ? '9px' : '14px'};
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              font-size: ${isMobile ? '10px' : '14px'};
+              font-weight: 500;
+              letter-spacing: 0.2px;
               outline: none;
               box-sizing: border-box;
+              transition: all 0.2s ease-in-out;
             ">
             <div style="
               position: absolute;
