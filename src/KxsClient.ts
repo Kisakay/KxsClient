@@ -1382,7 +1382,7 @@ export default class KxsClient {
 		// Détermine si le mode glassmorphism est activé
 		const is_glassmorphism_enabled = this.isGlassmorphismEnabled;
 
-		// Sélectionner le menu principal
+		// Select main menu elements
 		const startMenu = document.getElementById('start-menu');
 		const playButtons = document.querySelectorAll('.btn-green, #btn-help, .btn-team-option');
 		const playerOptions = document.getElementById('player-options');
@@ -1421,6 +1421,7 @@ export default class KxsClient {
 			}
 		});
 
+		// Remove default play button effects (image overlay and bottom border)
 		const playButtonsClean = document.querySelectorAll('.btn-green');
 		const playButtonOverrideStyle = document.createElement('style');
 		playButtonOverrideStyle.textContent = `
@@ -1433,6 +1434,12 @@ export default class KxsClient {
 			.btn-green:focus, .btn-green.btn-darken:focus,
 			.btn-green:active, .btn-green.btn-darken:active {
 				background-image: none !important;
+				border-bottom: none !important;
+			}
+			#btn-help, #btn-help.btn-darken {
+				border-bottom: none !important;
+			}
+			#btn-help:hover, #btn-help:focus, #btn-help:active {
 				border-bottom: none !important;
 			}
 		`;
