@@ -1240,6 +1240,7 @@ class KxsClientHUD {
 
 
 	initCounter(name: string, label: string, initialText: string) {
+		if (client.type === 2) return;
 		// Ensure design system fonts are loaded
 		DesignSystem.injectFonts();
 
@@ -1512,6 +1513,8 @@ class KxsClientHUD {
 	}
 
 	updateBoostBars() {
+		if (global.client.type === 2) return;
+
 		const boostCounter = document.querySelector("#ui-boost-counter");
 		if (boostCounter) {
 			// Si les indicateurs sont désactivés, on supprime les éléments personnalisés
@@ -1810,6 +1813,8 @@ class KxsClientHUD {
 	}
 
 	updateHealthBars() {
+		if (global.client.type === 2) return;
+
 		const healthBars = document.querySelectorAll("#ui-health-container");
 		healthBars.forEach((container) => {
 			// Si les indicateurs sont désactivés, on supprime les éléments personnalisés
@@ -1863,6 +1868,8 @@ class KxsClientHUD {
 	}
 
 	private showHealthChangeAnimation(container: HTMLElement, change: number) {
+		if (global.client.type === 2) return;
+
 		const healthContainer = container as HTMLElement;
 
 		if (!healthContainer || !this.kxsClient.isHealBarIndicatorEnabled) return;
