@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>SVG → PNG Converter (Drag & Drop)</title>
+	<style>
+		:root {
+			--bg: #0f172a;
+			--card: #0b1320;
+			--accent: #06b6d4;
+			--muted: #98a8b9;
+			color-scheme: dark
+		}
+
+		* {
+			box-sizing: border-box
+		}
+
+		body {
+			font-family: Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+			margin: 0;
+			background: linear-gradient(180deg, #071024 0%, #07122a 100%);
+			color: #e6eef6;
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 32px
+		}
+
+		.wrap {
+			width: 980px;
+			max-width: 96%;
+			background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+			border-radius: 12px;
+			padding: 20px;
+			box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6)
+		}
+
+		h1 {
+			margin: 0 0 8px;
+			font-size: 20px
+		}
+
+		p.lead {
+			margin: 0 0 16px;
+			color: var(--muted)
+		}
+
+		.controls {
+			display: flex;
+			gap: 12px;
+			flex-wrap: wrap;
+			margin-bottom: 14px
+		}
+
+		.control {
+			background: rgba(255, 255, 255, 0.02);
+			padding: 10px;
+			border-radius: 8px;
+			display: flex;
+			gap: 8px;
+			align-items: center
+		}
+
+		.control label {
+			font-size: 13px;
+			color: var(--muted)
+		}
+
+		input[type=range] {
+			width: 160px
+		}
+
+		input[type=color] {
+			width: 44px;
+			height: 34px;
+			border: 0;
+			padding: 0;
+			background: none
+		}
+
+		.drop {
+			border: 2px dashed rgba(255, 255, 255, 0.06);
+			padding: 28px;
+			border-radius: 10px;
+			display: flex;
+			gap: 16px;
+			align-items: center
+		}
+
+		.drop.dragover {
+			background: linear-gradient(90deg, rgba(6, 182, 212, 0.06), rgba(6, 182, 212, 0.02));
+			border-color: var(--accent)
+		}
+
+		.drop .left {
+			flex: 1
+		}
+
+		.drop .right {
+			width: 240px;
+			text-align: center
+		}
+
+		.files {
+			margin-top: 12px;
+			display: grid;
+			gap: 10px
+		}
+
+		.file-item {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 8px;
+			border-radius: 8px;
+			background: rgba(255, 255, 255, 0.015)
+		}
+
+		.file-item img {
+			width: 56px;
+			height: 56px;
+			object-fit: contain;
+			border-radius: 6px;
+			background: #fff;
+			border: 1px solid rgba(255, 255, 255, 0.04)
+		}
+
+		.file-meta {
+			flex: 1
+		}
+
+		.btn {
+			background: var(--accent);
+			color: #042031;
+			padding: 8px 12px;
+			border-radius: 8px;
+			border: 0;
+			cursor: pointer
+		}
+
+		.btn.ghost {
+			background: transparent;
+			border: 1px solid rgba(255, 255, 255, 0.04);
+			color: var(--muted)
+		}
+
+		.footer {
+			margin-top: 14px;
+			color: var(--muted);
+			font-size: 13px
+		}
+
+		@media (max-width:700px) {
+			.drop {
+				flex-direction: column
+			}
+
+			.drop .right {
+				width: 100%
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrap">
+		<h1>SVG → PNG Converter (Drag & Drop)</h1>
+		<p class="lead">Drag and drop one or more .svg files from your computer, choose the size and background color,
+			then click <strong>Convert</strong> to download.</p>
+
+		<div class="controls">
+			<div class="control">
+				<label for="scale">Scale (px for 1x):</label>
+				<input id="scale" type="range" min="64" max="4096" value="1024" />
+				<div id="scaleVal">1024</div>
+			</div>
+
+			<div class="control">
+				<label for="bg">Background:</label>
+				<input id="bg" type="color" value="#000000" />
+				<label style="margin-left:6px"><input id="transparent" type="checkbox" /> Transparent</label>
+			</div>
+
+			<div class="control">
+				<label for="dpi">DPR (device pixel ratio):</label>
+				<select id="dpi">
+					<option value="1">1</option>
+					<option value="1.5">1.5</option>
+					<option value="2" selected>2</option>
+					<option value="3">3</option>
+				</select>
+			</div>
+
+			<div class="control">
+				<input id="fileInput" type="file" accept=".svg,image/svg+xml" multiple style="display:none" />
+				<button id="pick" class="btn ghost">Select files</button>
+			</div>
+
+		</div>
+
+		<div id="drop" class="drop">
+			<div class="left">
+				<strong>Drop your SVG files here</strong>
+				<div style="margin-top:8px;color:var(--muted)">Or click on "Select files". All processing happens
+					locally in your browser (no upload).</div>
+
+				<div class="files" id="files"></div>
+			</div>
+
+			<div class="right">
+				<div style="margin-bottom:8px"><button id="convertAll" class="btn">Convert all</button></div>
+				<div style="font-size:13px;color:var(--muted)">Tips:
+					<ul style="padding-left:16px;margin:8px 0 0;color:var(--muted)">
+						<li>External fonts may not render if not embedded in the SVG.</li>
+						<li>If your SVG contains external images, they must be locally or online accessible.</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="footer">Made with ❤️ — everything runs locally in your browser.</div>
+	</div>
+
+	<script>
+		// Helpers
+		const $ = id => document.getElementById(id);
+		const filesList = [];
+
+		// Elements
+		const drop = $('drop');
+		const fileInput = $('fileInput');
+		const pick = $('pick');
+		const filesEl = $('files');
+		const scale = $('scale');
+		const scaleVal = $('scaleVal');
+		const bg = $('bg');
+		const transparent = $('transparent');
+		const dpi = $('dpi');
+		const convertAll = $('convertAll');
+
+		scale.addEventListener('input', () => { scaleVal.textContent = scale.value });
+
+		pick.addEventListener('click', () => fileInput.click());
+		fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+		// Drag & drop
+		['dragenter', 'dragover'].forEach(ev => {
+			drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('dragover') });
+		});
+		['dragleave', 'drop'].forEach(ev => {
+			drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('dragover') });
+		});
+
+		drop.addEventListener('drop', e => {
+			const dt = e.dataTransfer;
+			if (dt && dt.files) handleFiles(dt.files);
+		});
+
+		function handleFiles(fileList) {
+			const arr = Array.from(fileList).filter(f => f.type === 'image/svg+xml' || f.name.toLowerCase().endsWith('.svg'));
+			if (arr.length === 0) { alert('Aucun fichier SVG détecté.'); return }
+			arr.forEach(f => { const id = crypto.randomUUID(); filesList.push({ id, file: f }); renderFileItem(id, f) });
+		}
+
+		function renderFileItem(id, file) {
+			const item = document.createElement('div'); item.className = 'file-item'; item.dataset.id = id;
+			const img = document.createElement('img'); img.alt = 'preview';
+
+			// small placeholder until we can render preview
+			img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23000"/><text x="50%" y="50%" fill="%23fff" font-size="18" text-anchor="middle" alignment-baseline="middle">SVG</text></svg>';
+
+			const meta = document.createElement('div'); meta.className = 'file-meta';
+			meta.innerHTML = `<div style="font-weight:600">${escapeHtml(file.name)}</div><div style="font-size:12px;color:var(--muted)">${(file.size / 1024).toFixed(1)} KB</div>`;
+
+			const actions = document.createElement('div');
+			const btnConv = document.createElement('button'); btnConv.className = 'btn'; btnConv.textContent = 'Convertir';
+			btnConv.onclick = () => convertFileById(id);
+			const btnRemove = document.createElement('button'); btnRemove.className = 'btn ghost'; btnRemove.textContent = 'Supprimer';
+			btnRemove.onclick = () => { removeFileById(id); item.remove(); };
+			actions.appendChild(btnConv); actions.appendChild(btnRemove);
+
+			item.appendChild(img); item.appendChild(meta); item.appendChild(actions);
+			filesEl.appendChild(item);
+
+			// try to render SVG preview as dataURL
+			const reader = new FileReader();
+			reader.onload = e => {
+				const text = e.target.result;
+				// create data url
+				const url = 'data:image/svg+xml;utf8,' + encodeURIComponent(text);
+				img.src = url;
+			};
+			reader.readAsText(file);
+		}
+
+		function removeFileById(id) {
+			const idx = filesList.findIndex(f => f.id === id);
+			if (idx >= 0) filesList.splice(idx, 1);
+		}
+
+		async function convertFileById(id) {
+			const entry = filesList.find(f => f.id === id);
+			if (!entry) return alert('Fichier introuvable');
+			try {
+				const svgText = await entry.file.text();
+				const out = await svgToPng(svgText, entry.file.name.replace(/\.svg$/i, ''));
+				triggerDownload(out.blob, out.name);
+			} catch (err) { console.error(err); alert('Erreur lors de la conversion: ' + err.message) }
+		}
+
+		convertAll.addEventListener('click', async () => {
+			if (filesList.length === 0) return alert('Aucun fichier à convertir');
+			for (const f of [...filesList]) {
+				try {
+					const svgText = await f.file.text();
+					const out = await svgToPng(svgText, f.file.name.replace(/\.svg$/i, ''));
+					triggerDownload(out.blob, out.name);
+				} catch (err) { console.error(err); alert('Erreur: ' + err.message) }
+			}
+		});
+
+		// Core conversion
+		async function svgToPng(svgText, baseName) {
+			// prepare svg: set explicit width/height if missing
+			let parser = new DOMParser();
+			const doc = parser.parseFromString(svgText, 'image/svg+xml');
+			const svg = doc.querySelector('svg');
+			if (!svg) throw new Error('Contenu SVG invalide');
+
+			// compute width/height
+			let width = parseFloat(svg.getAttribute('width')) || null;
+			let height = parseFloat(svg.getAttribute('height')) || null;
+			const viewBox = svg.getAttribute('viewBox');
+			if ((!width || !height) && viewBox) {
+				const parts = viewBox.split(/\s+|,/).map(Number).filter(n => !isNaN(n));
+				if (parts.length >= 4) { width = width || parts[2]; height = height || parts[3]; }
+			}
+			if (!width || !height) { // fallback to scale (treat as square)
+				width = height = parseInt(scale.value, 10);
+			}
+
+			// target size from UI
+			const target = parseInt(scale.value, 10);
+			const ratio = target / Math.max(width, height);
+			const outW = Math.round((width * ratio) || target);
+			const outH = Math.round((height * ratio) || target);
+			const deviceRatio = parseFloat(dpi.value) || 1;
+			const canvasW = Math.max(1, Math.round(outW * deviceRatio));
+			const canvasH = Math.max(1, Math.round(outH * deviceRatio));
+
+			// apply background
+			let finalSvgText = svgText;
+			if (!transparent.checked) {
+				// ensure background rect exists as first child
+				const bgColor = bg.value || '#000000';
+				// insert a rect at the top of the SVG
+				try {
+					const cloned = svg.cloneNode(true);
+					const bgRect = doc.createElementNS('http://www.w3.org/2000/svg', 'rect');
+					bgRect.setAttribute('width', '100%'); bgRect.setAttribute('height', '100%'); bgRect.setAttribute('fill', bgColor);
+					cloned.insertBefore(bgRect, cloned.firstChild);
+					// serialize entire svg document
+					const serializer = new XMLSerializer();
+					finalSvgText = serializer.serializeToString(cloned);
+					// If original svg had xml declaration or namespaces outside svg node, add them back
+					// We'll just wrap with proper svg namespace if missing
+					if (!finalSvgText.includes('xmlns="http://www.w3.org/2000/svg"')) {
+						finalSvgText = finalSvgText.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+					}
+				} catch (e) { console.warn('échec ajout fond, fallback', e); finalSvgText = svgText; }
+			}
+
+			// Create image from SVG string
+			const svgBlob = new Blob([finalSvgText], { type: 'image/svg+xml;charset=utf-8' });
+			const url = URL.createObjectURL(svgBlob);
+
+			// use createImageBitmap if available for higher fidelity
+			let bitmap;
+			try { bitmap = await createImageBitmap(svgBlob, { imageOrientation: 'none' }); }
+			catch (e) {
+				// fallback to using Image element
+				bitmap = await new Promise((resolve, reject) => {
+					const img = new Image();
+					img.onload = () => {
+						// draw to offscreen canvas and create bitmap
+						resolve(img);
+					};
+					img.onerror = reject;
+					img.src = url;
+				});
+			}
+
+			// draw to canvas
+			const canvas = document.createElement('canvas');
+			canvas.width = canvasW; canvas.height = canvasH;
+			const ctx = canvas.getContext('2d');
+			ctx.imageSmoothingEnabled = true;
+			ctx.imageSmoothingQuality = 'high';
+
+			// clear with transparent or explicit color
+			if (transparent.checked) ctx.clearRect(0, 0, canvas.width, canvas.height);
+			else { /* background already applied inside SVG */ }
+
+			// compute draw size for bitmap/img
+			let drawW = canvasW; let drawH = canvasH;
+			// If bitmap is an HTMLImageElement it has naturalWidth
+			const srcW = bitmap.width || bitmap.naturalWidth || outW;
+			const srcH = bitmap.height || bitmap.naturalHeight || outH;
+
+			// draw
+			try {
+				if (typeof createImageBitmap === 'function' && bitmap instanceof ImageBitmap) {
+					ctx.drawImage(bitmap, 0, 0, srcW, srcH, 0, 0, drawW, drawH);
+					bitmap.close && bitmap.close();
+				} else {
+					// image element
+					ctx.drawImage(bitmap, 0, 0, drawW, drawH);
+				}
+			} catch (e) {
+				// some browsers cannot draw svg blob as bitmap with certain flags — fallback to image element
+				const img = new Image(); img.src = url;
+				await new Promise((res, reject) => { img.onload = res; img.onerror = reject; });
+				ctx.drawImage(img, 0, 0, drawW, drawH);
+			}
+
+			URL.revokeObjectURL(url);
+
+			// export
+			const dataUrl = canvas.toDataURL('image/png');
+			const blobOut = await (await fetch(dataUrl)).blob();
+			const fileName = `${baseName}.png`;
+			return { blob: blobOut, name: fileName };
+		}
+
+		function triggerDownload(blob, filename) {
+			const a = document.createElement('a');
+			const url = URL.createObjectURL(blob);
+			a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+			setTimeout(() => URL.revokeObjectURL(url), 2000);
+		}
+
+		function escapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') }
+
+		// drop zone click to open file picker
+		drop.addEventListener('click', () => fileInput.click());
+
+	</script>
+</body>
+
+</html>
