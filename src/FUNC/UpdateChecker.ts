@@ -12,7 +12,7 @@ class UpdateChecker {
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;
 
-		if (this.kxsClient.isAutoUpdateEnabled) {
+		if (this.kxsClient.isAutoUpdateEnabled && client.type === 1) {
 			this.checkForUpdate();
 		}
 	}
