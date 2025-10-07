@@ -155,9 +155,9 @@ class KxsNetwork {
 						const newPlayers = currentPlayers.filter((name: string) => !previousPlayers.includes(name));
 						for (const newPlayer of newPlayers) {
 							if (this.kxsClient.isKxsChatEnabled) {
-								this.kxsClient.chat.addSystemMessage(`${newPlayer} joined the game as a Kxs player`);
+								this.kxsClient.chat.addSystemMessage(`${newPlayer} joined the game as a ${client.acronym_start_upper} player`);
 							} else {
-								this.kxsClient.nm.showNotification(`🎉 ${newPlayer} is a Kxs player!`, 'info', 3500);
+								this.kxsClient.nm.showNotification(`🎉 ${newPlayer} is a ${client.acronym_start_upper} player!`, 'info', 3500);
 							}
 						}
 						this.currentGamePlayers = currentPlayers;

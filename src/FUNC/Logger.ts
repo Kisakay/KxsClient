@@ -2,7 +2,7 @@
 class Logger {
 
 	private getHeader(method: string) {
-		return "[" + "KxsClient" + " - " + method + "]";
+		return "[" + global.client.name + " - " + method + "]";
 	}
 
 	private 展示(...args: any[]) {

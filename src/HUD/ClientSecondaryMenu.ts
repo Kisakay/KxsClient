@@ -155,7 +155,7 @@ class KxsClientSecondaryMenu {
 		let CONFIG = this.addSection("CONFIG");
 
 		this.addOption(SERVER, {
-			label: "Kxs Network",
+			label: client.acronym_start_upper + " Network",
 			value: true,
 			type: ModType.Sub,
 			icon: '<svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>network</title> <path d="M27 21.75c-0.795 0.004-1.538 0.229-2.169 0.616l0.018-0.010-2.694-2.449c0.724-1.105 1.154-2.459 1.154-3.913 0-1.572-0.503-3.027-1.358-4.212l0.015 0.021 3.062-3.062c0.57 0.316 1.249 0.503 1.971 0.508h0.002c2.347 0 4.25-1.903 4.25-4.25s-1.903-4.25-4.25-4.25c-2.347 0-4.25 1.903-4.25 4.25v0c0.005 0.724 0.193 1.403 0.519 1.995l-0.011-0.022-3.062 3.062c-1.147-0.84-2.587-1.344-4.144-1.344-0.868 0-1.699 0.157-2.467 0.443l0.049-0.016-0.644-1.17c0.726-0.757 1.173-1.787 1.173-2.921 0-2.332-1.891-4.223-4.223-4.223s-4.223 1.891-4.223 4.223c0 2.332 1.891 4.223 4.223 4.223 0.306 0 0.605-0.033 0.893-0.095l-0.028 0.005 0.642 1.166c-1.685 1.315-2.758 3.345-2.758 5.627 0 0.605 0.076 1.193 0.218 1.754l-0.011-0.049-0.667 0.283c-0.78-0.904-1.927-1.474-3.207-1.474-2.334 0-4.226 1.892-4.226 4.226s1.892 4.226 4.226 4.226c2.334 0 4.226-1.892 4.226-4.226 0-0.008-0-0.017-0-0.025v0.001c-0.008-0.159-0.023-0.307-0.046-0.451l0.003 0.024 0.667-0.283c1.303 2.026 3.547 3.349 6.1 3.349 1.703 0 3.268-0.589 4.503-1.574l-0.015 0.011 2.702 2.455c-0.258 0.526-0.41 1.144-0.414 1.797v0.001c0 2.347 1.903 4.25 4.25 4.25s4.25-1.903 4.25-4.25c0-2.347-1.903-4.25-4.25-4.25v0zM8.19 5c0-0.966 0.784-1.75 1.75-1.75s1.75 0.784 1.75 1.75c0 0.966-0.784 1.75-1.75 1.75v0c-0.966-0.001-1.749-0.784-1.75-1.75v-0zM5 22.42c-0.966-0.001-1.748-0.783-1.748-1.749s0.783-1.749 1.749-1.749c0.966 0 1.748 0.782 1.749 1.748v0c-0.001 0.966-0.784 1.749-1.75 1.75h-0zM27 3.25c0.966 0 1.75 0.784 1.75 1.75s-0.784 1.75-1.75 1.75c-0.966 0-1.75-0.784-1.75-1.75v0c0.001-0.966 0.784-1.749 1.75-1.75h0zM11.19 16c0-0.001 0-0.002 0-0.003 0-2.655 2.152-4.807 4.807-4.807 1.328 0 2.53 0.539 3.4 1.409l0.001 0.001 0.001 0.001c0.87 0.87 1.407 2.072 1.407 3.399 0 2.656-2.153 4.808-4.808 4.808s-4.808-2.153-4.808-4.808c0-0 0-0 0-0v0zM27 27.75c-0.966 0-1.75-0.784-1.75-1.75s0.784-1.75 1.75-1.75c0.966 0 1.75 0.784 1.75 1.75v0c-0.001 0.966-0.784 1.749-1.75 1.75h-0z"></path> </g></svg>',
@@ -515,7 +515,7 @@ class KxsClientSecondaryMenu {
 
 
 		this.addOption(HUD, {
-			label: `KxsClient Logo`,
+			label: global.client.name + ` Logo`,
 			value: this.kxsClient.isKxsClientLogoEnable,
 			icon: '<svg fill="#000000" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20,37.5c0-0.8-0.7-1.5-1.5-1.5h-15C2.7,36,2,36.7,2,37.5v11C2,49.3,2.7,50,3.5,50h15c0.8,0,1.5-0.7,1.5-1.5 V37.5z"></path> <path d="M8.1,22H3.2c-1,0-1.5,0.9-0.9,1.4l8,8.3c0.4,0.3,1,0.3,1.4,0l8-8.3c0.6-0.6,0.1-1.4-0.9-1.4h-4.7 c0-5,4.9-10,9.9-10V6C15,6,8.1,13,8.1,22z"></path> <path d="M41.8,20.3c-0.4-0.3-1-0.3-1.4,0l-8,8.3c-0.6,0.6-0.1,1.4,0.9,1.4h4.8c0,6-4.1,10-10.1,10v6 c9,0,16.1-7,16.1-16H49c1,0,1.5-0.9,0.9-1.4L41.8,20.3z"></path> <path d="M50,3.5C50,2.7,49.3,2,48.5,2h-15C32.7,2,32,2.7,32,3.5v11c0,0.8,0.7,1.5,1.5,1.5h15c0.8,0,1.5-0.7,1.5-1.5 V3.5z"></path> </g></svg>',
 
@@ -639,7 +639,7 @@ class KxsClientSecondaryMenu {
 							return;
 						}
 						const choice = prompt(
-							"Enter '0' to default Kxs background, '1' to provide a URL or '2' to upload a local image:",
+							`Enter '0' to default ${client.acronym_start_upper} background, '1' to provide a URL or '2' to upload a local image:`,
 						);
 
 						if (choice === "0") {
@@ -728,18 +728,18 @@ class KxsClientSecondaryMenu {
 
 		this.addOption(CONFIG, {
 			icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M19.53 8L14 2.47C13.8595 2.32931 13.6688 2.25018 13.47 2.25H11C10.2707 2.25 9.57118 2.53973 9.05546 3.05546C8.53973 3.57118 8.25 4.27065 8.25 5V6.25H7C6.27065 6.25 5.57118 6.53973 5.05546 7.05546C4.53973 7.57118 4.25 8.27065 4.25 9V19C4.25 19.7293 4.53973 20.4288 5.05546 20.9445C5.57118 21.4603 6.27065 21.75 7 21.75H14C14.7293 21.75 15.4288 21.4603 15.9445 20.9445C16.4603 20.4288 16.75 19.7293 16.75 19V17.75H17C17.7293 17.75 18.4288 17.4603 18.9445 16.9445C19.4603 16.4288 19.75 15.7293 19.75 15V8.5C19.7421 8.3116 19.6636 8.13309 19.53 8ZM14.25 4.81L17.19 7.75H14.25V4.81ZM15.25 19C15.25 19.3315 15.1183 19.6495 14.8839 19.8839C14.6495 20.1183 14.3315 20.25 14 20.25H7C6.66848 20.25 6.35054 20.1183 6.11612 19.8839C5.8817 19.6495 5.75 19.3315 5.75 19V9C5.75 8.66848 5.8817 8.35054 6.11612 8.11612C6.35054 7.8817 6.66848 7.75 7 7.75H8.25V15C8.25 15.7293 8.53973 16.4288 9.05546 16.9445C9.57118 17.4603 10.2707 17.75 11 17.75H15.25V19ZM17 16.25H11C10.6685 16.25 10.3505 16.1183 10.1161 15.8839C9.8817 15.6495 9.75 15.3315 9.75 15V5C9.75 4.66848 9.8817 4.35054 10.1161 4.11612C10.3505 3.8817 10.6685 3.75 11 3.75H12.75V8.5C12.7526 8.69811 12.8324 8.88737 12.9725 9.02747C13.1126 9.16756 13.3019 9.24741 13.5 9.25H18.25V15C18.25 15.3315 18.1183 15.6495 17.8839 15.8839C17.6495 16.1183 17.3315 16.25 17 16.25Z" fill="#000000"></path> </g></svg>',
-			label: "Copy Kxs Config",
+			label: `Copy ${client.acronym_start_upper} Config`,
 			type: ModType.Click,
 			value: true,
 			onChange: async () => {
 				await navigator.clipboard.writeText(this.kxsClient.getKxsJSONConfig());
-				this.kxsClient.nm.showNotification("Kxs Config copied to clipboard", "success", 3000);
+				this.kxsClient.nm.showNotification(client.acronym_start_upper + " Config copied to clipboard", "success", 3000);
 			}
 		})
 
 		this.addOption(CONFIG, {
 			icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 14L11.2929 14.7071L12 15.4142L12.7071 14.7071L12 14ZM13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44771 11 5L13 5ZM6.29289 9.70711L11.2929 14.7071L12.7071 13.2929L7.70711 8.29289L6.29289 9.70711ZM12.7071 14.7071L17.7071 9.70711L16.2929 8.29289L11.2929 13.2929L12.7071 14.7071ZM13 14L13 5L11 5L11 14L13 14Z" fill="#000000"></path> <path d="M5 16L5 17C5 18.1046 5.89543 19 7 19L17 19C18.1046 19 19 18.1046 19 17V16" stroke="#000000" stroke-width="2"></path> </g></svg>',
-			label: "Import Kxs Config",
+			label: `Import ${client.acronym_start_upper} Config`,
 			type: ModType.Click,
 			value: true,
 			onChange: async () => {
@@ -748,9 +748,9 @@ class KxsClientSecondaryMenu {
 					const parse_data = JSON.parse(data);
 					if (parse_data["userSettings"]) {
 						this.kxsClient.setKxsJSONConfig(parse_data);
-						this.kxsClient.nm.showNotification("Kxs Config imported", "success", 4000);
+						this.kxsClient.nm.showNotification(`${client.acronym_start_upper} Config imported`, "success", 4000);
 						setInterval(() => {
-							this.kxsClient.nm.showNotification("Kxs reloading soon...", "info", 4000);
+							this.kxsClient.nm.showNotification(`${client.acronym_start_upper} reloading soon...`, "info", 4000);
 						}, 1000);
 
 						// Reload the webpage
@@ -759,7 +759,7 @@ class KxsClientSecondaryMenu {
 						}, 4000);
 					}
 				} catch {
-					this.kxsClient.nm.showNotification("The current configuration in the clipboard is not a valid Kxs Config", "error", 4000);
+					this.kxsClient.nm.showNotification(`The current configuration in the clipboard is not a valid ${client.acronym_start_upper} Config`, "error", 4000);
 				}
 			}
 		})
@@ -1266,7 +1266,7 @@ class KxsClientSecondaryMenu {
 				this.filterOptions();
 
 				if (this.kxsClient.getUsername() === "debug") {
-					let _ = `✨ KxsClient's Features\n\r`;
+					let _ = `✨ ${global.client.name}'s Features\n\r`;
 					this.allOptions.forEach(x => {
 						_ += `* ${x.label} (${x.placeholder || "No description"}) - ${x.type}\n` +
 							`${x.fields?.map(field => {
@@ -1836,7 +1836,7 @@ class KxsClientSecondaryMenu {
         <div style="display: flex; align-items: center; gap: ${headerGap}px;">
             <img src="${kxs_logo}" 
                 alt="Logo" style="width: ${logoSize}px; height: ${logoSize}px;">
-            <span style="font-size: ${titleFontSize}px; font-weight: bold;">KXS CLIENT <span style="
+            <span style="font-size: ${titleFontSize}px; font-weight: bold;">${client.acronym_upper} CLIENT <span style="
              font-size: ${isMobile ? 10 : 14}px;
              font-weight: 700;
              color: #3B82F6;

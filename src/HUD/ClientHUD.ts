@@ -905,7 +905,7 @@ class KxsClientHUD {
 
 			const title = document.createElement('span');
 			title.className = 'kxs-title';
-			title.innerHTML = '<span>Kxs</span> CLIENT';
+			title.innerHTML = `<span>${client.acronym_start_upper}</span> CLIENT`;
 			header.appendChild(title);
 			menuContainer.insertBefore(header, menuContainer.firstChild);
 		};

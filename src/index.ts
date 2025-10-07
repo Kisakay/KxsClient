@@ -58,7 +58,7 @@ if (window.location.href === "https://kxs.rip/") {
 	} catch {
 	}
 
-	document.title = "KxsClient";
+	document.title = global.client.name;
 
 	const uiStatsLogo = document.querySelector('#ui-stats-logo') as HTMLElement | null;
 	if (uiStatsLogo && kxs_settings.get("isKxsClientLogoEnable") === true) {

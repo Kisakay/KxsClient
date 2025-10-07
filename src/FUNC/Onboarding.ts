@@ -61,7 +61,7 @@ export class OnboardingModal {
 		this.overlay.remove();
 		this.overlay = null;
 		this.isVisible = false;
-		felicitation(true, "https://kxs.rip/assets/o_sound.mp3", "Welcome to KxsClient");
+		felicitation(true, "https://kxs.rip/assets/o_sound.mp3", "Welcome to " + global.client.name);
 		localStorage.setItem("on_boarding_complete", "yes");
 	}
 

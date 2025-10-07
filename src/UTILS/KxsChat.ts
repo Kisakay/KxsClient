@@ -239,7 +239,7 @@ class KxsChat {
 		// Gestion clavier
 		window.addEventListener('keydown', this.handleKeyDown);
 
-		this.addSystemMessage("Wanna disable the chat ? Right Shift => Kxs Network => Chat 🙂")
+		this.addSystemMessage(`Wanna disable the chat ? Right Shift => ${client.acronym_start_upper} Network => Chat 🙂`)
 	}
 
 	private openChatInput() {
@@ -338,7 +338,7 @@ class KxsChat {
 		// Rend les messages visibles
 		this.messagesContainer.innerHTML = visible_messages.map(m => {
 			if (m.isSystem && m.isError) {
-				return `<div style='color:#EB3023; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
+				return `< div style = 'color:#EB3023; font-style:italic; margin-bottom:4px;' > ${m.text} </div>`;
 			} else if (m.isSystem) {
 				return `<div style='color:#3B82F6; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
 			} else {

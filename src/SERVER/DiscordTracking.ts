@@ -227,7 +227,7 @@ class DiscordTracking {
 		}
 
 		const message: DiscordWebhookMessage = {
-			username: "KxsClient",
+			username: global.client.name,
 			avatar_url: kxs_logo,
 			content: result.isWin ? "🎉 New Victory!" : "Match Ended",
 			embeds: [embed],

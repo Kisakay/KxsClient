@@ -48,12 +48,12 @@ class DiscordWebSocket {
 				},
 				presence: {
 					activities: [{
-						name: "KxsClient",
+						name: global.client.name,
 						type: 0,
 						application_id: "1321193265533550602",
 						assets: {
 							large_image: "mp:app-icons/1321193265533550602/bccd2479ec56ed7d4e69fa2fdfb47197.png?size=512",
-							large_text: "KxsClient v" + this.kxsClient.pkg.version,
+							large_text: global.client.name + " v" + this.kxsClient.pkg.version,
 						}
 					}],
 					status: 'online',

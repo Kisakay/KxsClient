@@ -101,7 +101,7 @@ export class BroadcastHUD {
 
 		// Create title
 		const title = document.createElement("div");
-		title.textContent = "BROADCAST MESSAGE FROM KXS CREATOR";
+		title.textContent = `BROADCAST MESSAGE FROM ${client.acronym_upper} CREATOR`;
 		Object.assign(title.style, {
 			fontWeight: "bold",
 			color: "#fff",

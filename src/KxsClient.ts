@@ -163,7 +163,7 @@ export default class KxsClient {
 		};
 
 		this.gridSystem = new GridSystem();
-		this.db = new Browser2Database({ database: "KxsClient", tableName: "gameplay_history" });
+		this.db = new Browser2Database({ database: global.client.name, tableName: "gameplay_history" });
 		// Before all, load local storage
 		this.loadLocalStorage();
 		this.updateLocalStorage();
@@ -445,7 +445,7 @@ export default class KxsClient {
 
 			const res = this.kxsNetwork.getOnlineCount();
 			const count = typeof res === 'number' ? res : '?';
-			if (countEl) countEl.textContent = `${count} Kxs users`;
+			if (countEl) countEl.textContent = `${count} ${client.acronym_start_upper} users`;
 			if (dot) {
 				dot.style.background = '#3fae2a';
 				dot.style.boxShadow = '0 0 8px #3fae2a';
