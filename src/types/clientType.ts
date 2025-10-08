@@ -8,4 +8,6 @@ export interface Client {
 	name: 'KxsClient' | 'KxzClient'
 	acronym_upper: 'KXZ' | "KXS"
 	acronym_start_upper: "Kxz" | "Kxs"
+	application_id: string;
+	rpc_assets: string;
 }
