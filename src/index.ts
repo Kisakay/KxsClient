@@ -44,6 +44,7 @@ if (window.location.href === "https://kxs.rip/") {
 	if (backgroundElement && (
 		!kxs_settings.has("isCustomBackgroundEnabled") ||
 		kxs_settings.get("isCustomBackgroundEnabled") === true
+		&& client.type === 1
 	)
 	) {
 		setTimeout(() => {

@@ -614,7 +614,7 @@ class KxsClientSecondaryMenu {
 			},
 		});
 
-		this.addOption(HUD, {
+		client.type === 1 && this.addOption(HUD, {
 			icon: '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect width="48" height="48" fill="white" fill-opacity="0.01"></rect> <path fill-rule="evenodd" clip-rule="evenodd" d="M37 37C39.2091 37 41 35.2091 41 33C41 31.5272 39.6667 29.5272 37 27C34.3333 29.5272 33 31.5272 33 33C33 35.2091 34.7909 37 37 37Z" fill="#000000"></path> <path d="M20.8535 5.50439L24.389 9.03993" stroke="#000000" stroke-width="4" stroke-linecap="round"></path> <path d="M23.6818 8.33281L8.12549 23.8892L19.4392 35.2029L34.9955 19.6465L23.6818 8.33281Z" stroke="#000000" stroke-width="4" stroke-linejoin="round"></path> <path d="M12 20.0732L28.961 25.6496" stroke="#000000" stroke-width="4" stroke-linecap="round"></path> <path d="M4 43H44" stroke="#000000" stroke-width="4" stroke-linecap="round"></path> </g></svg>',
 			label: "Background Modifiction",
 			type: ModType.Sub,

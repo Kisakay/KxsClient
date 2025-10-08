@@ -800,6 +800,8 @@ export default class KxsClient {
 	}
 
 	loadBackgroundFromLocalStorage() {
+		if (client.type === 2) return;
+
 		const backgroundType = localStorage.getItem("lastBackgroundType");
 		const backgroundValue = localStorage.getItem("lastBackgroundValue");
 
