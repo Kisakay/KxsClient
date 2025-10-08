@@ -26,7 +26,8 @@ function parseImage(image) {
 
 
 console.log(
-	parseImage("https://cdn.discordapp.com/app-icons/1321193265533550602/bccd2479ec56ed7d4e69fa2fdfb47197.png?size=512")
+	parseImage("https://cdn.discordapp.com/app-icons/1321193265533550602/bccd2479ec56ed7d4e69fa2fdfb47197.png?size=512"),
+	parseImage("https://cdn.discordapp.com/avatars/1425487439547334808/22119f9c9881a9543159952f481a89be?size=512")
 )
 
 module.exports = {

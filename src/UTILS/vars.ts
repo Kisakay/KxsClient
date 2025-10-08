@@ -3,12 +3,12 @@ import { Client, ClientType } from "../types/clientType";
 import config from "../../config.json";
 
 export const client: Client = {
-	type: window.location.href.includes("zurviv.io/") ? ClientType.KxzClient : ClientType.KxsClient,
-	name: window.location.href.includes("zurviv.io/") ? "KxzClient" : "KxsClient",
-	acronym_upper: window.location.href.includes("zurviv.io/") ? "KXZ" : "KXS",
-	acronym_start_upper: window.location.href.includes("zurviv.io/") ? "Kxz" : "Kxs",
-	application_id: window.location.href.includes("zurviv.io/") ? "1425487439547334808" : "1321193265533550602",
-	rpc_assets: window.location.href.includes("zurviv.io/") ? "mp:app-icons/1425487439547334808/22119f9c9881a9543159952f481a89be.png?size=512" : "mp:app-icons/1321193265533550602/bccd2479ec56ed7d4e69fa2fdfb47197.png?size=512"
+	type: window.location.href.includes("zurviv.io") ? ClientType.KxzClient : ClientType.KxsClient,
+	name: window.location.href.includes("zurviv.io") ? "KxzClient" : "KxsClient",
+	acronym_upper: window.location.href.includes("zurviv.io") ? "KXZ" : "KXS",
+	acronym_start_upper: window.location.href.includes("zurviv.io") ? "Kxz" : "Kxs",
+	application_id: window.location.href.includes("zurviv.io") ? "1425487439547334808" : "1321193265533550602",
+	rpc_assets: window.location.href.includes("zurviv.io") ? "mp:avatars/1425487439547334808/22119f9c9881a9543159952f481a89be?size=512" : "mp:app-icons/1321193265533550602/bccd2479ec56ed7d4e69fa2fdfb47197.png?size=512"
 }
 
 global.client = client;
