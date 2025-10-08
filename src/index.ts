@@ -12,6 +12,8 @@ import { OnboardingModal } from './FUNC/Onboarding';
 import KxsClient from "./KxsClient";
 
 import { openCreditsWindow, showClickMeAnimation } from "./UTILS/credits-helper";
+import { client } from "./UTILS/vars";
+if (client.type === 2) localStorage.setItem("popupHidden", String(true));
 
 if (window.location.href === "https://kxs.rip/") {
 	/*
