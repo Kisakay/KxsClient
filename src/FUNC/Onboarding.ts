@@ -2,8 +2,13 @@
 // @ts-ignore
 import htmlTemplate from '../assets/onboarding.html?raw';
 // @ts-ignore
+import htmlTemplate2 from '../assets/onboarding_kxz.html?raw';
+
+// @ts-ignore
 import styles from '../assets/onboarding-styles.css?raw';
 import { felicitation } from './Felicitations';
+import { client } from '../UTILS/vars';
+import { ClientType } from '../types/clientType';
 
 export class OnboardingModal {
 	private overlay: HTMLDivElement | null = null;
@@ -35,7 +40,7 @@ export class OnboardingModal {
 
 		// Create overlay element
 		this.overlay = document.createElement('div');
-		this.overlay.innerHTML = htmlTemplate;
+		this.overlay.innerHTML = client.type === ClientType.KxsClient ? htmlTemplate : htmlTemplate2;
 
 		// Get the actual overlay from the created HTML
 		const overlayElement = this.overlay.firstElementChild as HTMLDivElement;
@@ -61,7 +66,9 @@ export class OnboardingModal {
 		this.overlay.remove();
 		this.overlay = null;
 		this.isVisible = false;
-		felicitation(true, "https://kxs.rip/assets/o_sound.mp3", "Welcome to " + global.client.name);
+
+		let welcome_sound = client.type === ClientType.KxsClient ? "https://kxs.rip/assets/o_sound.mp3" : "https://kxs.rip/assets/o_z_sound.mp3"
+		felicitation(true, welcome_sound, "Welcome to " + global.client.name);
 		localStorage.setItem("on_boarding_complete", "yes");
 	}
 
