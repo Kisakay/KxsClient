@@ -160,7 +160,7 @@ class KxsClientSecondaryMenu {
 		let MECHANIC = this.addSection("MECHANIC");
 		let SERVER = this.addSection("SERVER");
 		let MISC = this.addSection("$MISC");
-		let CONFIG = this.addSection("CONFIG");
+		let CONFIG = this.addSection("$CONFIG");
 
 		this.addOption(SERVER, {
 			label: client.acronym_start_upper + " Network",

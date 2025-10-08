@@ -1,4 +1,4 @@
-export const category = ["ALL", "HUD", "SERVER", "MECHANIC", "$MISC", "CONFIG"] as const;
+export const category = ["ALL", "HUD", "SERVER", "MECHANIC", "$MISC", "$CONFIG"] as const;
 export type Category = typeof category[number];
 
 export const X0 = ["Kxs Network", "Developer Options"];
