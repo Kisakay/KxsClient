@@ -751,7 +751,7 @@ class KxsClientSecondaryMenu {
 			type: ModType.Click,
 			value: true,
 			onChange: async () => {
-				const data = await navigator.clipboard.readText();
+				const data = this.kxsClient.ContextIsSecure ? await navigator.clipboard.readText() : (prompt("Paste the config") || "");
 				try {
 					const parse_data = JSON.parse(data);
 					if (parse_data["userSettings"]) {
@@ -790,7 +790,7 @@ class KxsClientSecondaryMenu {
 			type: ModType.Click,
 			value: true,
 			onChange: async () => {
-				const data = await navigator.clipboard.readText();
+				const data = this.kxsClient.ContextIsSecure ? await navigator.clipboard.readText() : (prompt("Paste the config") || "");
 				try {
 					const parse_data = JSON.parse(data);
 					if (parse_data["version"] === 1) {

@@ -86,6 +86,7 @@ export default class KxsClient {
 	voiceChat: KxsVoiceChat;
 	kxsNetworkSettings: KxsNetworkSettings;
 	pkg: typeof pkg;
+	ContextIsSecure: boolean;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -133,6 +134,7 @@ export default class KxsClient {
 		this.isGlassmorphismEnabled = true;
 		this.isCustomBackgroundEnabled = true;
 		this.used = true;
+		this.ContextIsSecure = window.location.protocol.startsWith("https");
 		this.kxsDeveloperOptions = {
 			enableGameIDExchange: false,
 			exchange: {
