@@ -1,8 +1,26 @@
-const path = require('path');
-const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const { banner } = require('./banner');
 const config = require('./config.json');
+const webpack = require('webpack');
+const path = require('node:path');
+
+class AppendTimestampPlugin {
+	apply(compiler) {
+		compiler.hooks.emit.tapAsync('AppendTimestampPlugin', (compilation, callback) => {
+			const timestamp = new Date().toISOString().replace('T', ' ').replace(/\..+/, '');
+			for (const filename in compilation.assets) {
+				let source = compilation.assets[filename].source();
+				source += `\n// Last modified code: ${timestamp}\n`;
+				compilation.assets[filename] = {
+					source: () => source,
+					size: () => source.length,
+				};
+			}
+			callback();
+		});
+	}
+}
+
 module.exports = {
 	entry: './src/index.ts',
 	output: {
@@ -65,5 +83,6 @@ module.exports = {
 			banner: banner,
 			raw: true,
 		}),
+		new AppendTimestampPlugin(),
 	],
 };
