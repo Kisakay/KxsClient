@@ -30,11 +30,13 @@ if (window.location.href === "https://kxs.rip/") {
 	survev_settings.set("language", "en");
 
 	if (localStorage.getItem("on_boarding_complete") !== "yes") {
-		document.addEventListener('DOMContentLoaded', () => {
-			setTimeout(() => {
-				const onboardingModal = new OnboardingModal();
-				onboardingModal.show();
-			}, 1000);
+		window.addEventListener('load', () => {
+			queueMicrotask(() => {
+				requestAnimationFrame(() => {
+					const onboardingModal = new OnboardingModal();
+					onboardingModal.show();
+				});
+			});
 		});
 	}
 
