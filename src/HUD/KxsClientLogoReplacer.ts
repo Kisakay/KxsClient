@@ -7,6 +7,8 @@ const replacementLogo = full_logo;
 const processedElements = new WeakSet();
 
 const replaceLogo = () => {
+	if (global.x) return;
+
 	const elements = document.querySelectorAll(`[style*="${targetLogo}"]`);
 
 	elements.forEach(el => {
@@ -27,6 +29,7 @@ replaceLogo();
 // Throttled function to prevent excessive calls
 let isThrottled = false;
 const throttledReplaceLogo = () => {
+	if (global.x) return;
 	if (isThrottled) return;
 
 	isThrottled = true;
@@ -38,6 +41,7 @@ const throttledReplaceLogo = () => {
 
 // More targeted observer
 const observer = new MutationObserver(mutations => {
+	if (global.x) return;
 	let shouldReplace = false;
 
 	for (const mutation of mutations) {
