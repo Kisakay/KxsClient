@@ -115,3 +115,5 @@ function loadKxs() {
 		}, 1400);
 	}
 }
+
+loadKxs()
