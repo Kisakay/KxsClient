@@ -1,8 +1,4 @@
-// Be sure than kxs client load only in zurvev with specific VAR
-export let IS_ZURVIV = 0x00;
 let href = window.location.href;
-
-/* */if (href.includes("zurviv.io") && IS_ZURVIV !== 0x10f) { global.x = true; } else loadKxs();
 
 import "./UTILS/websocket-hook";
 import "./HUD/KxsClientLogoReplacer";
