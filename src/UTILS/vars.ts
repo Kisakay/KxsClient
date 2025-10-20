@@ -36,6 +36,9 @@ function detectClientFromUrl(): ClientConfig {
 	const href = window.location.href;
 	let defaultClient: ClientConfig | null = null;
 
+	// Extract the hostname from the URL
+	const hostname = new URL(href).hostname;
+
 	// First pass: look for clients with specific domains
 	for (const config of Object.values(CLIENT_REGISTRY)) {
 		// Identify the default client but don't return it yet
@@ -44,8 +47,8 @@ function detectClientFromUrl(): ClientConfig {
 			continue; // Skip to next without returning
 		}
 
-		// Check if the URL matches any of the specific domains
-		if (Array.isArray(config.domains) && config.domains.some(domain => href.includes(domain))) {
+		// Check if the hostname matches any of the specific domains
+		if (Array.isArray(config.domains) && config.domains.some(domain => hostname.includes(domain))) {
 			return config; // Return immediately if a domain matches
 		}
 	}
