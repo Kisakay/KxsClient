@@ -17,7 +17,7 @@ import { openCreditsWindow, showClickMeAnimation } from "./UTILS/credits-helper"
 import { client } from "./UTILS/vars";
 
 function loadKxs() {
-	if (client.type === 2) localStorage.setItem("popupHidden", String(true));
+	if (client.name == "KxzClient") localStorage.setItem("popupHidden", String(true));
 
 	if (href === "https://kxs.rip/") {
 		/*
@@ -52,7 +52,7 @@ function loadKxs() {
 		if (backgroundElement && (
 			!kxs_settings.has("isCustomBackgroundEnabled") ||
 			kxs_settings.get("isCustomBackgroundEnabled") === true
-			&& client.type === 1
+			&& client.options.is_custom_background_enabled
 		)
 		) {
 			setTimeout(() => {

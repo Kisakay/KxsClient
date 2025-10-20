@@ -1,10 +1,16 @@
 import { SimplifiedDatabase } from "../DATABASE/simplified";
-import { ClientConfig, ClientType } from "../types/clientType";
+import { ClientConfig } from "../types/clientType";
 import config from "../../config.json";
+
+// @ts-ignore
+import Kxs_O from '../assets/onboarding.html?raw';
+// @ts-ignore
+import Kxz_O from '../assets/onboarding_kxz.html?raw';
+// @ts-ignore
+import Kxc_O from '../assets/onboarding_kxc.html?raw';
 
 const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 	kxz: {
-		type: ClientType.KxzClient,
 		name: "KxzClient",
 		acronym_upper: "KXZ",
 		acronym_start_upper: "Kxz",
@@ -13,10 +19,29 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		domains: ["zurviv.io"],
 		full_logo: config.base_url + "/assets/KxzLogoFull.png",
 		icon_logo: config.base_url + "/assets/KxzClientLogo.png",
-		welcome_sound: "https://kxs.rip/assets/o_z_sound.mp3"
+		welcome_sound: "https://kxs.rip/assets/o_z_sound.mp3",
+		options: {
+			is_custom_background_enabled: false,
+			is_dollar_sub_category_enable: false,
+			is_background_music_enabled: false,
+			is_game_history_enabled: false,
+			is_counters_enable: false,
+			is_waepon_border_enable: false,
+			is_focus_mode_emable: false,
+			is_health_bar_enable: false,
+			is_discord_related_things_enable: true,
+			is_spotify_player_enable: false,
+			is_custom_crosshair_enabled: false,
+			is_chroma_thingy_enabled: false,
+			is_import_thingy_enabled: false,
+			is_developer_options: false,
+			is_friends_detector_enable: false,
+			is_kill_leader_tracking_enable: true,
+			is_brightness_enable: false
+		},
+		htmlCode: Kxz_O
 	},
 	kxc: {
-		type: ClientType.KxcClient,
 		name: "KxcClient",
 		acronym_upper: "KXC",
 		acronym_start_upper: "Kxc",
@@ -25,10 +50,29 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		domains: ["cursev.io"],
 		full_logo: config.base_url + "/assets/KxcLogoFull.png",
 		icon_logo: config.base_url + "/assets/KxcClientLogo.png",
-		welcome_sound: "https://kxs.rip/assets/o_c_sound.mp3"
+		welcome_sound: "https://kxs.rip/assets/o_c_sound.mp3",
+		options: {
+			is_custom_background_enabled: true,
+			is_dollar_sub_category_enable: true,
+			is_background_music_enabled: true,
+			is_game_history_enabled: true,
+			is_counters_enable: true,
+			is_waepon_border_enable: true,
+			is_focus_mode_emable: true,
+			is_health_bar_enable: true,
+			is_discord_related_things_enable: true,
+			is_spotify_player_enable: true,
+			is_custom_crosshair_enabled: true,
+			is_chroma_thingy_enabled: true,
+			is_import_thingy_enabled: true,
+			is_developer_options: true,
+			is_friends_detector_enable: true,
+			is_kill_leader_tracking_enable: true,
+			is_brightness_enable: true
+		},
+		htmlCode: Kxc_O
 	},
 	kxs: {
-		type: ClientType.KxsClient,
 		name: "KxsClient",
 		acronym_upper: "KXS",
 		acronym_start_upper: "Kxs",
@@ -37,7 +81,27 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		domains: true,
 		full_logo: config.base_url + "/assets/KysClient.gif",
 		icon_logo: config.base_url + "/assets/KysClientLogo.png",
-		welcome_sound: "https://kxs.rip/assets/o_sound.mp3"
+		welcome_sound: "https://kxs.rip/assets/o_sound.mp3",
+		options: {
+			is_custom_background_enabled: true,
+			is_dollar_sub_category_enable: true,
+			is_background_music_enabled: true,
+			is_game_history_enabled: true,
+			is_counters_enable: true,
+			is_waepon_border_enable: true,
+			is_focus_mode_emable: true,
+			is_health_bar_enable: true,
+			is_discord_related_things_enable: true,
+			is_spotify_player_enable: true,
+			is_custom_crosshair_enabled: true,
+			is_chroma_thingy_enabled: true,
+			is_import_thingy_enabled: true,
+			is_developer_options: true,
+			is_friends_detector_enable: true,
+			is_kill_leader_tracking_enable: true,
+			is_brightness_enable: true
+		},
+		htmlCode: Kxs_O
 	},
 };
 

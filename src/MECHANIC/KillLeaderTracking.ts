@@ -160,7 +160,6 @@ class KillLeaderTracker {
 
 	public update(myKills: number) {
 		if (!this.kxsClient.isKillLeaderTrackerEnabled) return;
-		if (client.type === 2) return;
 
 		const killLeaderElement = document.querySelector("#ui-kill-leader-count");
 		this.killLeaderKillCount = parseInt(killLeaderElement?.textContent || "0", 10);

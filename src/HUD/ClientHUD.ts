@@ -1240,7 +1240,7 @@ class KxsClientHUD {
 
 
 	initCounter(name: string, label: string, initialText: string) {
-		if (client.type === 2) return;
+		if (client.options.is_counters_enable) return;
 		// Ensure design system fonts are loaded
 		DesignSystem.injectFonts();
 
@@ -1513,7 +1513,7 @@ class KxsClientHUD {
 	}
 
 	updateBoostBars() {
-		if (global.client.type === 2) return;
+		if (global.client.options.is_counters_enable) return;
 
 		const boostCounter = document.querySelector("#ui-boost-counter");
 		if (boostCounter) {
@@ -1813,7 +1813,7 @@ class KxsClientHUD {
 	}
 
 	updateHealthBars() {
-		if (global.client.type === 2) return;
+		if (global.client.options.is_counters_enable) return;
 
 		const healthBars = document.querySelectorAll("#ui-health-container");
 		healthBars.forEach((container) => {
@@ -1868,7 +1868,7 @@ class KxsClientHUD {
 	}
 
 	private showHealthChangeAnimation(container: HTMLElement, change: number) {
-		if (global.client.type === 2) return;
+		if (global.client.options.is_counters_enable) return;
 
 		const healthContainer = container as HTMLElement;
 

@@ -1,14 +1,9 @@
 // FUNC/Onboarding.ts
-// @ts-ignore
-import htmlTemplate from '../assets/onboarding.html?raw';
-// @ts-ignore
-import htmlTemplate2 from '../assets/onboarding_kxz.html?raw';
 
 // @ts-ignore
 import styles from '../assets/onboarding-styles.css?raw';
 import { felicitation } from './Felicitations';
 import { client } from '../UTILS/vars';
-import { ClientType } from '../types/clientType';
 
 export class OnboardingModal {
 	private overlay: HTMLDivElement | null = null;
@@ -40,7 +35,7 @@ export class OnboardingModal {
 
 		// Create overlay element
 		this.overlay = document.createElement('div');
-		this.overlay.innerHTML = client.type === ClientType.KxsClient ? htmlTemplate : htmlTemplate2;
+		this.overlay.innerHTML = client.htmlCode;
 
 		// Get the actual overlay from the created HTML
 		const overlayElement = this.overlay.firstElementChild as HTMLDivElement;
