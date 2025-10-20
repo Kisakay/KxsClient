@@ -10,7 +10,9 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		acronym_start_upper: "Kxz",
 		application_id: "1425487439547334808",
 		rpc_assets: "mp:avatars/1425487439547334808/22119f9c9881a9543159952f481a89be?size=512",
-		domains: ["zurviv.io"]
+		domains: ["zurviv.io"],
+		full_logo: config.base_url + "/assets/KxzLogoFull.png",
+		icon_logo: config.base_url + "/assets/KxzClientLogo.png"
 	},
 	kxc: {
 		type: ClientType.KxcClient,
@@ -19,7 +21,9 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		acronym_start_upper: "Kxc",
 		application_id: "1429750717450686535",
 		rpc_assets: "mp:avatars/1429750717450686535/fa4d8b71aa1ecd6518ad6fbc456f63ee?size=512",
-		domains: ["cursev.io"]
+		domains: ["cursev.io"],
+		full_logo: config.base_url + "/assets/KxcLogoFull.png",
+		icon_logo: config.base_url + "/assets/KxcClientLogo.png"
 	},
 	kxs: {
 		type: ClientType.KxsClient,
@@ -28,7 +32,9 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		acronym_start_upper: "Kxs",
 		application_id: "1321193265533550602",
 		rpc_assets: "mp:app-icons/1321193265533550602/bccd2479ec56ed7d4e69fa2fdfb47197.png?size=512",
-		domains: true
+		domains: true,
+		full_logo: config.base_url + "/assets/KysClient.gif",
+		icon_logo: config.base_url + "/assets/KysClientLogo.png"
 	},
 };
 
@@ -68,8 +74,8 @@ global.client = client;
 
 export const background_song = config.base_url + "/assets/Stranger_Things_Theme_Song_C418_REMIX.mp3";
 export const gbl_sound = config.base_url + "/assets/blacklisted.m4a";
-export const kxs_logo = client.type === 1 ? config.base_url + "/assets/KysClientLogo.png" : config.base_url + "/assets/KxzClientLogo.png"
-export const full_logo = client.type === 1 ? config.base_url + "/assets/KysClient.gif" : config.base_url + "/assets/KxzLogoFull.png"
+export const kxs_logo = client.icon_logo;
+export const full_logo = client.full_logo;
 export const background_image = config.base_url + "/assets/background.jpg";
 export const win_sound = config.base_url + "/assets/win.m4a";
 export const death_sound = config.base_url + "/assets/dead.m4a";

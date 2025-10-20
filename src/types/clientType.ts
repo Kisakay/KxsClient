@@ -12,4 +12,6 @@ export interface ClientConfig {
 	application_id: string;
 	rpc_assets: string;
 	domains: string[] | boolean;
+	full_logo: string;
+	icon_logo: string;
 }
