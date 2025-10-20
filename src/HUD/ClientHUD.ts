@@ -1240,7 +1240,7 @@ class KxsClientHUD {
 
 
 	initCounter(name: string, label: string, initialText: string) {
-		if (client.options.is_counters_enable) return;
+		if (!client.options.is_counters_enable) return;
 		// Ensure design system fonts are loaded
 		DesignSystem.injectFonts();
 
