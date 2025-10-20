@@ -12,7 +12,8 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		rpc_assets: "mp:avatars/1425487439547334808/22119f9c9881a9543159952f481a89be?size=512",
 		domains: ["zurviv.io"],
 		full_logo: config.base_url + "/assets/KxzLogoFull.png",
-		icon_logo: config.base_url + "/assets/KxzClientLogo.png"
+		icon_logo: config.base_url + "/assets/KxzClientLogo.png",
+		welcome_sound: "https://kxs.rip/assets/o_z_sound.mp3"
 	},
 	kxc: {
 		type: ClientType.KxcClient,
@@ -23,7 +24,8 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		rpc_assets: "mp:avatars/1429750717450686535/fa4d8b71aa1ecd6518ad6fbc456f63ee?size=512",
 		domains: ["cursev.io"],
 		full_logo: config.base_url + "/assets/KxcLogoFull.png",
-		icon_logo: config.base_url + "/assets/KxcClientLogo.png"
+		icon_logo: config.base_url + "/assets/KxcClientLogo.png",
+		welcome_sound: ""
 	},
 	kxs: {
 		type: ClientType.KxsClient,
@@ -34,7 +36,8 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		rpc_assets: "mp:app-icons/1321193265533550602/bccd2479ec56ed7d4e69fa2fdfb47197.png?size=512",
 		domains: true,
 		full_logo: config.base_url + "/assets/KysClient.gif",
-		icon_logo: config.base_url + "/assets/KysClientLogo.png"
+		icon_logo: config.base_url + "/assets/KysClientLogo.png",
+		welcome_sound: "https://kxs.rip/assets/o_sound.mp3"
 	},
 };
 

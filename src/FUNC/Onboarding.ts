@@ -67,7 +67,7 @@ export class OnboardingModal {
 		this.overlay = null;
 		this.isVisible = false;
 
-		let welcome_sound = client.type === ClientType.KxsClient ? "https://kxs.rip/assets/o_sound.mp3" : "https://kxs.rip/assets/o_z_sound.mp3"
+		let welcome_sound = client.welcome_sound;
 		felicitation(true, welcome_sound, "Welcome to " + global.client.name);
 		localStorage.setItem("on_boarding_complete", "yes");
 	}

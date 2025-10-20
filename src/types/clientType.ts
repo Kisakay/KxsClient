@@ -14,4 +14,5 @@ export interface ClientConfig {
 	domains: string[] | boolean;
 	full_logo: string;
 	icon_logo: string;
+	welcome_sound: string;
 }
