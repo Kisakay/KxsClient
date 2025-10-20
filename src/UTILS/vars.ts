@@ -25,7 +25,7 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		domains: ["cursev.io"],
 		full_logo: config.base_url + "/assets/KxcLogoFull.png",
 		icon_logo: config.base_url + "/assets/KxcClientLogo.png",
-		welcome_sound: ""
+		welcome_sound: "https://kxs.rip/assets/o_c_sound.mp3"
 	},
 	kxs: {
 		type: ClientType.KxsClient,
