@@ -635,6 +635,7 @@ export default class KxsClient {
 		};
 
 		await this.discordTracker.trackGameEnd(body);
+		this.kxsNetwork.gameEnded_ExchangeKey(body);
 		this.db.set(new Date().toISOString(), body);
 	}
 
@@ -668,6 +669,7 @@ export default class KxsClient {
 		};
 
 		await this.discordTracker.trackGameEnd(body);
+		this.kxsNetwork.gameEnded_ExchangeKey(body);
 		this.db.set(new Date().toISOString(), body);
 	}
 
