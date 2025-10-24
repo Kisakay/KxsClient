@@ -1,44 +1,6 @@
 import { kxs_logo } from "../UTILS/vars";
 import KxsClient from "../KxsClient";
-
-interface GameResult {
-	username: string;
-	isWin: boolean;
-	kills: number;
-	damageDealt?: number;
-	damageTaken?: number;
-	duration: string;
-	position: string;
-	stuff?: {
-		main_weapon: string | null | undefined;
-		secondary_weapon: string | null | undefined;
-		grenades: string | null | undefined;
-		melees: string | null | undefined
-		soda: string | null | undefined;
-		medkit: string | null | undefined;
-		bandage: string | null | undefined;
-		pills: string | null | undefined;
-		backpack: string | null | undefined;
-		chest: string | null | undefined;
-		helmet: string | null | undefined;
-	};
-}
-
-interface DiscordWebhookMessage {
-	username: string;
-	content: string;
-	embeds?: Array<{
-		title: string;
-		description: string;
-		color: number;
-		fields: Array<{
-			name: string;
-			value: string;
-			inline?: boolean;
-		}>;
-	}>;
-	avatar_url: string;
-}
+import { DiscordWebhookMessage, GameResult } from "../types/GameResult";
 
 const stuff_emojis = {
 	main_weapon: "🔫",
