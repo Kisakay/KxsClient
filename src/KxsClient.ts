@@ -1,7 +1,7 @@
 import { HealthWarning } from "./HUD/MOD/HealthWarning";
 import { KillLeaderTracker } from "./MECHANIC/KillLeaderTracking";
 import { GridSystem } from "./HUD/GridSystem";
-import { DiscordTracking } from "./SERVER/DiscordTracking";
+import { DiscordTracking, GameResult } from "./SERVER/DiscordTracking";
 import { StatsParser } from "./FUNC/StatsParser";
 import { PlayerStats } from "./types/types";
 import { Config } from "./types/configtype";
@@ -624,29 +624,16 @@ export default class KxsClient {
 			this.logger.error("Reading error:", error);
 		}
 
-		const stats = this.getPlayerStats(false);
-		const body = {
-			username: stats.username,
-			kills: stats.kills,
-			damageDealt: stats.damageDealt,
-			damageTaken: stats.damageTaken,
-			duration: stats.duration,
-			position: stats.position,
-			isWin: false,
-		};
+		const body = this.getFinalGameBody();
 
 		await this.discordTracker.trackGameEnd(body);
-		this.kxsNetwork.gameEnded_ExchangeKey(body);
 		this.db.set(new Date().toISOString(), body);
 	}
 
-	private async handlePlayerWin(): Promise<void> {
-		if (this.isWinningAnimationEnabled) {
-			felicitation(this.isWinSoundEnabled, this.soundLibrary.win_sound_url, '#1');
-		}
-
+	public getFinalGameBody(): GameResult {
 		const stats = this.getPlayerStats(true);
-		const body = {
+
+		const body: GameResult = {
 			username: stats.username,
 			kills: stats.kills,
 			damageDealt: stats.damageDealt,
@@ -655,22 +642,30 @@ export default class KxsClient {
 			position: stats.position,
 			isWin: true,
 			stuff: {
-				main_weapon: document.querySelector('#ui-weapon-id-1 .ui-weapon-name')?.textContent,
-				secondary_weapon: document.querySelector('#ui-weapon-id-2 .ui-weapon-name')?.textContent,
-				soda: document.querySelector("#ui-loot-soda .ui-loot-count")?.textContent,
-				melees: document.querySelector('#ui-weapon-id-3 .ui-weapon-name')?.textContent,
-				grenades: document.querySelector(`#ui-weapon-id-4 .ui-weapon-name`)?.textContent,
-				medkit: document.querySelector("#ui-loot-healthkit .ui-loot-count")?.textContent,
-				bandage: document.querySelector("#ui-loot-bandage .ui-loot-count")?.textContent,
-				pills: document.querySelector("#ui-loot-painkiller .ui-loot-count")?.textContent,
-				backpack: document.querySelector("#ui-armor-backpack .ui-armor-level")?.textContent,
-				chest: document.querySelector("#ui-armor-chest .ui-armor-level")?.textContent,
-				helmet: document.querySelector("#ui-armor-helmet .ui-armor-level")?.textContent,
+				main_weapon: document.querySelector('#ui-weapon-id-1 .ui-weapon-name')?.textContent || "",
+				secondary_weapon: document.querySelector('#ui-weapon-id-2 .ui-weapon-name')?.textContent || "",
+				soda: document.querySelector("#ui-loot-soda .ui-loot-count")?.textContent || "",
+				melees: document.querySelector('#ui-weapon-id-3 .ui-weapon-name')?.textContent || "",
+				grenades: document.querySelector(`#ui-weapon-id-4 .ui-weapon-name`)?.textContent || "",
+				medkit: document.querySelector("#ui-loot-healthkit .ui-loot-count")?.textContent || "",
+				bandage: document.querySelector("#ui-loot-bandage .ui-loot-count")?.textContent || "",
+				pills: document.querySelector("#ui-loot-painkiller .ui-loot-count")?.textContent || "",
+				backpack: document.querySelector("#ui-armor-backpack .ui-armor-level")?.textContent || "",
+				chest: document.querySelector("#ui-armor-chest .ui-armor-level")?.textContent || "",
+				helmet: document.querySelector("#ui-armor-helmet .ui-armor-level")?.textContent || "",
 			}
 		};
+		return body;
+	}
+
+	private async handlePlayerWin(): Promise<void> {
+		if (this.isWinningAnimationEnabled) {
+			felicitation(this.isWinSoundEnabled, this.soundLibrary.win_sound_url, '#1');
+		}
+
+		const body = this.getFinalGameBody();
 
 		await this.discordTracker.trackGameEnd(body);
-		this.kxsNetwork.gameEnded_ExchangeKey(body);
 		this.db.set(new Date().toISOString(), body);
 	}
 
