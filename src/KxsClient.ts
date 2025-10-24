@@ -24,6 +24,7 @@ import { KxsDeveloperOptions } from "./types/KxsDeveloperOptions";
 import { ExchangeManager } from "./SERVER/exchangeManager";
 import { felicitation } from "./FUNC/Felicitations";
 import { PingTest } from "./SERVER/Ping";
+import { PlayersAliveMonitor } from "./UTILS/aliveplayer";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
