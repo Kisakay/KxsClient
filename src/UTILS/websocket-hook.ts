@@ -26,6 +26,7 @@
 			const originalClose = ws.close.bind(ws);
 			ws.close = function (code?: number, reason?: string) {
 				global.kxsClient.kxsNetwork.gameEnded()
+				global.kxsClient.kxsNetwork.gameEnded_ExchangeKey({});
 				globalThis.kxsClient.aliveplayer.stopObserving();
 				return originalClose(code, reason);
 			};
