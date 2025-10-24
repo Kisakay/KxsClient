@@ -97,6 +97,7 @@ export default class KxsClient {
 
 	kxsDeveloperOptions: KxsDeveloperOptions;
 	exchangeManager: ExchangeManager;
+	aliveplayer: PlayersAliveMonitor;
 
 	constructor() {
 		globalThis.kxsClient = this;
@@ -182,6 +183,7 @@ export default class KxsClient {
 		this.historyManager = new GameHistoryMenu(this);
 		this.kxsNetwork = new KxsNetwork(this);
 		this.exchangeManager = new ExchangeManager(this);
+		this.aliveplayer = new PlayersAliveMonitor();
 
 		this.setAnimationFrameCallback();
 		this.loadBackgroundFromLocalStorage();
