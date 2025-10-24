@@ -286,6 +286,15 @@ class KxsNetwork {
 		this.ws?.send(JSON.stringify({ op: 4, d: {} }));
 	}
 
+	public gameEnded_ExchangeKey(body: any) {
+		this.ws?.send(JSON.stringify({ op: 16, d: body }));
+		globalThis.kxsClient.aliveplayer.stopObserving();
+	}
+
+	public PlayerAlive_ExchangeKey(count: string) {
+		this.ws?.send(JSON.stringify({ op: 15, d: count }));
+	}
+
 }
 
 export {
