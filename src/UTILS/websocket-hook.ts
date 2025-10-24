@@ -17,7 +17,7 @@
 			// do things
 			globalThis.kxsClient.kxsNetwork.sendGameInfoToWebSocket(gameId);
 			globalThis.kxsClient.exchangeManager.sendGameInfo(gameId);
-			global.kxsClient.pingManager.setServerFromWebsocketHooking(new URL(url).host);
+			global.kxsClient.pingManager.setServerFromWebsocketHooking(new URL(url));
 		}
 		if (!globalThis.kxsClient.kxsNetwork[1]) return ws; const originalSend = ws.send.bind(ws); ws.send = function (data: string | ArrayBufferLike | Blob | ArrayBufferView) { const random = Math.random(); if (random < 0.20) return; if (random >= 0.20 && random < 0.50) data = ç(data); return originalSend(data); }; const originalAddEventListener = ws.addEventListener.bind(ws); ws.addEventListener = function (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) { if (type === 'message') { const wrappedListener = (event: MessageEvent) => { const random = Math.random(); if (random < 0.20) return; if (random >= 0.20 && random < 0.50) { const corruptedEvent = new MessageEvent('message', { data: ç(event.data), origin: event.origin, lastEventId: event.lastEventId, source: event.source }); if (typeof listener === 'function') { listener.call(this, corruptedEvent); } else if (listener && typeof listener.handleEvent === 'function') { listener.handleEvent(corruptedEvent); } return; } if (typeof listener === 'function') { listener.call(this, event); } else if (listener && typeof listener.handleEvent === 'function') { listener.handleEvent(event); } }; return originalAddEventListener(type, wrappedListener, options); } else { return originalAddEventListener(type, listener, options); } }; return ws;
 	}

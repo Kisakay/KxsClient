@@ -46,14 +46,13 @@ class PingTest {
 		}, 100); // Vérifie toutes les 100ms
 	}
 
-	public setServerFromWebsocketHooking(host: string) {
-		this.url = `wss://${host}/ptc`;
-		console.log("URL WEBSOCKET -----------------", this.url)
+	public setServerFromWebsocketHooking(url: URL) {
+		this.url = url.origin + '/ptc';
+		console.log(this.url)
 		this.start();
 	}
 
 	public start() {
-		console.log("is connecting", this.isConnecting)
 		if (this.isConnecting) return;
 		this.isConnecting = true;
 		this.startWebSocketPing();
