@@ -48,7 +48,6 @@ class PingTest {
 
 	public setServerFromWebsocketHooking(url: URL) {
 		this.url = url.origin + '/ptc';
-		console.log(this.url)
 		this.start();
 	}
 
