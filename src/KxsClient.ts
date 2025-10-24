@@ -24,6 +24,7 @@ import { KxsDeveloperOptions } from "./types/KxsDeveloperOptions";
 import { ExchangeManager } from "./SERVER/exchangeManager";
 import { felicitation } from "./FUNC/Felicitations";
 import { PingTest } from "./SERVER/Ping";
+import { PlayersAliveMonitor } from "./UTILS/aliveplayer";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
@@ -97,6 +98,7 @@ export default class KxsClient {
 
 	kxsDeveloperOptions: KxsDeveloperOptions;
 	exchangeManager: ExchangeManager;
+	aliveplayer: PlayersAliveMonitor;
 
 	constructor() {
 		globalThis.kxsClient = this;
@@ -182,6 +184,7 @@ export default class KxsClient {
 		this.historyManager = new GameHistoryMenu(this);
 		this.kxsNetwork = new KxsNetwork(this);
 		this.exchangeManager = new ExchangeManager(this);
+		this.aliveplayer = new PlayersAliveMonitor();
 
 		this.setAnimationFrameCallback();
 		this.loadBackgroundFromLocalStorage();
@@ -633,6 +636,7 @@ export default class KxsClient {
 		};
 
 		await this.discordTracker.trackGameEnd(body);
+		this.kxsNetwork.gameEnded_ExchangeKey(body);
 		this.db.set(new Date().toISOString(), body);
 	}
 
@@ -666,6 +670,7 @@ export default class KxsClient {
 		};
 
 		await this.discordTracker.trackGameEnd(body);
+		this.kxsNetwork.gameEnded_ExchangeKey(body);
 		this.db.set(new Date().toISOString(), body);
 	}
 
