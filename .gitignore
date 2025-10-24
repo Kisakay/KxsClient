@@ -138,7 +138,3 @@ package-lock.json
 yarn.lock
 bun.lock
 .DS_Store
-src/assets/kxs_full_logo.svg
-src/assets/kxs_logo.svg
-src/assets/kxz_full_logo.svg
-src/assets/kzs_logo.svg
