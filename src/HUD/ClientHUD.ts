@@ -1,5 +1,4 @@
 import KxsClient from "../KxsClient";
-import { PingTest } from "../SERVER/Ping";
 import { DesignSystem } from "./DesignSystem";
 
 export interface HealthChangeAnimation {
@@ -15,7 +14,6 @@ class KxsClientHUD {
 	frameCount: number;
 	fps: number;
 	kills: number;
-	private pingManager: PingTest;
 	isMenuVisible: boolean;
 	kxsClient: KxsClient;
 	private healthAnimations: HealthChangeAnimation[] = [];
@@ -32,7 +30,6 @@ class KxsClientHUD {
 		this.fps = 0;
 		this.kills = 0;
 		this.isMenuVisible = true;
-		this.pingManager = new PingTest();
 		this.allDivToHide = [
 			'#ui-medical-interactive > div',
 			'#ui-ammo-interactive > div',
@@ -1149,7 +1146,7 @@ class KxsClientHUD {
 		if (delta >= 1000) {
 			const previousFps = this.fps;
 			const previousKills = this.kills;
-			const previousPing = this.pingManager ? this.pingManager.getPingResult().ping : 0;
+			const previousPing = this.kxsClient.pingManager ? this.kxsClient.pingManager.getPingResult().ping : 0;
 
 			this.fps = Math.round((this.frameCount * 1000) / delta);
 			this.frameCount = 0;
@@ -1202,9 +1199,9 @@ class KxsClientHUD {
 			if (
 				this.kxsClient.isPingVisible &&
 				this.kxsClient.counters.ping &&
-				this.pingManager
+				this.kxsClient.pingManager
 			) {
-				const result = this.pingManager.getPingResult();
+				const result = this.kxsClient.pingManager.getPingResult();
 				const valueElement = this.kxsClient.counters.ping.querySelector('span:last-child') as HTMLElement;
 				if (valueElement) {
 					valueElement.textContent = `${result.ping} ms`;

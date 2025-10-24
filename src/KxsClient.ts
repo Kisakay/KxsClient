@@ -23,6 +23,7 @@ import pkg from "../package.json";
 import { KxsDeveloperOptions } from "./types/KxsDeveloperOptions";
 import { ExchangeManager } from "./SERVER/exchangeManager";
 import { felicitation } from "./FUNC/Felicitations";
+import { PingTest } from "./SERVER/Ping";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
@@ -87,6 +88,7 @@ export default class KxsClient {
 	kxsNetworkSettings: KxsNetworkSettings;
 	pkg: typeof pkg;
 	ContextIsSecure: boolean;
+	pingManager: PingTest;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -185,6 +187,7 @@ export default class KxsClient {
 		this.loadBackgroundFromLocalStorage();
 		this.initDeathDetection();
 		this.discordRPC.connect();
+		this.pingManager = new PingTest();
 		this.hud = new KxsClientHUD(this);
 
 		this.discordTracker = new DiscordTracking(this, this.discordWebhookUrl!);

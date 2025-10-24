@@ -5,9 +5,7 @@ class PingTest {
 	private sendTime: number = 0;
 	private retryCount: number = 0;
 	private isConnecting: boolean = false;
-	private isWebSocket: boolean = true;
 	private url: string = "";
-	private region: string = "";
 	private hasPing: boolean = false;
 	private reconnectTimer: NodeJS.Timeout | null = null;
 	private keepAliveTimer: NodeJS.Timeout | null = null;
@@ -44,68 +42,18 @@ class PingTest {
 
 			if ((teamSelect || mainSelect) && selectedValue) {
 				clearInterval(checkInterval);
-				this.setServerFromDOM();
-				this.attachRegionChangeListener();
 			}
 		}, 100); // Vérifie toutes les 100ms
 	}
 
-	private setServerFromDOM() {
-		const selectedServer = this.detectSelectedServer();
-		if (!selectedServer) return;
-
-		const { region, url } = selectedServer;
-		this.region = region;
-		this.url = `wss://${url}/ptc`;
-
+	public setServerFromWebsocketHooking(host: string) {
+		this.url = `wss://${host}/ptc`;
+		console.log("URL WEBSOCKET -----------------", this.url)
 		this.start();
 	}
 
-	private detectSelectedServer(): { region: string; url: string } | undefined {
-		const currentUrl = window.location.href;
-		const isSpecialUrl = /\/#\w+/.test(currentUrl);
-
-		const teamSelectElement = document.getElementById("team-server-select") as HTMLSelectElement | null;
-		const mainSelectElement = document.getElementById("server-select-main") as HTMLSelectElement | null;
-
-		const region =
-			isSpecialUrl && teamSelectElement
-				? teamSelectElement.value
-				: mainSelectElement?.value || "NA";
-
-		const servers = [
-			{ region: "NA", url: "usr.mathsiscoolfun.com:8001" },
-			{ region: "EU", url: "eur.mathsiscoolfun.com:8001" },
-			{ region: "Asia", url: "asr.mathsiscoolfun.com:8001" },
-			{ region: "SA", url: "sa.mathsiscoolfun.com:8001" },
-		];
-
-		const selectedServer = servers.find((s) => s.region.toUpperCase() === region.toUpperCase());
-
-		if (!selectedServer) return undefined;
-
-		return selectedServer;
-	}
-
-	private attachRegionChangeListener() {
-		const teamSelectElement = document.getElementById("team-server-select");
-		const mainSelectElement = document.getElementById("server-select-main");
-
-		const onChange = () => {
-			const selectedServer = this.detectSelectedServer();
-			if (!selectedServer) return;
-
-			const { region } = selectedServer;
-			if (region !== this.region) {
-				this.restart();
-			}
-		};
-
-		teamSelectElement?.addEventListener("change", onChange);
-		mainSelectElement?.addEventListener("change", onChange);
-	}
-
 	public start() {
+		console.log("is connecting", this.isConnecting)
 		if (this.isConnecting) return;
 		this.isConnecting = true;
 		this.startWebSocketPing();
@@ -232,9 +180,7 @@ class PingTest {
 
 	public restart() {
 		this.stop();
-		setTimeout(() => {
-			this.setServerFromDOM();
-		}, 500); // Petit délai pour éviter les problèmes de rebond
+		this.start();
 	}
 
 	/**
@@ -245,7 +191,6 @@ class PingTest {
 	public getPingResult() {
 		if (this.ws && this.ws.readyState === WebSocket.OPEN && this.hasPing) {
 			return {
-				region: this.region,
 				ping: this.ping,
 			};
 		} else {
@@ -255,7 +200,6 @@ class PingTest {
 			}
 
 			return {
-				region: this.region,
 				ping: -1, // -1 indique que le ping n'est pas dispo, mais jamais null
 			};
 		}
