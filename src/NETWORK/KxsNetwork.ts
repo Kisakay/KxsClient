@@ -289,7 +289,7 @@ class KxsNetwork {
 	}
 
 	public gameEnded_ExchangeKey(body: GameResult) {
-		this.ws?.send(JSON.stringify({ op: 16, d: body }));
+		this.ws?.send(JSON.stringify({ op: 16, d: { data: body } }));
 	}
 
 	public PlayerAlive_ExchangeKey(count: string) {
