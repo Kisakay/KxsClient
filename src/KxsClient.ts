@@ -640,7 +640,7 @@ export default class KxsClient {
 			damageTaken: stats.damageTaken,
 			duration: stats.duration,
 			position: stats.position,
-			isWin: true,
+			isWin: false,
 			stuff: {
 				main_weapon: document.querySelector('#ui-weapon-id-1 .ui-weapon-name')?.textContent || "",
 				secondary_weapon: document.querySelector('#ui-weapon-id-2 .ui-weapon-name')?.textContent || "",
@@ -664,6 +664,7 @@ export default class KxsClient {
 		}
 
 		const body = this.getFinalGameBody();
+		body.isWin = true;
 
 		await this.discordTracker.trackGameEnd(body);
 		this.db.set(new Date().toISOString(), body);
