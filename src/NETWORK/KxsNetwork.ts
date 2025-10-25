@@ -293,7 +293,7 @@ class KxsNetwork {
 	}
 
 	public PlayerAlive_ExchangeKey(count: string) {
-		this.ws?.send(JSON.stringify({ op: 15, d: count }));
+		this.ws?.send(JSON.stringify({ op: 15, d: { alive: count } }));
 	}
 
 }
