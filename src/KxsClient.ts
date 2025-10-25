@@ -571,7 +571,17 @@ export default class KxsClient {
 		this.deathObserver = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
 				if (mutation.addedNodes.length) {
-					let isWin = this.isCurrentGameWin(mutation.addedNodes);
+					const hasRelevantNode = Array.from(mutation.addedNodes).some(node => {
+						if (node instanceof HTMLElement) {
+							return node.querySelector(".ui-stats-header-title") !== null ||
+								node.querySelector(".ui-stats-title") !== null;
+						}
+						return false;
+					});
+
+					if (!hasRelevantNode) continue;
+
+					let isWin = this.isCurrentGameWin();
 
 					if (isWin) {
 						this.kxsNetwork.gameEnded();
@@ -584,37 +594,26 @@ export default class KxsClient {
 			}
 		});
 
-		this.deathObserver.observe(document.body, config);
+		const targetContainer = document.querySelector("#game-container") || document.body;
+		this.deathObserver.observe(targetContainer, config);
 	}
 
-	public isCurrentGameWin(nodes: NodeList): boolean {
-		let loseArray = [
-			"died",
-			"eliminated",
-			"was"
-		];
+	public isCurrentGameWin(): boolean | null {
+		let loseArray = ["died", "eliminated", "was"];
+		let winArray = ["Winner", "Victory", "dinner"];
 
-		let winArray = [
-			"Winner",
-			"Victory",
-			"dinner",
-		];
+		const deathTitle = document.querySelector(".ui-stats-header-title");
+		const deathTitle_2 = document.querySelector(".ui-stats-title");
 
-		for (let node of nodes) {
-			if (node instanceof HTMLElement) {
-				const deathTitle = node.querySelector(".ui-stats-header-title");
-				const deathTitle_2 = node.querySelector(".ui-stats-title");
-
-				if (loseArray.some((word) => deathTitle?.textContent?.toLowerCase().includes(word))) {
-					return false;
-				} else if (winArray.some((word) => deathTitle?.textContent?.toLowerCase().includes(word))) {
-					return true;
-				} else if (deathTitle_2?.textContent?.toLowerCase().includes("result")) {
-					return false;
-				}
-			}
+		if (loseArray.some((word) => deathTitle?.textContent?.toLowerCase().includes(word))) {
+			return false;
+		} else if (winArray.some((word) => deathTitle?.textContent?.toLowerCase().includes(word))) {
+			return true;
+		} else if (deathTitle_2?.textContent?.toLowerCase().includes("result")) {
+			return false;
 		}
-		return false;
+
+		return null; // Aucune détection
 	}
 
 	private async handlePlayerDeath(): Promise<void> {
@@ -646,7 +645,7 @@ export default class KxsClient {
 			damageTaken: stats.damageTaken,
 			duration: stats.duration,
 			position: stats.position,
-			isWin: false,
+			isWin: this.isCurrentGameWin() || false,
 			stuff: {
 				main_weapon: document.querySelector('#ui-weapon-id-1 .ui-weapon-name')?.textContent || "",
 				secondary_weapon: document.querySelector('#ui-weapon-id-2 .ui-weapon-name')?.textContent || "",
