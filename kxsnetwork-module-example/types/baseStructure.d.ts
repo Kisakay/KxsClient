@@ -1,4 +1,4 @@
-import type { KxsRip } from "kxs.rip";
+import type { KxsRip, WebSocketEvents } from "kxs.rip";
 
 export interface CommandType {
 	name: string;
