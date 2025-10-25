@@ -1,6 +1,7 @@
 import KxsClient from "../KxsClient";
 import config from "../../config.json";
 import { BroadcastHUD } from "../HUD/MOD/BroadcastHUD";
+import { GameResult } from "../types/GameResult";
 
 interface KxsNetworkSettings {
 	nickname_anonymized: boolean;
@@ -287,7 +288,7 @@ class KxsNetwork {
 		this.ws?.send(JSON.stringify({ op: 4, d: {} }));
 	}
 
-	public gameEnded_ExchangeKey(body: any) {
+	public gameEnded_ExchangeKey(body: GameResult) {
 		this.ws?.send(JSON.stringify({ op: 16, d: body }));
 	}
 
