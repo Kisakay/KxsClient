@@ -571,7 +571,15 @@ export default class KxsClient {
 		this.deathObserver = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
 				if (mutation.addedNodes.length) {
-					this.checkForDeathScreen(mutation.addedNodes);
+					let isWin = this.isCurrentGameWin(mutation.addedNodes);
+
+					if (isWin) {
+						this.kxsNetwork.gameEnded();
+						this.handlePlayerWin();
+					} else {
+						this.kxsNetwork.gameEnded();
+						this.handlePlayerDeath();
+					}
 				}
 			}
 		});
@@ -579,7 +587,7 @@ export default class KxsClient {
 		this.deathObserver.observe(document.body, config);
 	}
 
-	private checkForDeathScreen(nodes: NodeList): void {
+	public isCurrentGameWin(nodes: NodeList): boolean {
 		let loseArray = [
 			"died",
 			"eliminated",
@@ -592,23 +600,21 @@ export default class KxsClient {
 			"dinner",
 		];
 
-		nodes.forEach((node) => {
+		for (let node of nodes) {
 			if (node instanceof HTMLElement) {
 				const deathTitle = node.querySelector(".ui-stats-header-title");
 				const deathTitle_2 = node.querySelector(".ui-stats-title");
 
 				if (loseArray.some((word) => deathTitle?.textContent?.toLowerCase().includes(word))) {
-					this.kxsNetwork.gameEnded();
-					this.handlePlayerDeath();
+					return false;
 				} else if (winArray.some((word) => deathTitle?.textContent?.toLowerCase().includes(word))) {
-					this.kxsNetwork.gameEnded();
-					this.handlePlayerWin();
+					return true;
 				} else if (deathTitle_2?.textContent?.toLowerCase().includes("result")) {
-					this.kxsNetwork.gameEnded();
-					this.handlePlayerDeath();
+					return false;
 				}
 			}
-		});
+		}
+		return false;
 	}
 
 	private async handlePlayerDeath(): Promise<void> {
