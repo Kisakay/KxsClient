@@ -1,12 +1,12 @@
-import type { KxsRip, WebSocketEvents } from "kxs.rip";
+import type { Client, WebSocketEvents } from "kxs.rip";
 
 export interface CommandType {
 	name: string;
 	description: string;
-	execute: (kxs: KxsRip, data: any, args: string[]) => void;
+	execute: (kxs: Client, data: any, args: string[]) => void;
 }
 
 export interface EventType {
 	name: keyof WebSocketEvents;
-	handler: (kxs: KxsRip, data: any) => void;
+	handler: (kxs: Client, data: any) => void;
 }

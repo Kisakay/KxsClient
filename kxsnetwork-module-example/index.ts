@@ -1,10 +1,10 @@
-import KxsNetwork from "kxs.rip";
+import { Client } from "kxs.rip";
 import config from './config.json';
 import fs from "node:fs";
 import type { EventType } from "./types/baseStructure";
 import { Logger } from "../src/FUNC/Logger";
 
-export const kxs = new KxsNetwork({
+export const kxs = new Client({
 	wsUrl: `wss://${config.KXS_NETWORK_URL}`,
 	apiUrl: `https://${config.KXS_NETWORK_URL}`,
 	username: config.BOT_NAME,

@@ -4,7 +4,7 @@ import config from "../config.json";
 import type { Logger } from "../../src/FUNC/Logger";
 
 declare module "kxs.rip" {
-	interface KxsNetwork {
+	interface Client {
 		commands: Map<string, CommandType>;
 		config: typeof config;
 		logger: Logger
