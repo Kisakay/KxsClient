@@ -16,7 +16,7 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		acronym_start_upper: "Kxz",
 		application_id: "1425487439547334808",
 		rpc_assets: "mp:avatars/1425487439547334808/22119f9c9881a9543159952f481a89be?size=512",
-		domains: ["zurviv.io"],
+		domains: ["zurviv.io", "eu-comp.zurviv.io"],
 		full_logo: config.base_url + "/assets/KxzLogoFull.png",
 		icon_logo: config.base_url + "/assets/KxzClientLogo.png",
 		welcome_sound: "https://kxs.rip/assets/o_z_sound.mp3",
