@@ -1597,7 +1597,7 @@ class KxsClientHUD {
 				ORANGE_RED: '#FF4500',
 				PURPLE: '#800080',
 				TEAL: '#008080',
-				BROWN: '#a48161',
+				BROWN: '#64411f',
 				PINK: '#FFC0CB',
 				DEFAULT: '#FFFFFF'
 			};
