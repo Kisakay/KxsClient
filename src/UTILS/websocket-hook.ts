@@ -12,6 +12,7 @@
 			: new OriginalWebSocket(url);
 		if (typeof url === "string" && url.includes("gameId=")) {
 			const gameId = url.split("gameId=")[1];
+			globalThis.kxsClient.kxsNetwork.actualGameId = gameId;
 
 			// do things
 			globalThis.kxsClient.kxsNetwork.sendGameInfoToWebSocket(gameId);
@@ -27,6 +28,7 @@
 				global.kxsClient.kxsNetwork.gameEnded()
 				global.kxsClient.kxsNetwork.gameEnded_ExchangeKey(global.kxsClient.getFinalGameBody() || {});
 				globalThis.kxsClient.aliveplayer.stopObserving();
+				globalThis.kxsClient.kxsNetwork.actualGameId = null;
 				return originalClose(code, reason);
 			};
 		}

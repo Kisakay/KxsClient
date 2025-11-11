@@ -22,6 +22,7 @@ class KxsNetwork {
 	private kxs_users: string[] = [];
 	public 0x1: boolean = false;
 	public connected: boolean = false;
+	public actualGameId: string | null = null;
 
 	constructor(kxsClient: KxsClient) {
 		this.kxsClient = kxsClient;

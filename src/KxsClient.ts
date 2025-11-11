@@ -25,6 +25,7 @@ import { ExchangeManager } from "./SERVER/exchangeManager";
 import { felicitation } from "./FUNC/Felicitations";
 import { PingTest } from "./SERVER/Ping";
 import { PlayersAliveMonitor } from "./UTILS/aliveplayer";
+import { GameIdHelper } from "./HUD/MOD/GameIdHelper";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
@@ -56,6 +57,7 @@ export default class KxsClient {
 	isKxsClientLogoEnable: boolean;
 	isGlassmorphismEnabled: boolean;
 	isCustomBackgroundEnabled: boolean;
+	isGameIdHelperEnabled: boolean;
 	used: boolean;
 	brightness: number;
 	currentFocusModeState: boolean;
@@ -90,6 +92,7 @@ export default class KxsClient {
 	pkg: typeof pkg;
 	ContextIsSecure: boolean;
 	pingManager: PingTest;
+	gameIdHelper: GameIdHelper;
 
 	protected menu: HTMLElement;
 	animationFrameCallback:
@@ -137,6 +140,7 @@ export default class KxsClient {
 		this.currentFocusModeState = false;
 		this.isGlassmorphismEnabled = true;
 		this.isCustomBackgroundEnabled = true;
+		this.isGameIdHelperEnabled = true;
 		this.used = true;
 		this.ContextIsSecure = window.location.protocol.startsWith("https");
 		this.kxsDeveloperOptions = {
@@ -185,7 +189,7 @@ export default class KxsClient {
 		this.kxsNetwork = new KxsNetwork(this);
 		this.exchangeManager = new ExchangeManager(this);
 		this.aliveplayer = new PlayersAliveMonitor();
-
+		this.gameIdHelper = new GameIdHelper(this);
 		this.setAnimationFrameCallback();
 		this.loadBackgroundFromLocalStorage();
 		this.initDeathDetection();
@@ -548,7 +552,8 @@ export default class KxsClient {
 				kxsDeveloperOptions: this.kxsDeveloperOptions,
 				isGlassmorphismEnabled: this.isGlassmorphismEnabled,
 				isCustomBackgroundEnabled: this.isCustomBackgroundEnabled,
-				used: this.used
+				used: this.used,
+				isGameIdHelperEnabled: this.isGameIdHelperEnabled
 			}),
 		);
 	};
@@ -860,6 +865,7 @@ export default class KxsClient {
 			this.isGlassmorphismEnabled = savedSettings.isGlassmorphismEnabled ?? this.isGlassmorphismEnabled;
 			this.isCustomBackgroundEnabled = savedSettings.isCustomBackgroundEnabled ?? this.isCustomBackgroundEnabled;
 			this.used = savedSettings.used ?? this.used;
+			this.isGameIdHelperEnabled = savedSettings.isGameIdHelperEnabled ?? this.isGameIdHelperEnabled;
 
 			// Apply brightness setting
 			this.applyBrightness(this.brightness);
