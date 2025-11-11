@@ -813,11 +813,14 @@ class KxsClientSecondaryMenu {
 
 	}
 
-	private createOptionCard(option: MenuOption, container: HTMLElement): void {
+	private createOptionCard(option: MenuOption, container: HTMLElement, matchingFields: string[] = []): void {
 		const isMobile = this.kxsClient.isMobile && this.kxsClient.isMobile();
+		// Only highlight if we have matching fields (meaning match is in child, not parent label)
+		const isMatchInChild = matchingFields.length > 0;
+
 		const optionCard = document.createElement("div");
 		Object.assign(optionCard.style, {
-			background: "rgba(31, 41, 55, 0.8)",
+			background: isMatchInChild ? "rgba(59, 130, 246, 0.15)" : "rgba(31, 41, 55, 0.8)",
 			borderRadius: "12px",
 			padding: isMobile ? "12px" : "16px",
 			display: "flex",
@@ -827,19 +830,29 @@ class KxsClientSecondaryMenu {
 			minHeight: isMobile ? "50px" : "60px",
 			width: "100%",
 			boxSizing: "border-box",
-			border: "1px solid rgba(255, 255, 255, 0.1)",
+			border: isMatchInChild
+				? "2px solid rgba(59, 130, 246, 0.5)"
+				: "1px solid rgba(255, 255, 255, 0.1)",
 			transition: "all 0.2s ease"
 		});
 
 		// Hover effect for the card
 		optionCard.addEventListener("mouseenter", () => {
-			optionCard.style.background = "rgba(31, 41, 55, 0.9)";
-			optionCard.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+			optionCard.style.background = isMatchInChild
+				? "rgba(59, 130, 246, 0.25)"
+				: "rgba(31, 41, 55, 0.9)";
+			optionCard.style.border = isMatchInChild
+				? "2px solid rgba(59, 130, 246, 0.7)"
+				: "1px solid rgba(255, 255, 255, 0.2)";
 		});
 
 		optionCard.addEventListener("mouseleave", () => {
-			optionCard.style.background = "rgba(31, 41, 55, 0.8)";
-			optionCard.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+			optionCard.style.background = isMatchInChild
+				? "rgba(59, 130, 246, 0.15)"
+				: "rgba(31, 41, 55, 0.8)";
+			optionCard.style.border = isMatchInChild
+				? "2px solid rgba(59, 130, 246, 0.5)"
+				: "1px solid rgba(255, 255, 255, 0.1)";
 		});
 
 		const iconContainer = document.createElement("div");
@@ -850,8 +863,12 @@ class KxsClientSecondaryMenu {
 			display: "flex",
 			alignItems: "center",
 			justifyContent: "center",
-			background: "rgba(59, 130, 246, 0.1)",
-			border: "1px solid rgba(59, 130, 246, 0.2)",
+			background: isMatchInChild
+				? "rgba(59, 130, 246, 0.2)"
+				: "rgba(59, 130, 246, 0.1)",
+			border: isMatchInChild
+				? "1px solid rgba(59, 130, 246, 0.4)"
+				: "1px solid rgba(59, 130, 246, 0.2)",
 			flexShrink: "0"
 		});
 		iconContainer.innerHTML = option.icon || '';
@@ -875,6 +892,25 @@ class KxsClientSecondaryMenu {
 			overflow: "hidden",
 			textOverflow: "ellipsis"
 		});
+
+		// Add subtitle if match is in child fields
+		if (isMatchInChild) {
+			const subtitle = document.createElement("div");
+			const fieldsText = matchingFields.length === 1
+				? matchingFields[0]
+				: `${matchingFields.slice(0, 2).join(", ")}${matchingFields.length > 2 ? ` +${matchingFields.length - 2}` : ""}`;
+			subtitle.textContent = `Founded in: ${fieldsText}`;
+			Object.assign(subtitle.style, {
+				fontSize: isMobile ? "11px" : "12px",
+				fontWeight: "400",
+				color: "rgba(147, 197, 253, 0.9)",
+				marginTop: "2px",
+				whiteSpace: "nowrap",
+				overflow: "hidden",
+				textOverflow: "ellipsis"
+			});
+			contentContainer.appendChild(subtitle);
+		}
 
 		let control: null | HTMLElement = null;
 
@@ -952,17 +988,28 @@ class KxsClientSecondaryMenu {
 						const optionKey = `${option.label}-${section.category}`;
 
 						// Check if option matches search term (including subfields)
+						const labelMatches = this.searchTerm !== '' && option.label.toLowerCase().includes(this.searchTerm);
+						const categoryMatches = this.searchTerm !== '' && section.category.toLowerCase().includes(this.searchTerm);
+
+						// Search in sub-menu fields and track which fields match
+						let matchingFields: string[] = [];
+						if (this.searchTerm !== '' && option.fields) {
+							matchingFields = option.fields
+								.filter(field => field.label.toLowerCase().includes(this.searchTerm))
+								.map(field => field.label);
+						}
+
 						const matchesSearch = this.searchTerm === '' ||
-							option.label.toLowerCase().includes(this.searchTerm) ||
-							section.category.toLowerCase().includes(this.searchTerm) ||
-							// Search in sub-menu fields
-							(option.fields && option.fields.some(field =>
-								field.label.toLowerCase().includes(this.searchTerm)
-							));
+							labelMatches ||
+							categoryMatches ||
+							matchingFields.length > 0;
 
 						if (!displayedOptions.has(optionKey) && matchesSearch) {
 							displayedOptions.add(optionKey);
-							this.createOptionCard(option, gridContainer);
+							// Only pass matching fields if label doesn't match (match is only in child)
+							// This way we highlight parent only when search is found in children
+							const shouldHighlightParent = matchingFields.length > 0 && !labelMatches && !categoryMatches;
+							this.createOptionCard(option, gridContainer, shouldHighlightParent ? matchingFields : []);
 						}
 					});
 				}
