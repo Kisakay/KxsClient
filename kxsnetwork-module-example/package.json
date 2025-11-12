@@ -10,6 +10,6 @@
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
-		"kxs.rip": "^1.7.1"
+		"kxs.rip": "^1.7.3"
 	}
 }
