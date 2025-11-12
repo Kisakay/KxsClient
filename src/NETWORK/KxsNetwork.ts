@@ -125,7 +125,9 @@ class KxsNetwork {
 				username: this.getUsername(),
 				isVoiceChat: this.kxsClient.isVoiceChatEnabled,
 				v: this.capitalizeFirstLetter(global.client.name) + "@" + this.kxsClient.pkg.version,
-				exchangeKey: this.kxsClient.kxsDeveloperOptions.exchange.password || null
+				exchangeKey: this.kxsClient.kxsDeveloperOptions.exchange.password || null,
+				isMobile: this.kxsClient.isMobile(),
+				isSecure: this.kxsClient.ContextIsSecure
 			}
 		};
 		this.send(payload);
