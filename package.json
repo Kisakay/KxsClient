@@ -24,6 +24,7 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
+		"js-confetti": "^0.13.1",
 		"semver": "^7.7.2"
 	}
 }

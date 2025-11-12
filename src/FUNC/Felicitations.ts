@@ -1,77 +1,44 @@
+import JSConfetti from 'js-confetti';
 
 export function felicitation(enable: boolean, win_sound_url: string, text: string) {
+	const jsConfetti = new JSConfetti();
+
 	const goldText = document.createElement("div");
 	goldText.textContent = text;
-	goldText.style.position = "fixed";
-	goldText.style.top = "50%";
-	goldText.style.left = "50%";
-	goldText.style.transform = "translate(-50%, -50%)";
-	goldText.style.fontSize = "80px";
-	goldText.style.color = "gold";
-	goldText.style.textShadow = "2px 2px 4px rgba(0,0,0,0.3)";
-	goldText.style.zIndex = "10000";
+	Object.assign(goldText.style, {
+		position: "fixed",
+		top: "50%",
+		left: "50%",
+		transform: "translate(-50%, -50%)",
+		fontSize: "80px",
+		color: "gold",
+		textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+		zIndex: "10000",
+		pointerEvents: "none",
+		fontWeight: "bold"
+	});
 	document.body.appendChild(goldText);
 
-	function createConfetti() {
-		const colors = [
-			"#ff0000",
-			"#00ff00",
-			"#0000ff",
-			"#ffff00",
-			"#ff00ff",
-			"#00ffff",
-			"gold",
-		];
-		const confetti = document.createElement("div");
+	const duration = 2000;
+	const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#FFD700'];
 
-		confetti.style.position = "fixed";
-		confetti.style.width = Math.random() * 10 + 5 + "px";
-		confetti.style.height = Math.random() * 10 + 5 + "px";
-		confetti.style.backgroundColor =
-			colors[Math.floor(Math.random() * colors.length)];
-		confetti.style.borderRadius = "50%";
-		confetti.style.zIndex = "9999";
-
-		confetti.style.left = Math.random() * 100 + "vw";
-		confetti.style.top = "-20px";
-
-		document.body.appendChild(confetti);
-
-		let posY = -20;
-		let posX = parseFloat(confetti.style.left);
-		let rotation = 0;
-		let speedY = Math.random() * 2 + 1;
-		let speedX = Math.random() * 2 - 1;
-
-		function fall() {
-			posY += speedY;
-			posX += speedX;
-			rotation += 5;
-
-			confetti.style.top = posY + "px";
-			confetti.style.left = posX + "vw";
-			confetti.style.transform = `rotate(${rotation}deg)`;
-
-			if (posY < window.innerHeight) {
-				requestAnimationFrame(fall);
-			} else {
-				confetti.remove();
-			}
-		}
-
-		fall();
-	}
+	jsConfetti.addConfetti({
+		confettiColors: colors,
+		confettiRadius: 6,
+		confettiNumber: 500,
+		emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸'],
+	});
 
 	const confettiInterval = setInterval(() => {
-		for (let i = 0; i < 5; i++) {
-			createConfetti();
-		}
-	}, 100);
+		jsConfetti.addConfetti({
+			confettiColors: colors,
+			confettiRadius: 5,
+			confettiNumber: 150,
+		});
+	}, 300);
 
-	if (enable) {
-		const audio = new Audio(
-			win_sound_url,
-		);
+	if (enable && win_sound_url) {
+		const audio = new Audio(win_sound_url);
 		audio.play().catch((err) => console.error("Erreur lecture:", err));
 	}
 
@@ -79,6 +46,10 @@ export function felicitation(enable: boolean, win_sound_url: string, text: strin
 		clearInterval(confettiInterval);
 		goldText.style.transition = "opacity 1s";
 		goldText.style.opacity = "0";
-		setTimeout(() => goldText.remove(), 1000);
-	}, 5000);
+
+		setTimeout(() => {
+			goldText.remove();
+			jsConfetti.clearCanvas();
+		}, 1000);
+	}, duration);
 }
