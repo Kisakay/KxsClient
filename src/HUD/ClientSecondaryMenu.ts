@@ -655,7 +655,7 @@ class KxsClientSecondaryMenu {
 							localStorage.removeItem("lastBackgroundFile");
 							localStorage.removeItem("lastBackgroundType");
 							localStorage.removeItem("lastBackgroundValue");
-							this.kxsClient.loadBackgroundFromLocalStorage();
+							this.kxsClient.loadBackgroundFromLocalStorage(true);
 
 						} else if (choice === "1") {
 							const newBackgroundUrl = prompt(

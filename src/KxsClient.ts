@@ -30,6 +30,7 @@ import { GameIdHelper } from "./HUD/MOD/GameIdHelper";
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
 	private onlineMenuInterval: number | null = null;
+	private backgroundInterval: number | null = null;
 	private deathObserver: MutationObserver | null = null;
 	lastFrameTime: DOMHighResTimeStamp;
 
@@ -815,10 +816,16 @@ export default class KxsClient {
 		}
 	}
 
-	loadBackgroundFromLocalStorage() {
+	loadBackgroundFromLocalStorage(applyImmediately: boolean = false) {
 		if (!client.options.is_custom_background_enabled) return;
 		const backgroundElement = document.getElementById("background");
 		if (!backgroundElement) return;
+
+		// Clear any existing background interval
+		if (this.backgroundInterval !== null) {
+			clearInterval(this.backgroundInterval);
+			this.backgroundInterval = null;
+		}
 
 		// Retrieve values from localStorage
 		const backgroundType = localStorage.getItem("lastBackgroundType");
@@ -865,37 +872,41 @@ export default class KxsClient {
 			};
 		};
 
+		// Function to apply background
+		const applyBackground = (imageUrl: string) => {
+			backgroundElement.style.backgroundImage = `url("${imageUrl}")`;
+			extractDominantColor(imageUrl, (color) => {
+				console.log(`
+					
+					
+					
+					`, color)
+				document.body.style.backgroundColor = color;
+			});
+		};
+
 		// Priority to stored background if everything is valid
 		if (backgroundType && backgroundValue && this.isCustomBackgroundEnabled && isCustomEnabled) {
-			return setInterval(() => {
-				backgroundElement.style.backgroundImage = `url(${backgroundValue})`;
-
-				// Extract and apply dominant color
-				extractDominantColor(backgroundValue, (color) => {
-					console.log(`
-					
-					
-					
-					`, color)
-					document.body.style.backgroundColor = color;
-				});
-			}, 2900);
+			// Apply immediately if requested, otherwise wait
+			if (applyImmediately) {
+				applyBackground(backgroundValue);
+			}
+			this.backgroundInterval = setInterval(() => {
+				applyBackground(backgroundValue);
+			}, 2900) as unknown as number;
 		} else if (isCustomEnabled && client.options.is_custom_background_enabled) {
-			// Fallback if no stored background
-			return setTimeout(() => {
-				backgroundElement.style.backgroundImage = `url("${background_image}")`;
-
-				// Extract and apply dominant color
-				extractDominantColor(background_image, (color) => {
-					console.log(`
-					
-					
-					
-					`, color)
-					document.body.style.backgroundColor = color;
-				});
-			}, 2900);
-			return;
+			// Fallback if no stored background - apply default background
+			if (applyImmediately) {
+				applyBackground(background_image);
+			} else {
+				setTimeout(() => {
+					applyBackground(background_image);
+				}, 2900);
+			}
+			// Set interval to keep applying default background
+			this.backgroundInterval = setInterval(() => {
+				applyBackground(background_image);
+			}, 2900) as unknown as number;
 		}
 	}
 
