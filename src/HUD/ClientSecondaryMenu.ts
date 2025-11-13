@@ -655,16 +655,16 @@ class KxsClientSecondaryMenu {
 							localStorage.removeItem("lastBackgroundFile");
 							localStorage.removeItem("lastBackgroundType");
 							localStorage.removeItem("lastBackgroundValue");
+							this.kxsClient.loadBackgroundFromLocalStorage();
 
-							backgroundElement.style.backgroundImage = `url(${background_image})`;
 						} else if (choice === "1") {
 							const newBackgroundUrl = prompt(
 								"Enter the URL of the new background image:",
 							);
 							if (newBackgroundUrl) {
-								backgroundElement.style.backgroundImage = `url(${newBackgroundUrl})`;
 								this.kxsClient.saveBackgroundToLocalStorage(newBackgroundUrl);
 								alert("Background updated successfully!");
+								this.kxsClient.loadBackgroundFromLocalStorage();
 							}
 						} else if (choice === "2") {
 							const fileInput = document.createElement("input");
@@ -675,9 +675,10 @@ class KxsClientSecondaryMenu {
 								if (file) {
 									const reader = new FileReader();
 									reader.onload = () => {
-										backgroundElement.style.backgroundImage = `url(${reader.result})`;
 										this.kxsClient.saveBackgroundToLocalStorage(file);
 										alert("Background updated successfully!");
+										this.kxsClient.loadBackgroundFromLocalStorage();
+
 									};
 									reader.readAsDataURL(file);
 								}

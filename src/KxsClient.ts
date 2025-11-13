@@ -867,24 +867,35 @@ export default class KxsClient {
 
 		// Priority to stored background if everything is valid
 		if (backgroundType && backgroundValue && this.isCustomBackgroundEnabled && isCustomEnabled) {
-			setInterval(() => {
+			return setInterval(() => {
 				backgroundElement.style.backgroundImage = `url(${backgroundValue})`;
 
 				// Extract and apply dominant color
 				extractDominantColor(backgroundValue, (color) => {
+					console.log(`
+					
+					
+					
+					`, color)
 					document.body.style.backgroundColor = color;
 				});
 			}, 2900);
 		} else if (isCustomEnabled && client.options.is_custom_background_enabled) {
 			// Fallback if no stored background
-			setTimeout(() => {
+			return setTimeout(() => {
 				backgroundElement.style.backgroundImage = `url("${background_image}")`;
 
 				// Extract and apply dominant color
 				extractDominantColor(background_image, (color) => {
+					console.log(`
+					
+					
+					
+					`, color)
 					document.body.style.backgroundColor = color;
 				});
 			}, 2900);
+			return;
 		}
 	}
 
