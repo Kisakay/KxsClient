@@ -46,20 +46,6 @@ function loadKxs() {
 
 		const loadingScreen = new LoadingScreen(kxs_logo);
 		loadingScreen.show();
-
-		const backgroundElement = document.getElementById("background");
-
-		if (backgroundElement && (
-			!kxs_settings.has("isCustomBackgroundEnabled") ||
-			kxs_settings.get("isCustomBackgroundEnabled") === true
-			&& client.options.is_custom_background_enabled
-		)
-		) {
-			setTimeout(() => {
-				backgroundElement.style.backgroundImage = `url("${background_image}")`
-			}, 2900);
-		}
-
 		setFavicon(kxs_logo);
 
 		try {

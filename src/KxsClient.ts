@@ -10,7 +10,7 @@ import { DiscordWebSocket } from "./SERVER/DiscordRichPresence";
 import { NotificationManager } from "./HUD/MOD/NotificationManager";
 import { KxsClientSecondaryMenu } from "./HUD/ClientSecondaryMenu";
 import { SoundLibrary } from "./types/SoundLibrary";
-import { background_song, gbl_sound, death_sound, full_logo, win_sound, survev_settings } from "./UTILS/vars";
+import { background_song, gbl_sound, death_sound, full_logo, win_sound, survev_settings, kxs_settings, background_image } from "./UTILS/vars";
 import { KxsClientHUD } from "./HUD/ClientHUD";
 import { Logger } from "./FUNC/Logger";
 import { Browser2Database } from "./DATABASE/browser2";
@@ -817,15 +817,74 @@ export default class KxsClient {
 
 	loadBackgroundFromLocalStorage() {
 		if (!client.options.is_custom_background_enabled) return;
+		const backgroundElement = document.getElementById("background");
+		if (!backgroundElement) return;
 
+		// Retrieve values from localStorage
 		const backgroundType = localStorage.getItem("lastBackgroundType");
 		const backgroundValue = localStorage.getItem("lastBackgroundValue");
 
-		const backgroundElement = document.getElementById("background");
-		if (backgroundElement && backgroundType && backgroundValue && this.isCustomBackgroundEnabled) {
+		// Check custom settings
+		const isCustomEnabled = kxs_settings.has("isCustomBackgroundEnabled")
+			? kxs_settings.get("isCustomBackgroundEnabled")
+			: true;
+
+		// Function to extract dominant color from an image
+		const extractDominantColor = (imageUrl: string, callback: { (color: any): void; (color: any): void; (arg0: string): void; }) => {
+			const img = new Image();
+			img.crossOrigin = "Anonymous";
+			img.src = imageUrl;
+
+			img.onload = () => {
+				const canvas = document.createElement('canvas');
+				canvas.width = img.width;
+				canvas.height = img.height;
+				const ctx = canvas.getContext('2d')!;
+				ctx.drawImage(img, 0, 0);
+
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+				let r = 0, g = 0, b = 0, count = 0;
+
+				for (let i = 0; i < imageData.length; i += 4) {
+					r += imageData[i];
+					g += imageData[i + 1];
+					b += imageData[i + 2];
+					count++;
+				}
+
+				r = Math.floor(r / count);
+				g = Math.floor(g / count);
+				b = Math.floor(b / count);
+
+				const dominantColor = `rgb(${r}, ${g}, ${b})`;
+				callback(dominantColor);
+			};
+
+			img.onerror = () => {
+				console.error('Error loading image for color extraction');
+			};
+		};
+
+		// Priority to stored background if everything is valid
+		if (backgroundType && backgroundValue && this.isCustomBackgroundEnabled && isCustomEnabled) {
 			setInterval(() => {
 				backgroundElement.style.backgroundImage = `url(${backgroundValue})`;
-			}, 2900)
+
+				// Extract and apply dominant color
+				extractDominantColor(backgroundValue, (color) => {
+					document.body.style.backgroundColor = color;
+				});
+			}, 2900);
+		} else if (isCustomEnabled && client.options.is_custom_background_enabled) {
+			// Fallback if no stored background
+			setTimeout(() => {
+				backgroundElement.style.backgroundImage = `url("${background_image}")`;
+
+				// Extract and apply dominant color
+				extractDominantColor(background_image, (color) => {
+					document.body.style.backgroundColor = color;
+				});
+			}, 2900);
 		}
 	}
 
