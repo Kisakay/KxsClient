@@ -1,65 +1,32 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg
-width="400"
-height="400"
-viewBox="50 40 240 240"
-version="1.1"
-id="svg1"
-xmlns:xlink="http://www.w3.org/1999/xlink"
-xmlns="http://www.w3.org/2000/svg"
-xmlns:svg="http://www.w3.org/2000/svg">
-<defs
-id="defs1">
-<linearGradient
-id="linearGradient3">
-<stop
-style="stop-color:#50C878;stop-opacity:1;"
-offset="0"
-id="stop3" />
-<stop
-style="stop-color:#2E8B57;stop-opacity:1;"
-offset="1"
-id="stop4" />
-</linearGradient>
-<linearGradient
-id="linearGradient1">
-<stop
-style="stop-color:#5FFBBD;stop-opacity:1;"
-offset="0"
-id="stop1" />
-<stop
-style="stop-color:#00D98C;stop-opacity:1;"
-offset="1"
-id="stop2" />
-</linearGradient>
-<linearGradient
-xlink:href="#linearGradient1"
-id="linearGradient2"
-x1="61.406559"
-y1="132.29167"
-x2="203.17679"
-y2="132.29167"
-gradientUnits="userSpaceOnUse"
-gradientTransform="matrix(1.5067,0,0,1.5067,-30.675896,-40.573906)" />
-<radialGradient
-xlink:href="#linearGradient3"
-id="radialGradient4"
-cx="132.29167"
-cy="132.29167"
-fx="132.29167"
-fy="132.29167"
-r="70.885117"
-gradientUnits="userSpaceOnUse"
-gradientTransform="matrix(1.5067,0,0,1.5067,-30.675896,-40.573906)" />
-</defs>
-<g
-id="layer1">
-<circle
-style="mix-blend-mode:normal;fill:url(#radialGradient4);stroke:url(#linearGradient2);stroke-width:18.8332;stroke-dasharray:none;stroke-opacity:1"
-id="path1"
-cx="168.64799"
-cy="158.74998"
-r="104.26759" />
-</g>
+<svg width="400"
+	height="400"
+	viewBox="50 40 240 240"
+	version="1.1"
+	id="svg1"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:svg="http://www.w3.org/2000/svg">
+	<defs>
+		<linearGradient id="linearGradient2" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" style="stop-color:#000000; stop-opacity:1;" />
+			<stop offset="0.33" style="stop-color:#1a1a1a; stop-opacity:1;" />
+			<stop offset="0.66" style="stop-color:#2d2d2d; stop-opacity:1;" />
+			<stop offset="1" style="stop-color:#333333; stop-opacity:1;" />
+		</linearGradient>
+
+		<radialGradient id="radialGradient4" cx="50%" cy="50%" r="70%">
+			<stop offset="0" style="stop-color:#2a2a2a; stop-opacity:1;" />
+			<stop offset="0.3" style="stop-color:#1a1a1a; stop-opacity:1;" />
+			<stop offset="0.7" style="stop-color:#0d0d0d; stop-opacity:1;" />
+			<stop offset="1" style="stop-color:#000000; stop-opacity:1;" />
+		</radialGradient>
+	</defs>
+
+	<g>
+		<circle
+			cx="168.64799"
+			cy="158.74998"
+			r="104.26759"
+			style="fill:url(#radialGradient4); stroke:url(#linearGradient2); stroke-width:18.8332;" />
+	</g>
 </svg>
