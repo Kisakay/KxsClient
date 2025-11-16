@@ -25,17 +25,9 @@ export function felicitation(enable: boolean, win_sound_url: string, text: strin
 	jsConfetti.addConfetti({
 		confettiColors: colors,
 		confettiRadius: 6,
-		confettiNumber: 500,
+		confettiNumber: 300,
 		emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸'],
 	});
-
-	const confettiInterval = setInterval(() => {
-		jsConfetti.addConfetti({
-			confettiColors: colors,
-			confettiRadius: 5,
-			confettiNumber: 150,
-		});
-	}, 300);
 
 	if (enable && win_sound_url) {
 		const audio = new Audio(win_sound_url);
@@ -43,7 +35,6 @@ export function felicitation(enable: boolean, win_sound_url: string, text: strin
 	}
 
 	setTimeout(() => {
-		clearInterval(confettiInterval);
 		goldText.style.transition = "opacity 1s";
 		goldText.style.opacity = "0";
 
