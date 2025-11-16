@@ -59,6 +59,7 @@ export default class KxsClient {
 	isGlassmorphismEnabled: boolean;
 	isCustomBackgroundEnabled: boolean;
 	isGameIdHelperEnabled: boolean;
+	isCustomMusicEnabled: boolean;
 	used: boolean;
 	brightness: number;
 	currentFocusModeState: boolean;
@@ -142,6 +143,8 @@ export default class KxsClient {
 		this.isGlassmorphismEnabled = true;
 		this.isCustomBackgroundEnabled = true;
 		this.isGameIdHelperEnabled = true;
+		this.isCustomMusicEnabled = true;
+
 		this.used = true;
 		this.ContextIsSecure = window.location.protocol.startsWith("https");
 		this.kxsDeveloperOptions = {
@@ -554,7 +557,8 @@ export default class KxsClient {
 				isGlassmorphismEnabled: this.isGlassmorphismEnabled,
 				isCustomBackgroundEnabled: this.isCustomBackgroundEnabled,
 				used: this.used,
-				isGameIdHelperEnabled: this.isGameIdHelperEnabled
+				isGameIdHelperEnabled: this.isGameIdHelperEnabled,
+				isCustomMusicEnabled: this.isCustomMusicEnabled
 			}),
 		);
 	};
@@ -947,6 +951,7 @@ export default class KxsClient {
 			this.isCustomBackgroundEnabled = savedSettings.isCustomBackgroundEnabled ?? this.isCustomBackgroundEnabled;
 			this.used = savedSettings.used ?? this.used;
 			this.isGameIdHelperEnabled = savedSettings.isGameIdHelperEnabled ?? this.isGameIdHelperEnabled;
+			this.isCustomMusicEnabled = savedSettings.isCustomMusicEnabled ?? this.isCustomMusicEnabled;
 
 			// Apply brightness setting
 			this.applyBrightness(this.brightness);

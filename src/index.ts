@@ -29,7 +29,10 @@ function loadKxs() {
 			- Avoiding intercepting another page as the root page
 		*/
 
-		intercept("audio/ambient/menu_music_01.mp3", kxs_settings.get("soundLibrary.background_sound_url") || background_song);
+		console.log(kxs_settings.has("isCustomMusicEnabled"), kxs_settings.get("isCustomMusicEnabled"))
+		if ((kxs_settings.has("isCustomMusicEnabled") && kxs_settings.get("isCustomMusicEnabled"))) {
+			intercept("audio/ambient/menu_music_01.mp3", kxs_settings.get("soundLibrary.background_sound_url") || background_song);
+		}
 
 		survev_settings.set("language", "en");
 

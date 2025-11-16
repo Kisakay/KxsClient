@@ -357,6 +357,17 @@ class KxsClientSecondaryMenu {
 			},
 		});
 
+		this.addOption(HUD, {
+			label: "Main Menu Custom Music",
+			value: this.kxsClient.isCustomMusicEnabled,
+			type: ModType.Toggle,
+			icon: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15 1H4V9H3C1.34315 9 0 10.3431 0 12C0 13.6569 1.34315 15 3 15C4.65685 15 6 13.6569 6 12V5H13V9H12C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12V1Z" fill="#000000" style="--darkreader-inline-fill: var(--darkreader-background-000000, #000000);" data-darkreader-inline-fill=""></path> </g></svg>',
+			onChange: () => {
+				this.kxsClient.isCustomMusicEnabled = !this.kxsClient.isCustomMusicEnabled
+				this.kxsClient.updateLocalStorage()
+			},
+		});
+
 		client.options.is_waepon_border_enable && this.addOption(HUD, {
 			label: "Chromatic Weapon Border",
 			value: this.kxsClient.isGunBorderChromatic,
