@@ -1947,7 +1947,7 @@ class KxsClientSecondaryMenu {
             </svg>
             ${isMobile ? '' : 'Join Discord'}
           </button>
-          <button style="
+          <button id="closeMenuBtn" style="
             padding: ${closeBtnPadding}px;
             background: none;
             border: none;
@@ -2016,10 +2016,13 @@ class KxsClientSecondaryMenu {
 			});
 		});
 
-		const closeButton = header.querySelector('button');
-		closeButton?.addEventListener('click', () => {
-			this.toggleMenuVisibility();
-		});
+		const closeButton = header.querySelector('#closeMenuBtn');
+		if (closeButton) {
+			this.blockMousePropagation(closeButton as HTMLElement);
+			closeButton.addEventListener('click', () => {
+				this.toggleMenuVisibility();
+			});
+		}
 
 		// Discord button event listener
 		const discordButton = header.querySelector('#discordBtn');
