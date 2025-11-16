@@ -1,6 +1,6 @@
 {
 	"name": "kxsclient",
-	"version": "2.7.4",
+	"version": "2.7.5",
 	"main": "index.js",
 	"namespace": "https://github.com/Kisakay/KxsClient",
 	"icon": "https://kxs.rip/assets/KysClientLogo.png",
