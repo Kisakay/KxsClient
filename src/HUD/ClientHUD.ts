@@ -458,64 +458,87 @@ class KxsClientHUD {
 			return;
 		}
 
-		// Nettoie la règle cursor:none si on repasse sur un curseur natif
-		const hideCursorStyle = document.getElementById('kxs-hide-cursor-style');
-		if (hideCursorStyle) hideCursorStyle.remove();
+		// Pour les images statiques aussi : masquer le curseur natif et utiliser une image qui suit la souris
+		// Ajoute une règle CSS globale pour cacher le curseur natif partout
+		let hideCursorStyle = document.getElementById('kxs-hide-cursor-style') as HTMLStyleElement | null;
+		if (!hideCursorStyle) {
+			hideCursorStyle = document.createElement('style');
+			hideCursorStyle.id = 'kxs-hide-cursor-style';
+			hideCursorStyle.innerHTML = `
+			* { cursor: none !important; }
+			*:hover { cursor: none !important; }
+			*:active { cursor: none !important; }
+			*:focus { cursor: none !important; }
+			input, textarea { cursor: none !important; }
+			a, button, [role="button"], [onclick] { cursor: none !important; }
+			[draggable="true"] { cursor: none !important; }
+			[style*="cursor: pointer"] { cursor: none !important; }
+			[style*="cursor: text"] { cursor: none !important; }
+			[style*="cursor: move"] { cursor: none !important; }
+			[style*="cursor: crosshair"] { cursor: none !important; }
+			[style*="cursor: ew-resize"] { cursor: none !important; }
+			[style*="cursor: ns-resize"] { cursor: none !important; }
+		`;
+			document.head.appendChild(hideCursorStyle);
+		}
 
-		// Sinon, méthode classique : précharge l'image, puis applique le curseur natif
+		// Créer l'image du curseur personnalisé
+		const cursorImg = document.createElement('img');
+		cursorImg.src = url;
+		cursorImg.style.position = 'fixed';
+		cursorImg.style.pointerEvents = 'none';
+		cursorImg.style.zIndex = '99999';
+		cursorImg.style.left = '0px';
+		cursorImg.style.top = '0px';
+
+		// Précharger l'image pour obtenir ses dimensions
 		const img = new window.Image();
 		img.onload = () => {
-			const style = document.createElement('style');
-			style.id = styleId;
-			style.innerHTML = `
-			* { cursor: url('${url}'), auto !important; }
-			*:hover { cursor: url('${url}'), pointer !important; }
-			*:active { cursor: url('${url}'), pointer !important; }
-			*:focus { cursor: url('${url}'), text !important; }
-			input, textarea { cursor: url('${url}'), text !important; }
-			a, button, [role="button"], [onclick] { cursor: url('${url}'), pointer !important; }
-			[draggable="true"] { cursor: url('${url}'), move !important; }
-			[style*="cursor: pointer"] { cursor: url('${url}'), pointer !important; }
-			[style*="cursor: text"] { cursor: url('${url}'), text !important; }
-			[style*="cursor: move"] { cursor: url('${url}'), move !important; }
-			[style*="cursor: crosshair"] { cursor: url('${url}'), crosshair !important; }
-			[style*="cursor: ew-resize"] { cursor: url('${url}'), ew-resize !important; }
-			[style*="cursor: ns-resize"] { cursor: url('${url}'), ns-resize !important; }
-		`;
-			document.head.appendChild(style);
-		};
-		img.onerror = () => {
-			document.body.style.cursor = '';
-			this.kxsClient.logger.warn('Impossible de charger le curseur personnalisé:', url);
-		};
-		img.src = url;
+			// Définir la taille de l'image du curseur (par défaut utiliser les dimensions de l'image)
+			// Ou limiter à une taille raisonnable si trop grande
+			const maxSize = 64; // Taille maximale recommandée pour un curseur
+			let width = img.width;
+			let height = img.height;
 
-
-		// --- MutationObserver pour forcer le curseur même si le jeu le réécrit ---
-		this.customCursorObserver = new MutationObserver((mutations) => {
-			for (const mutation of mutations) {
-				if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-					const node = mutation.target as HTMLElement;
-					if (node.style && node.style.cursor && !node.style.cursor.includes(url)) {
-						node.style.cursor = `url('${url}'), auto`;
-					}
+			if (width > maxSize || height > maxSize) {
+				// Redimensionner en conservant le ratio
+				if (width > height) {
+					height = (height * maxSize) / width;
+					width = maxSize;
+				} else {
+					width = (width * maxSize) / height;
+					height = maxSize;
 				}
 			}
-		});
-		// Observe tous les changements de style sur tout le body et sur #game-touch-area
-		const gameTouchArea = document.getElementById('game-touch-area');
-		if (gameTouchArea) {
-			this.customCursorObserver.observe(gameTouchArea, {
-				attributes: true,
-				attributeFilter: ['style'],
-				subtree: true
-			});
-		}
-		this.customCursorObserver.observe(document.body, {
-			attributes: true,
-			attributeFilter: ['style'],
-			subtree: true
-		});
+
+			cursorImg.style.width = `${width}px`;
+			cursorImg.style.height = `${height}px`;
+
+			// Stocker la référence à l'image
+			this.animatedCursorImg = cursorImg as HTMLImageElement;
+			document.body.appendChild(cursorImg);
+
+			// Créer le handler pour suivre la souris
+			this._mousemoveHandler = (e: MouseEvent) => {
+				if (this.animatedCursorImg) {
+					// Ajuster la position pour centrer le curseur sur la position de la souris
+					const offsetX = width / 2;
+					const offsetY = height / 2;
+					this.animatedCursorImg.style.left = `${e.clientX - offsetX}px`;
+					this.animatedCursorImg.style.top = `${e.clientY - offsetY}px`;
+				}
+			};
+
+			document.addEventListener('mousemove', this._mousemoveHandler);
+		};
+
+		img.onerror = () => {
+			this.kxsClient.logger.warn('Impossible de charger le curseur personnalisé:', url);
+			// Si l'image ne charge pas, supprimer le style qui cache le curseur
+			if (hideCursorStyle) hideCursorStyle.remove();
+		};
+
+		img.src = url;
 	}
 
 	private escapeMenu() {
