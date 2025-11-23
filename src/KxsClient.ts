@@ -26,6 +26,7 @@ import { felicitation } from "./FUNC/Felicitations";
 import { PingTest } from "./SERVER/Ping";
 import { PlayersAliveMonitor } from "./UTILS/aliveplayer";
 import { GameIdHelper } from "./HUD/MOD/GameIdHelper";
+import { AdBlockerBaby } from "./FUNC/AdBlocker";
 
 export default class KxsClient {
 	private onlineMenuElement: HTMLDivElement | null = null;
@@ -60,6 +61,7 @@ export default class KxsClient {
 	isCustomBackgroundEnabled: boolean;
 	isGameIdHelperEnabled: boolean;
 	isCustomMusicEnabled: boolean;
+	isAdsBlockerEnabled: boolean;
 	used: boolean;
 	brightness: number;
 	currentFocusModeState: boolean;
@@ -84,6 +86,7 @@ export default class KxsClient {
 	nm: NotificationManager;
 	soundLibrary: SoundLibrary;
 	hud: KxsClientHUD;
+	adsBlocker: AdBlockerBaby;
 	logger: Logger;
 	db: Browser2Database;
 	historyManager: GameHistoryMenu;
@@ -144,6 +147,7 @@ export default class KxsClient {
 		this.isCustomBackgroundEnabled = true;
 		this.isGameIdHelperEnabled = true;
 		this.isCustomMusicEnabled = true;
+		this.isAdsBlockerEnabled = true;
 
 		this.used = true;
 		this.ContextIsSecure = window.location.protocol.startsWith("https");
@@ -200,6 +204,7 @@ export default class KxsClient {
 		this.discordRPC.connect();
 		this.pingManager = new PingTest();
 		this.hud = new KxsClientHUD(this);
+		this.adsBlocker = new AdBlockerBaby();
 
 		this.discordTracker = new DiscordTracking(this, this.discordWebhookUrl!);
 		this.chat = new KxsChat(this);
@@ -207,6 +212,10 @@ export default class KxsClient {
 
 		if (this.isSpotifyPlayerEnabled) {
 			this.createSimpleSpotifyPlayer();
+		}
+
+		if (this.isAdsBlockerEnabled) {
+			this.adsBlocker.run();
 		}
 
 		this.MainMenuCleaning();
@@ -558,7 +567,8 @@ export default class KxsClient {
 				isCustomBackgroundEnabled: this.isCustomBackgroundEnabled,
 				used: this.used,
 				isGameIdHelperEnabled: this.isGameIdHelperEnabled,
-				isCustomMusicEnabled: this.isCustomMusicEnabled
+				isCustomMusicEnabled: this.isCustomMusicEnabled,
+				isAdsBlockerEnabled: this.isAdsBlockerEnabled
 			}),
 		);
 	};
@@ -952,6 +962,7 @@ export default class KxsClient {
 			this.used = savedSettings.used ?? this.used;
 			this.isGameIdHelperEnabled = savedSettings.isGameIdHelperEnabled ?? this.isGameIdHelperEnabled;
 			this.isCustomMusicEnabled = savedSettings.isCustomMusicEnabled ?? this.isCustomMusicEnabled;
+			this.isAdsBlockerEnabled = savedSettings.isAdsBlockerEnabled ?? this.isAdsBlockerEnabled;
 
 			// Apply brightness setting
 			this.applyBrightness(this.brightness);
