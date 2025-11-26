@@ -103,6 +103,37 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		},
 		htmlCode: Kxs_O
 	},
+	kxr: {
+		name: "KxrClient",
+		acronym_upper: "KXR",
+		acronym_start_upper: "Kxr",
+		application_id: "1443348644580298842",
+		rpc_assets: "mp:app-icons/1443348644580298842/686b62c3843ad74516ca81728ac50e6f.png?size=512",
+		domains: true,
+		full_logo: config.base_url + "/assets/KxrClient.png",
+		icon_logo: config.base_url + "/assets/KxrClientLogo.png",
+		welcome_sound: "https://kxs.rip/assets/o_r_sound.mp3",
+		options: {
+			is_custom_background_enabled: true,
+			is_dollar_sub_category_enable: true,
+			is_background_music_enabled: true,
+			is_game_history_enabled: true,
+			is_counters_enable: true,
+			is_waepon_border_enable: true,
+			is_focus_mode_emable: true,
+			is_health_bar_enable: true,
+			is_discord_related_things_enable: true,
+			is_spotify_player_enable: true,
+			is_custom_crosshair_enabled: true,
+			is_chroma_thingy_enabled: true,
+			is_import_thingy_enabled: true,
+			is_developer_options: true,
+			is_friends_detector_enable: true,
+			is_kill_leader_tracking_enable: true,
+			is_brightness_enable: true
+		},
+		htmlCode: Kxs_O
+	},
 };
 
 function detectClientFromUrl(): ClientConfig {

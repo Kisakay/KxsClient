@@ -1,0 +1,30 @@
+<svg width="400"
+	height="400"
+	viewBox="50 40 240 240"
+	version="1.1"
+	id="svg1"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:svg="http://www.w3.org/2000/svg">
+	<defs>
+		<linearGradient id="linearGradient2" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" style="stop-color:#3e502e; stop-opacity:1;" />
+			<stop offset="0.33" style="stop-color:#4a6038; stop-opacity:1;" />
+			<stop offset="0.66" style="stop-color:#567042; stop-opacity:1;" />
+			<stop offset="1" style="stop-color:#62804c; stop-opacity:1;" />
+		</linearGradient>
+		<radialGradient id="radialGradient4" cx="50%" cy="50%" r="70%">
+			<stop offset="0" style="stop-color:#6a8854; stop-opacity:1;" />
+			<stop offset="0.3" style="stop-color:#567042; stop-opacity:1;" />
+			<stop offset="0.7" style="stop-color:#4a6038; stop-opacity:1;" />
+			<stop offset="1" style="stop-color:#3e502e; stop-opacity:1;" />
+		</radialGradient>
+	</defs>
+	<g>
+		<circle
+			cx="168.64799"
+			cy="158.74998"
+			r="104.26759"
+			style="fill:url(#radialGradient4); stroke:url(#linearGradient2); stroke-width:18.8332;" />
+	</g>
+</svg>
