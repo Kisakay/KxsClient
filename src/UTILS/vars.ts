@@ -8,6 +8,8 @@ import Kxs_O from '../assets/onboarding.html?raw';
 import Kxz_O from '../assets/onboarding_kxz.html?raw';
 // @ts-ignore
 import Kxc_O from '../assets/onboarding_kxc.html?raw';
+// @ts-ignore
+import Kxc_R from '../assets/onboarding_kxr.html?raw';
 
 const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 	kxz: {
@@ -109,8 +111,8 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		acronym_start_upper: "Kxr",
 		application_id: "1443348644580298842",
 		rpc_assets: "mp:app-icons/1443348644580298842/686b62c3843ad74516ca81728ac50e6f.png?size=512",
-		domains: true,
-		full_logo: config.base_url + "/assets/KxrClient.png",
+		domains: ["resurviv.biz"],
+		full_logo: config.base_url + "/assets/KxrLogoFull.png",
 		icon_logo: config.base_url + "/assets/KxrClientLogo.png",
 		welcome_sound: "https://kxs.rip/assets/o_r_sound.mp3",
 		options: {
