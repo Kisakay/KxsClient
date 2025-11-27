@@ -9,7 +9,7 @@ import Kxz_O from '../assets/onboarding_kxz.html?raw';
 // @ts-ignore
 import Kxc_O from '../assets/onboarding_kxc.html?raw';
 // @ts-ignore
-import Kxc_R from '../assets/onboarding_kxr.html?raw';
+import Kxr_O from '../assets/onboarding_kxr.html?raw';
 
 const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 	kxz: {
@@ -134,7 +134,7 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 			is_kill_leader_tracking_enable: true,
 			is_brightness_enable: true
 		},
-		htmlCode: Kxs_O
+		htmlCode: Kxr_O
 	},
 };
 
