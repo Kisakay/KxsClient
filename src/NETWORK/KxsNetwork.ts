@@ -146,6 +146,7 @@ class KxsNetwork {
 				{
 					if (d?.uuid) {
 						this.connected = true;
+						this.spoofJoinGame();
 					}
 				}
 				break;
@@ -267,6 +268,18 @@ class KxsNetwork {
 			this.send(payload);
 		} catch (error) {
 		}
+	}
+
+	// WARNING: ONLY FOR GLOBAL CHAT TESTING!!
+	public spoofJoinGame() {
+		// Send a fake game ID to trick the server
+		const payload = {
+			op: 3, // Assuming op: 3 is used for joining games (based on other code)
+			d: {
+				gameId: "menu_lobby_" + Math.random().toString(36).substring(7)
+			}
+		};
+		this.send(payload);
 	}
 
 	public getWebSocketURL() {

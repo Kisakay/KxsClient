@@ -25,6 +25,7 @@
 	},
 	"dependencies": {
 		"js-confetti": "^0.13.1",
+		"kxs.rip": "^1.7.5",
 		"semver": "^7.7.2"
 	}
 }
