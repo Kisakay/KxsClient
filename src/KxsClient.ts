@@ -890,11 +890,6 @@ export default class KxsClient {
 		const applyBackground = (imageUrl: string) => {
 			backgroundElement.style.backgroundImage = `url("${imageUrl}")`;
 			extractDominantColor(imageUrl, (color) => {
-				console.log(`
-					
-					
-					
-					`, color)
 				document.body.style.backgroundColor = color;
 			});
 		};
