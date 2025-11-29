@@ -66,13 +66,16 @@ class KxsChat {
 		chatBox.appendChild(messagesContainer);
 		this.messagesContainer = messagesContainer;
 		chatBox.style.position = 'absolute';
-		chatBox.style.left = '50%';
-		chatBox.style.bottom = '38px';
-		chatBox.style.transform = 'translateX(-50%)';
-		chatBox.style.minWidth = '260px';
-		chatBox.style.maxWidth = '480px';
+
+		// Chatbox Position (Right under kills section!)
+		chatBox.style.left = '20px';
+		chatBox.style.top = '360px';
+		chatBox.style.bottom = 'unset';
+		//chatBox.style.transform = 'translateX(-50%)';
+		chatBox.style.minWidth = '160px';
+		chatBox.style.maxWidth = '280px';
 		chatBox.style.minHeight = '150px'; // Hauteur minimale pour le chat box
-		chatBox.style.height = '200px'; // Hauteur par défaut
+		chatBox.style.height = '150px'; // Hauteur par défaut
 
 		// Apply styling based on glassmorphism toggle
 		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
@@ -338,13 +341,16 @@ class KxsChat {
 		// Rend les messages visibles
 		this.messagesContainer.innerHTML = visible_messages.map(m => {
 			if (m.isSystem && m.isError) {
-				return `< div style = 'color:#EB3023; font-style:italic; margin-bottom:4px;' > ${m.text} </div>`;
+				return `<div style='color:#EB3023; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
 			} else if (m.isSystem) {
 				return `<div style='color:#3B82F6; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
 			} else {
 				return `<div style='margin-bottom:4px;'><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</div>`;
 			}
 		}).join('');
+
+		// Scroll to the bottom of the chatbox
+		this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
 	}
 
 	public toggleChat() {
