@@ -47,8 +47,12 @@ class KxsChat {
 	};
 
 	private initGlobalChat() {
-		const area = document.getElementById('game-touch-area');
-		if (!area) return;
+		
+		if (this.chatBox) return;
+
+		// FIX: Always attach to body so it doesn't get hidden when game-touch-area is hidden
+		const area = document.body;
+
 		// Chat box
 		const chatBox = document.createElement('div');
 		chatBox.id = 'kxs-chat-box';
@@ -65,14 +69,18 @@ class KxsChat {
 		messagesContainer.style.maxHeight = '300px'; // Hauteur maximale pour éviter qu'il ne devienne trop grand
 		chatBox.appendChild(messagesContainer);
 		this.messagesContainer = messagesContainer;
-		chatBox.style.position = 'absolute';
-		chatBox.style.left = '50%';
-		chatBox.style.bottom = '38px';
-		chatBox.style.transform = 'translateX(-50%)';
-		chatBox.style.minWidth = '260px';
-		chatBox.style.maxWidth = '480px';
+		
+		// FIX: Use 'fixed' instead of 'absolute' to keep it on screen regardless of scrolling/containers
+		chatBox.style.position = 'fixed';
+
+		// Chatbox Position (Right under kills section!)
+		chatBox.style.left = '20px';
+		chatBox.style.top = '360px';
+		chatBox.style.bottom = 'unset';
+		chatBox.style.minWidth = '160px';
+		chatBox.style.maxWidth = '260px';
 		chatBox.style.minHeight = '150px'; // Hauteur minimale pour le chat box
-		chatBox.style.height = '200px'; // Hauteur par défaut
+		chatBox.style.height = '150px'; // Hauteur par défaut
 
 		// Apply styling based on glassmorphism toggle
 		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
@@ -97,7 +105,10 @@ class KxsChat {
 		chatBox.style.padding = '7px 14px 4px 14px';
 		chatBox.style.fontSize = '15px';
 		chatBox.style.fontFamily = 'inherit';
-		chatBox.style.zIndex = '1002';
+		
+		// FIX: Increase Z-Index to ensure it sits above the Homepage Menu (which often has high z-index)
+		chatBox.style.zIndex = '999999';
+		
 		chatBox.style.pointerEvents = 'auto';
 		chatBox.style.cursor = 'move'; // Indique que c'est déplaçable
 		chatBox.style.display = 'flex';
@@ -338,13 +349,16 @@ class KxsChat {
 		// Rend les messages visibles
 		this.messagesContainer.innerHTML = visible_messages.map(m => {
 			if (m.isSystem && m.isError) {
-				return `< div style = 'color:#EB3023; font-style:italic; margin-bottom:4px;' > ${m.text} </div>`;
+				return `<div style='color:#EB3023; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
 			} else if (m.isSystem) {
 				return `<div style='color:#3B82F6; font-style:italic; margin-bottom:4px;'>${m.text}</div>`;
 			} else {
 				return `<div style='margin-bottom:4px;'><b style='color:#3fae2a;'>${m.user}</b>: ${m.text}</div>`;
 			}
 		}).join('');
+
+		// Scroll to the bottom of the chatbox
+		this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
 	}
 
 	public toggleChat() {
