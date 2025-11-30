@@ -92,7 +92,8 @@ class KxsNetwork {
 			op: 7,
 			d: {
 				user: this.getUsername(),
-				text
+				text,
+				gameId: this.actualGameId || "lobby"
 			}
 		};
 		this.send(payload);
@@ -146,7 +147,6 @@ class KxsNetwork {
 				{
 					if (d?.uuid) {
 						this.connected = true;
-						this.spoofJoinGame();
 					}
 				}
 				break;
@@ -270,17 +270,6 @@ class KxsNetwork {
 		}
 	}
 
-	// WARNING: ONLY FOR GLOBAL CHAT TESTING!!
-	public spoofJoinGame(gameId: string = "lobby") {
-		// Send a game ID to allow menu-state chat
-		const payload = {
-			op: 3,
-			d: {
-				gameId: gameId
-			}
-		};
-		this.send(payload);
-	}
 
 	public getWebSocketURL() {
 		let isSecured = this.HOST.startsWith("https://");
