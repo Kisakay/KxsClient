@@ -271,12 +271,12 @@ class KxsNetwork {
 	}
 
 	// WARNING: ONLY FOR GLOBAL CHAT TESTING!!
-	public spoofJoinGame() {
-		// Send a fake game ID to trick the server
+	public spoofJoinGame(gameId: string = "lobby") {
+		// Send a game ID to allow menu-state chat
 		const payload = {
-			op: 3, // Assuming op: 3 is used for joining games (based on other code)
+			op: 3,
 			d: {
-				gameId: "menu_lobby_" + Math.random().toString(36).substring(7)
+				gameId: gameId
 			}
 		};
 		this.send(payload);

@@ -78,9 +78,14 @@ class KxsChat {
 		chatBox.style.top = '360px';
 		chatBox.style.bottom = 'unset';
 		chatBox.style.minWidth = '160px';
-		chatBox.style.maxWidth = '280px';
+		chatBox.style.maxWidth = '260px';
 		chatBox.style.minHeight = '150px'; // Hauteur minimale pour le chat box
 		chatBox.style.height = '150px'; // Hauteur par défaut
+
+		// Set gameId to "lobby" when on the main menu (actualGameId is null)
+		if (this.kxsClient.kxsNetwork.actualGameId === null) {
+			this.kxsClient.kxsNetwork.spoofJoinGame("lobby");
+		}
 
 		// Apply styling based on glassmorphism toggle
 		const is_glassmorphism_enabled = this.kxsClient.isGlassmorphismEnabled;
