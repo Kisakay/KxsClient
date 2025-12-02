@@ -142,6 +142,20 @@ class KxsChat {
 			this.resizeObserver.observe(this.chatBox);
 		}
 
+		const preventMiddleClickScroll = (e: MouseEvent) => {
+			if (e.button === 1) { // Button 1 = clic molette
+				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				return false;
+			}
+		};
+
+		chatBox.addEventListener('mousedown', preventMiddleClickScroll, true);
+		chatBox.addEventListener('auxclick', preventMiddleClickScroll, true);
+		messagesContainer.addEventListener('mousedown', preventMiddleClickScroll, true);
+		messagesContainer.addEventListener('auxclick', preventMiddleClickScroll, true);
+
 		// Rendre la chatbox draggable et resizable UNIQUEMENT si le menu secondaire est ouvert
 		const updateChatDraggable = () => {
 			const isMenuOpen = this.kxsClient.secondaryMenu.getMenuVisibility()
@@ -150,6 +164,7 @@ class KxsChat {
 				chatBox.style.pointerEvents = 'auto';
 				chatBox.style.cursor = 'move';
 				chatBox.style.resize = 'both'; // Active le redimensionnement avec l'indicateur gris
+				chatBox.style.cursor = 'move';
 				this.kxsClient.makeDraggable(chatBox, 'kxs-chat-box-position');
 			} else {
 				chatBox.style.pointerEvents = 'none';
