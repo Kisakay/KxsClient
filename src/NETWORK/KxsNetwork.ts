@@ -92,7 +92,8 @@ class KxsNetwork {
 			op: 7,
 			d: {
 				user: this.getUsername(),
-				text
+				text,
+				gameId: this.actualGameId || "lobby"
 			}
 		};
 		this.send(payload);
@@ -268,6 +269,7 @@ class KxsNetwork {
 		} catch (error) {
 		}
 	}
+
 
 	public getWebSocketURL() {
 		let isSecured = this.HOST.startsWith("https://");
