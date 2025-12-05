@@ -1172,7 +1172,7 @@ export default class KxsClient {
 		// Spotify iframe
 		const iframe = document.createElement('iframe');
 		iframe.id = 'spotify-player-iframe';
-		iframe.src = 'https://open.spotify.com/embed/playlist/37i9dQZEVXcJZyENOWUFo7?utm_source=generator&theme=1';
+		iframe.src = 'https://open.spotify.com/embed/playlist/37i9dQZF1DWZ7VnoXD1s7S?utm_source=generator&theme=1';
 		iframe.width = '100%';
 		iframe.height = '152px';
 		iframe.frameBorder = '0';
@@ -1220,7 +1220,7 @@ export default class KxsClient {
 		`;
 
 		changePlaylistBtn.addEventListener('click', () => {
-			const id = prompt('Enter the Spotify playlist ID:', '37i9dQZEVXcJZyENOWUFo7');
+			const id = prompt('Enter the Spotify playlist ID:', '37i9dQZF1DWZ7VnoXD1s7S');
 			if (id) {
 				iframe.src = `https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0`;
 				localStorage.setItem('kxsSpotifyPlaylist', id);
