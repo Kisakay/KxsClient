@@ -2115,6 +2115,9 @@ class KxsClientSecondaryMenu {
 	}
 
 	private addDragListeners(): void {
+		let baseLeft = 0;
+		let baseTop = 0;
+
 		this.menu.addEventListener('mousedown', (e: MouseEvent) => {
 			// Ne pas arrêter la propagation si l'événement vient d'un élément interactif
 			if (
@@ -2135,34 +2138,61 @@ class KxsClientSecondaryMenu {
 			) {
 				this.isDragging = true;
 				const rect = this.menu.getBoundingClientRect();
+
+				// Utiliser la position réelle en pixels (getBoundingClientRect donne toujours des px)
+				baseLeft = rect.left;
+				baseTop = rect.top;
+
+				// Convertir la position actuelle en px absolus pour éviter les problèmes avec % ou transform
+				// Cela permet de basculer proprement depuis left: 50% + transform vers left: Xpx
+				this.menu.style.left = `${baseLeft}px`;
+				this.menu.style.top = `${baseTop}px`;
+				this.menu.style.transform = 'none';
+
 				this.dragOffset = {
 					x: e.clientX - rect.left,
 					y: e.clientY - rect.top
 				};
+
+				// Optimiser pour le drag: désactiver la transition et activer will-change
+				this.menu.style.transition = 'none';
+				this.menu.style.willChange = 'transform';
 				this.menu.style.cursor = "grabbing";
 			}
 		});
 
-		// Optimized: use throttled mousemove for better performance
-		let mouseMoveThrottle = false;
+		// Optimized: direct mousemove without throttle for immediate response
 		document.addEventListener('mousemove', (e) => {
-			if (this.isDragging && !mouseMoveThrottle) {
-				mouseMoveThrottle = true;
-				requestAnimationFrame(() => {
-					const x = e.clientX - this.dragOffset.x;
-					const y = e.clientY - this.dragOffset.y;
-					this.menu.style.transform = 'none';
-					this.menu.style.left = `${x}px`;
-					this.menu.style.top = `${y}px`;
-					mouseMoveThrottle = false;
-				});
-			}
+			if (!this.isDragging) return;
+
+			// Calculer la nouvelle position absolue
+			const x = e.clientX - this.dragOffset.x;
+			const y = e.clientY - this.dragOffset.y;
+
+			// Utiliser transform pour des performances optimales (GPU-accelerated)
+			// Le transform est relatif à la position de base left/top
+			this.menu.style.transform = `translate(${x - baseLeft}px, ${y - baseTop}px)`;
 		});
 
 		document.addEventListener('mouseup', (e) => {
 			// Arrêter le drag & drop
 			const wasDragging = this.isDragging;
-			this.isDragging = false;
+
+			if (this.isDragging) {
+				this.isDragging = false;
+
+				// Appliquer la position finale en left/top pour la persistance
+				const rect = this.menu.getBoundingClientRect();
+				this.menu.style.left = `${rect.left}px`;
+				this.menu.style.top = `${rect.top}px`;
+				this.menu.style.transform = 'none';
+
+				// Réactiver la transition et nettoyer will-change
+				const animationDuration = DesignSystem.animation.normal || '0.3s';
+				this.menu.style.transition = `all ${animationDuration} ease`;
+				this.menu.style.willChange = 'auto';
+			}
+
 			this.menu.style.cursor = "grab";
 
 			// Empêcher la propagation de l'événement mouseup vers la page web
