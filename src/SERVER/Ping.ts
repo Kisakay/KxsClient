@@ -60,7 +60,13 @@ class PingTest {
 		if (this.isConnecting) return;
 		this.isStopped = false;
 		this.isConnecting = true;
-		this.startWebSocketPing();
+
+		// On attend avant de démarrer la connexion pour éviter les rate-limit de la websocket
+		setTimeout(() => {
+			if (!this.isStopped) {
+				this.startWebSocketPing();
+			}
+		}, 4000);
 
 		// Vérifier régulièrement l'état de la connexion
 		this.startConnectionCheck();
