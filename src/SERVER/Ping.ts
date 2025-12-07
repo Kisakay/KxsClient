@@ -5,6 +5,7 @@ class PingTest {
 	private sendTime: number = 0;
 	private retryCount: number = 0;
 	private isConnecting: boolean = false;
+	private isStopped: boolean = false;
 	private url: string = "";
 	private hasPing: boolean = false;
 	private reconnectTimer: NodeJS.Timeout | null = null;
@@ -24,11 +25,14 @@ class PingTest {
 		}
 
 		this.keepAliveTimer = setInterval(() => {
+			if (this.isStopped) return;
 			if (this.ws?.readyState === WebSocket.OPEN) {
 				this.ws.send(this.ptcDataBuf);
 			} else if (this.ws?.readyState === WebSocket.CLOSED || this.ws?.readyState === WebSocket.CLOSING) {
 				// Redémarrer la connexion si elle est fermée
-				this.restart();
+				if (!this.isStopped) {
+					this.restart();
+				}
 			}
 		}, 5000); // envoie toutes les 5s
 	}
@@ -54,6 +58,7 @@ class PingTest {
 
 	public start() {
 		if (this.isConnecting) return;
+		this.isStopped = false;
 		this.isConnecting = true;
 		this.startWebSocketPing();
 
@@ -70,7 +75,7 @@ class PingTest {
 		// Vérifier l'état de la connexion toutes les 10 secondes
 		this.connectionCheckTimer = setInterval(() => {
 			// Si on n'a pas de ping valide ou que la connexion est fermée, on tente de reconnecter
-			if (!this.hasPing || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+			if (!this.isStopped && (!this.hasPing || !this.ws || this.ws.readyState !== WebSocket.OPEN)) {
 				this.restart();
 			}
 		}, 10000);
@@ -83,13 +88,17 @@ class PingTest {
 		ws.binaryType = "arraybuffer";
 
 		ws.onopen = () => {
+			if (this.isStopped) {
+				ws.close();
+				return;
+			}
 			this.ws = ws;
 			this.retryCount = 0;
 			this.isConnecting = false;
 			this.sendPing();
 
 			setTimeout(() => {
-				if (this.ws?.readyState !== WebSocket.OPEN) {
+				if (!this.isStopped && this.ws?.readyState !== WebSocket.OPEN) {
 					this.restart();
 				}
 			}, 3000); // 3s pour sécuriser
@@ -103,6 +112,7 @@ class PingTest {
 		};
 
 		ws.onerror = (error) => {
+			if (this.isStopped) return;
 			this.ping = 0;
 			this.hasPing = false;
 			this.retryCount++;
@@ -116,8 +126,10 @@ class PingTest {
 			}
 
 			this.reconnectTimer = setTimeout(() => {
-				this.ws = null; // S'assurer que l'ancienne connexion est effacée
-				this.startWebSocketPing();
+				if (!this.isStopped) {
+					this.ws = null; // S'assurer que l'ancienne connexion est effacée
+					this.startWebSocketPing();
+				}
 			}, retryDelay);
 		};
 
@@ -126,28 +138,38 @@ class PingTest {
 			this.ws = null;
 			this.isConnecting = false;
 
-			// Tentative de reconnexion après une fermeture
-			if (this.reconnectTimer) {
-				clearTimeout(this.reconnectTimer);
-			}
+			// Tentative de reconnexion après une fermeture seulement si pas arrêté volontairement
+			if (!this.isStopped) {
+				if (this.reconnectTimer) {
+					clearTimeout(this.reconnectTimer);
+				}
 
-			this.reconnectTimer = setTimeout(() => {
-				this.start();
-			}, 2000); // Attendre 2 secondes avant de reconnecter
+				this.reconnectTimer = setTimeout(() => {
+					if (!this.isStopped) {
+						this.start();
+					}
+				}, 2000); // Attendre 2 secondes avant de reconnecter
+			}
 		};
 	}
 
 	private sendPing() {
+		if (this.isStopped) return;
 		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
 			this.sendTime = Date.now();
 			this.ws.send(this.ptcDataBuf);
 		} else if (this.ws?.readyState === WebSocket.CLOSED || this.ws?.readyState === WebSocket.CLOSING) {
 			// Si la WebSocket est fermée au moment d'envoyer le ping, on tente de reconnecter
-			this.restart();
+			if (!this.isStopped) {
+				this.restart();
+			}
 		}
 	}
 
 	public stop() {
+		// Marquer comme arrêté pour empêcher toute reconnexion automatique
+		this.isStopped = true;
+
 		// Annuler tous les timers
 		if (this.reconnectTimer) {
 			clearTimeout(this.reconnectTimer);
@@ -193,9 +215,13 @@ class PingTest {
 				ping: this.ping,
 			};
 		} else {
-			// Si on détecte un problème ici, planifier une reconnexion
-			if (!this.reconnectTimer && (!this.ws || this.ws.readyState !== WebSocket.CONNECTING)) {
-				this.reconnectTimer = setTimeout(() => this.restart(), 1000);
+			// Si on détecte un problème ici, planifier une reconnexion seulement si pas arrêté
+			if (!this.isStopped && !this.reconnectTimer && (!this.ws || this.ws.readyState !== WebSocket.CONNECTING)) {
+				this.reconnectTimer = setTimeout(() => {
+					if (!this.isStopped) {
+						this.restart();
+					}
+				}, 1000);
 			}
 
 			return {

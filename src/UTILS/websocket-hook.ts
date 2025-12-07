@@ -28,6 +28,7 @@
 				global.kxsClient.kxsNetwork.gameEnded()
 				global.kxsClient.kxsNetwork.gameEnded_ExchangeKey(global.kxsClient.getFinalGameBody() || {});
 				globalThis.kxsClient.aliveplayer.stopObserving();
+				global.kxsClient.pingManager.stop();
 				globalThis.kxsClient.kxsNetwork.actualGameId = null;
 				return originalClose(code, reason);
 			};
