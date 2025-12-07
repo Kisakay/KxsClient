@@ -100,7 +100,7 @@ function loadKxs() {
 			setTimeout(() => {
 				showClickMeAnimation();
 			}, 500);
-		}, 1400);
+		}, 2000);
 	}
 }
 

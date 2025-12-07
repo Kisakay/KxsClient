@@ -902,7 +902,7 @@ export default class KxsClient {
 			}
 			this.backgroundInterval = setInterval(() => {
 				applyBackground(backgroundValue);
-			}, 2900) as unknown as number;
+			}, 1000) as unknown as number;
 		} else if (isCustomEnabled && client.options.is_custom_background_enabled) {
 			// Fallback if no stored background - apply default background
 			if (applyImmediately) {
@@ -910,12 +910,12 @@ export default class KxsClient {
 			} else {
 				setTimeout(() => {
 					applyBackground(background_image);
-				}, 2900);
+				}, 1000);
 			}
 			// Set interval to keep applying default background
 			this.backgroundInterval = setInterval(() => {
 				applyBackground(background_image);
-			}, 2900) as unknown as number;
+			}, 1000) as unknown as number;
 		}
 	}
 
