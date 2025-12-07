@@ -9,7 +9,6 @@ class GameIdHelper {
 	private isDraggable: boolean = false;
 	private isDragging: boolean = false;
 	private dragOffset: { x: number, y: number } = { x: 0, y: 0 };
-	private mouseMoveThrottle: boolean = false;
 	private clickStartTime: number = 0;
 	private clickStartPosition: { x: number, y: number } = { x: 0, y: 0 };
 	private readonly CLICK_THRESHOLD = 5; // pixels de mouvement pour considérer comme un drag
@@ -343,10 +342,28 @@ class GameIdHelper {
 
 			// Calculer l'offset depuis la position de la souris jusqu'au coin de l'élément
 			const rect = this.warningElement.getBoundingClientRect();
+
+			// Utiliser la position réelle en pixels (getBoundingClientRect donne toujours des px)
+			const baseLeft = rect.left;
+			const baseTop = rect.top;
+
+			// Convertir la position actuelle en px absolus pour éviter les problèmes
+			this.warningElement.style.left = `${baseLeft}px`;
+			this.warningElement.style.top = `${baseTop}px`;
+			this.warningElement.style.transform = 'none';
+
+			// Stocker la position de base pour le transform
+			(this.warningElement as any).__baseLeft = baseLeft;
+			(this.warningElement as any).__baseTop = baseTop;
+
 			this.dragOffset = {
 				x: event.clientX - rect.left,
 				y: event.clientY - rect.top
 			};
+
+			// Optimiser pour le drag: désactiver la transition et activer will-change
+			this.warningElement.style.transition = 'none';
+			this.warningElement.style.willChange = 'transform';
 
 			// Empêcher la sélection de texte pendant le drag
 			event.preventDefault();
@@ -354,7 +371,7 @@ class GameIdHelper {
 	}
 
 	private handleMouseMove(event: MouseEvent) {
-		if (!this.isDraggable || !this.warningElement || this.mouseMoveThrottle) return;
+		if (!this.isDraggable || !this.warningElement) return;
 
 		// Si on a commencé un clic sur l'élément, vérifier si c'est un drag
 		if (this.clickStartTime > 0 && !this.isDragging) {
@@ -371,20 +388,14 @@ class GameIdHelper {
 
 		// Si on est en train de drag, déplacer l'élément
 		if (this.isDragging && this.warningElement) {
-			// Optimisé : throttle mousemove pour de meilleures performances
-			this.mouseMoveThrottle = true;
-			requestAnimationFrame(() => {
-				// Calculer la nouvelle position
-				const newX = event.clientX - this.dragOffset.x;
-				const newY = event.clientY - this.dragOffset.y;
+			// Calculer la nouvelle position absolue
+			const newX = event.clientX - this.dragOffset.x;
+			const newY = event.clientY - this.dragOffset.y;
 
-				// Mettre à jour la position de l'élément
-				if (this.warningElement) {
-					this.warningElement.style.left = `${newX}px`;
-					this.warningElement.style.top = `${newY}px`;
-				}
-				this.mouseMoveThrottle = false;
-			});
+			// Utiliser transform pour des performances optimales (GPU-accelerated)
+			const baseLeft = (this.warningElement as any).__baseLeft || 0;
+			const baseTop = (this.warningElement as any).__baseTop || 0;
+			this.warningElement.style.transform = `translate(${newX - baseLeft}px, ${newY - baseTop}px)`;
 		}
 	}
 
@@ -394,6 +405,21 @@ class GameIdHelper {
 		// Si on était en train de drag, sauvegarder la position
 		if (this.isDragging) {
 			this.isDragging = false;
+
+			// Appliquer la position finale en left/top pour la persistance
+			const rect = this.warningElement.getBoundingClientRect();
+			this.warningElement.style.left = `${rect.left}px`;
+			this.warningElement.style.top = `${rect.top}px`;
+			this.warningElement.style.transform = 'none';
+
+			// Réactiver la transition et nettoyer will-change
+			const animationDuration = DesignSystem.animation.normal || '0.3s';
+			this.warningElement.style.transition = `all ${animationDuration} ease`;
+			this.warningElement.style.willChange = 'auto';
+
+			// Nettoyer les données temporaires
+			delete (this.warningElement as any).__baseLeft;
+			delete (this.warningElement as any).__baseTop;
 
 			// Récupérer les positions actuelles
 			const left = parseInt(this.warningElement.style.left);

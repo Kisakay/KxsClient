@@ -257,40 +257,65 @@ class HealthWarning {
 
 			// Calculate offset from mouse position to element corner
 			const rect = this.warningElement.getBoundingClientRect();
+
+			// Utiliser la position réelle en pixels (getBoundingClientRect donne toujours des px)
+			const baseLeft = rect.left;
+			const baseTop = rect.top;
+
+			// Convertir la position actuelle en px absolus pour éviter les problèmes
+			this.warningElement.style.left = `${baseLeft}px`;
+			this.warningElement.style.top = `${baseTop}px`;
+			this.warningElement.style.transform = 'none';
+
+			// Stocker la position de base pour le transform
+			(this.warningElement as any).__baseLeft = baseLeft;
+			(this.warningElement as any).__baseTop = baseTop;
+
 			this.dragOffset = {
 				x: event.clientX - rect.left,
 				y: event.clientY - rect.top
 			};
+
+			// Optimiser pour le drag: désactiver la transition et activer will-change
+			this.warningElement.style.transition = 'none';
+			this.warningElement.style.willChange = 'transform';
 
 			// Prevent text selection during drag
 			event.preventDefault();
 		}
 	}
 
-	private mouseMoveThrottle = false;
-
 	private handleMouseMove(event: MouseEvent) {
-		if (!this.isDragging || !this.warningElement || this.mouseMoveThrottle) return;
+		if (!this.isDragging || !this.warningElement) return;
 
-		// Optimized: throttle mousemove for better performance
-		this.mouseMoveThrottle = true;
-		requestAnimationFrame(() => {
-			// Calculate new position
-			const newX = event.clientX - this.dragOffset.x;
-			const newY = event.clientY - this.dragOffset.y;
+		// Calculer la nouvelle position absolue
+		const newX = event.clientX - this.dragOffset.x;
+		const newY = event.clientY - this.dragOffset.y;
 
-			// Update element position
-			if (this.warningElement) {
-				this.warningElement.style.left = `${newX}px`;
-				this.warningElement.style.top = `${newY}px`;
-			}
-			this.mouseMoveThrottle = false;
-		});
+		// Utiliser transform pour des performances optimales (GPU-accelerated)
+		const baseLeft = (this.warningElement as any).__baseLeft || 0;
+		const baseTop = (this.warningElement as any).__baseTop || 0;
+		this.warningElement.style.transform = `translate(${newX - baseLeft}px, ${newY - baseTop}px)`;
 	}
 
 	private handleMouseUp() {
 		if (this.isDragging && this.warningElement) {
 			this.isDragging = false;
+
+			// Appliquer la position finale en left/top pour la persistance
+			const rect = this.warningElement.getBoundingClientRect();
+			this.warningElement.style.left = `${rect.left}px`;
+			this.warningElement.style.top = `${rect.top}px`;
+			this.warningElement.style.transform = 'none';
+
+			// Réactiver la transition et nettoyer will-change
+			const animationDuration = DesignSystem.animation.normal || '0.3s';
+			this.warningElement.style.transition = `all ${animationDuration} ease`;
+			this.warningElement.style.willChange = 'auto';
+
+			// Nettoyer les données temporaires
+			delete (this.warningElement as any).__baseLeft;
+			delete (this.warningElement as any).__baseTop;
 
 			// Récupérer les positions actuelles
 			const left = parseInt(this.warningElement.style.left);
