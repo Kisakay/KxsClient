@@ -111,7 +111,7 @@ const CLIENT_REGISTRY: Record<string, ClientConfig> = {
 		acronym_start_upper: "Kxr",
 		application_id: "1443348644580298842",
 		rpc_assets: "mp:app-icons/1443348644580298842/686b62c3843ad74516ca81728ac50e6f.png?size=512",
-		domains: ["resurviv.biz"],
+		domains: ["resurviv.biz", "uno.cheap"],
 		full_logo: config.base_url + "/assets/KxrLogoFull.png",
 		icon_logo: config.base_url + "/assets/KxrClientLogo.png",
 		welcome_sound: "https://kxs.rip/assets/o_r_sound.mp3",
